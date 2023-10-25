@@ -1,0 +1,83 @@
+{% extends 'main.html '%}
+{% block content %}
+<main class="container">
+    <div class="card card-body mt-4">
+        <section class="row justify-content-center">
+            <h2 class="">Distribucion Porcentaje de Objetivos</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'systemparameters' %}">Parametros</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'systemparameterpercentajedistribution' %}">Distribucion
+                            Porcentaje</a></li>
+                    <li class="breadcrumb-item"><a
+                            href="{% url 'systemparameterpercentajedistributiondepartment' departamento %}">{{departamento.nombre|title}}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">{{nivel|title}}</li>
+                </ol>
+            </nav>
+            <div class="col-md-6">
+                <div class="card card-body border-0 shadow">
+                    {% if nivel.porObjetivos != suma %}
+                    <div class="alert alert-warning" role="alert">
+                        Este nivel no tiene una distribucion de porcentaje valida de objetivos asignada para este
+                        departamento
+                    </div>
+                    {% endif %}
+                    <a
+                    href="{% url 'systemparameterpercentajedistributiondepartmentniveldistribution' departamento nivel.valor distribucion.id %}">Nuevo</a>
+               
+                    <table class="table">
+                        <thead>
+                            <th>Tipo</th>
+                            <th>Porcentaje</th>
+                        </thead>
+                        <tbody>
+                            {% for distribucion in distribucionObjetivos %}
+                            <tr>
+                                <td>{{distribucion.tipo|title}}</td>
+                                <td>{{distribucion.peso}}%</td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-body border-0 shadow">
+                    <h5>Parametros de {{nivel}}</h5>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Grupo</th>
+                                <td>{{nivel.nivel}}</td>
+                            </tr>
+                            <tr>
+                                <th>Porcentaje por Competencias</th>
+                                <td>{{nivel.porCompetencias}}%</td>
+                            </tr>
+                            <tr>
+                                <th>Porcentaje por Objetivos</th>
+                                <td>{{nivel.porObjetivos}}%</td>
+                            </tr>
+                            
+                            <tr>
+                                <th>Porcentaje Actualmente Asignado</th>
+                                <td>{{suma}}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+
+
+        </section>
+    </div>
+
+</main>
+{% endblock %}

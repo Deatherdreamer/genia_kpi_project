@@ -1,0 +1,130 @@
+{% extends 'main.html' %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+{% load static %}
+{% block content %}
+
+<main class="container">
+
+    <section class="row">
+        {% with periodo=periodos.last %}
+
+        <div class="col">
+            <div class="card mt-4">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="text-center">Periodo Actual</h3>
+                </div>
+
+                <div class="card-body">
+                    <h4 class="text-center">{{periodo.año}}</h4>
+
+                    <table class="table table-hover">
+
+                        <tbody>
+                            <tr>
+                                <th scope="row">Proceso de Evaluacion</th>
+                                <td>
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Fecha Inicio</th>
+                                                <td>{{periodo.fechaInicioEvaluaciones}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Fecha Fin</th>
+                                                <td>{{periodo.fechaFinEvaluaciones}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Estado</th>
+                                                <td>
+                                                    {% if periodo.estado == 'En Proceso' %}
+                                                    <span class="badge bg-success">{{periodo.estado}}</span>
+                                                    {% elif periodo.estado == 'No ha comenzado' %}
+                                                    <span class="badge bg-secondary">{{periodo.estado}}</span>
+                                                    {% elif periodo.estado == 'Prorroga' %}
+                                                    <span class="badge bg-warning text-dark">{{periodo.estado}}</span>
+                                                    {% elif periodo.estado == 'Finalizado' %}
+                                                    <span class="badge bg-primary">{{periodo.estado}}</span>
+                                                    {% else %}
+                                                    <span class="badge bg-danger">{{periodo.estado}}</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th scope="row">Objetivos Propuestos</th>
+                                <td>{{periodo.objetivosPeriodo}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Evaluaciones Realizadas</th>
+                                <td>{{periodo.evaluacionesPeriodo}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Promedio de Resultados</th>
+                                <td>{{periodo.promedioEvaluaciones}}</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+                    <div class="row">
+                        <div class="col">
+                            <a href="{% url 'editperiodo' periodo.id %}" class="btn btn-primary">Editar</a>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+        {% endwith %}
+        <div class="col">
+            <div class="card mt-4">
+                <div class="card-header bg-dark text-white">
+                    <h3 class="text-center">Periodos Anteriores</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <th>Periodo</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </thead>
+                        <tbody>
+                            {% for periodo in periodos %}
+
+
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="5">No hay periodos anteriores</td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    </section>
+</main>
+
+
+
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends 'main.html '%}
+{% load static %}
+{% load custom_tags %}
+
+{% block content %}
+
+
+<main class="container">
+    <div class="card mt-4">
+        <div class="card-header text-bg-dark bg-dark">
+            <h5 class="lead fw-bold">GERENCIA</h5>
+        </div>
+        <div class="card-body">
+            <h4 class=" lead fs-4">{{gerencia.nombreText}}</h4>
+
+        </div>
+    </div>
+
+    <section class="row mt-4">
+
+        <div class="col">
+            <div class="card">
+                <div class="card-header text-bg-dark bg-dark">
+                    <h5 class="lead fw-bold">DETALLES</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Direccion</th>
+                                <td>{{gerencia.direccion}}</td>
+                            </tr>
+                            <tr>
+                                <th>N° de Cargos</th>
+                                <td>
+                                    {{gerencia.cargosAsociados.count}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>N° de Empleados</th>
+                                <td>
+                                    {{gerencia.cantidadEmpleados}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Objetivos de Gerencia</th>
+                                <td>{{gerencia.objetivosGerencia}}</td>
+                            </tr>
+                            <tr>
+                                <th>Porcentaje de Completacion</th>
+                                <td>{{gerencia.porcentajeCompletacionObjetivos}}%</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <div class="progress m-3" style="height: 40px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark lead fw-bold"
+                                            role="progressbar" aria-label="Example 20px high"
+                                            style="width: {{gerencia.porcentajeCompletacionObjetivos|floatformat:0}}%;"
+                                            aria-valuenow="{{empleado.objetivosPorcentaje.0}}"
+                                            aria-valuemin="0" aria-valuemax="100">
+                                            {{gerencia.porcentajeCompletacionObjetivos}}% Completado
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card">
+                <div class="card-header text-bg-dark bg-dark">
+                    <h5 class="lead fw-bold">CARGOS</h5>
+
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="accordionExample">
+                        {% for cargo in gerencia.cargosAsociados %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse{{forloop.counter}}"
+                                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                                    aria-controls="collapse{{forloop.counter}}">
+                                    {{cargo}}
+                                </button>
+                            </h2>
+                            <div id="collapse{{forloop.counter}}" class="accordion-collapse collapse ">
+                                <div class="accordion-body">
+                                    <ul>
+                                        {% for empleado in cargo.empleadosAsociados %}
+                                        <div class="card cardbody">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <table class="table align-middle">
+                                                        <thead>
+                                                            <th colspan="2">
+
+                                                                <h4 class="text-center">{{empleado|title}} <span><a
+                                                                            class="btn btn-dark"
+                                                                            href="{% url 'profile' empleado.ficha %}"><i
+                                                                                class="bi bi-search"></i></a></span>
+                                                                </h4>
+                                                            </th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <th>
+                                                                    {% if empleado.imagen %}
+                                                                    <div class=" text-center"><img
+                                                                            src="{{ empleado.imagen.url }}"
+                                                                            alt=" Sin imagen "
+                                                                            class="rounded-circle img-fluid img-thumbnail"
+                                                                            style="width: 128px; height: 128px; object-fit: cover;">
+                                                                    </div>
+                                                                    {% else %}
+                                                                    <div class="text-center"><img
+                                                                            src="/static/default-avatar.png"
+                                                                            alt=" Sin imagen "
+                                                                            class="rounded-circle img-fluid img-thumbnail"
+                                                                            style="width: 128px; height:128px;object-fit: cover;">
+                                                                    </div>
+                                                                    {% endif %}
+                                                                </th>
+                                                                <td>
+                                                                    <table class="table table-sm">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <th scope="row">Estado</th>
+                                                                                {% if empleado.usuario.is_superuser %}
+                                                                                <td><span class="badge bg-warning">Super
+                                                                                        Administrador</span></td>
+                                                                                {% elif empleado.usuario.is_staff %}
+
+                                                                                <td><span
+                                                                                        class="badge bg-success">Activo</span><span
+                                                                                        class="badge bg-warning">Admin</span>
+                                                                                </td>
+                                                                                {% elif empleado.fechaEgreso %}
+                                                                                <td><span
+                                                                                        class="badge bg-danger">Egresado</span>
+                                                                                </td>
+                                                                                {% else %}
+                                                                                <td><span
+                                                                                        class="badge bg-success">Activo</span>
+                                                                                </td>
+                                                                                {% endif %}
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Objetivos</th>
+                                                                                <td>{{empleado.objetivosPorcentaje.1}}
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th>Porcentaje</th>
+                                                                                <td>{{empleado.objetivosPorcentaje.0}}%
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+
+                                                        </tbody>
+
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div class="card cardbody">
+                                            <h4 class="text-center">No se han encontrado resultados con este cargo</h4>
+                                        </div>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        </div>
+        </div>
+
+    </section>
+
+</main>
+
+
+
+
+
+
+{% endblock %}

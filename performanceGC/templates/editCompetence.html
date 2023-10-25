@@ -1,0 +1,113 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_tags %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center">Editar Competencia</h1>
+            <div class="card card-body">
+                <form action="" method="POST">
+
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group mt-2">
+                                <label for="id_nombre" class="fw-bold">Nombre de la Competencia:</label>
+                                <input type="text" name="nombre" class="form-control" maxlength="100" required
+                                    id="id_nombre" value="{{ form.nombre.value }}">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group mt-2">
+                                <label for="id_nivel" class="fw-bold">Nivel:</label>
+                                <select name="nivel" class="form-select" required id="id_nivel">
+                                    <option value="" {% if not form.nivel.value %}selected{% endif %}>---------</option>
+                                    <option value="1" {% if form.nivel.value == 1 %}selected{% endif %}>BASE</option>
+                                    <option value="2" {% if form.nivel.value == 2 %}selected{% endif %}>ESPECIALISTA O
+                                        SUPERVISOR
+                                    </option>
+                                    <option value="3" {% if form.nivel.value == 3 %}selected{% endif %}>COORDINACION O
+                                        JEFATURA
+                                    </option>
+                                    <option value="4" {% if form.nivel.value == 4 %}selected{% endif %}>GERENCIA
+                                    </option>
+                                    <option value="5" {% if form.nivel.value == 5 %}selected{% endif %}>DIRECCIÓN
+                                    </option>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group mt-2">
+                                <label for="id_descripcion" class="fw-bold">Descripcion de la Competencia:</label>
+                                <textarea name="descripcion" cols="40" rows="5" class="form-control" required
+                                    id="id_descripcion">{{ form.descripcion.value }}</textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <h4 class="text-center">Significado de los Resultados</h4>
+
+
+
+                        <table class="table table-sm table-borderless">
+                            <thead class="text-center">
+                                <tr>
+                                    <th><label for="id_significado1">Valor 1</label></th>
+                                    <th><label for="id_significado2">Valor 2</label></th>
+                                    <th><label for="id_significado3">Valor 3</label></th>
+                                    <th><label for="id_significado4">Valor 4</label></th>
+                                </tr>
+                                <tr>
+
+                                    <th>NO HAY DOMINIO
+                                    </th>
+                                    <th>DOMINIO BASICO
+                                    </th>
+                                    <th>DOMINIO PARCIAL
+                                    </th>
+                                    <th>DOMINIO SUPERIOR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><textarea name="significado1" rows="5" class="form-control"
+                                            id="id_significado1">{{ form.significado1.value }}</textarea></td>
+                                    <td><textarea name="significado2" rows="5" class="form-control"
+                                            id="id_significado2">{{ form.significado2.value }}</textarea></td>
+                                    <td><textarea name="significado3" rows="5" class="form-control"
+                                            id="id_significado3">{{ form.significado3.value }}</textarea></td>
+                                    <td><textarea name="significado4" rows="5" class="form-control"
+                                            id="id_significado4">{{ form.significado3.value }}</textarea></td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="form-group mt-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a href="{% url 'seeCompetences' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+{% endblock %}

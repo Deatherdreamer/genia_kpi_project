@@ -1,0 +1,850 @@
+{% extends 'main.html '%}
+{% load static %}
+{% load custom_tags %}
+
+{% block content %}
+
+<main class="container">
+    <section class="row">
+        <div class="col-lg-4 col-sm-12 my-2 p-2">
+            <div class="card  border-0 shadow">
+
+                {% if user.is_staff and not empleado.usuario.is_superuser %}
+
+                <div class="card-header bg-transparent border-light b p-1">
+                    <div class="btn-group float-end" role="group" aria-label="Basic example">
+                        <a href="{% url 'editemployee' empleado.ficha %}" class="btn btn-outline-secondary"><i
+                                class="bi bi-pencil-square"></i> </a>
+                        {% if not empleado.usuario.is_staff %}
+                        {% if not empleado.fechaEgreso %}
+                        <a href="{% url 'deleteemployee' empleado.ficha %}" class="btn btn-outline-danger"><i
+                                class="bi bi-trash"></i> </a>
+                        {% else %}
+                        <a href="{% url 'restoreEmployee' empleado.ficha %}" class="btn btn-outline-success"><i
+                                class="bi bi-arrow-clockwise"></i> </a>
+                        {% endif %}
+                        {% endif %}
+                        {% if empleado.usuario.is_active %}
+
+                        {% endif %}
+                    </div>
+
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    {% if empleado.imagen %}
+                    <div class="text-center"><img src="{{ empleado.imagen.url }}" alt=" Sin imagen "
+                            class="rounded-circle img-fluid img-thumbnail"
+                            style="width: 192px; height: 192px; object-fit: cover;">
+                    </div>
+                    {% else %}
+                    <div class="text-center"><img src="/static/default-avatar.png" alt=" Sin imagen "
+                            class="rounded-circle img-fluid img-thumbnail"
+                            style="width: 192px; height:192px;object-fit: cover;">
+                    </div>
+                    {% endif %}
+
+                    <h5 class="text-center">
+                        {{empleado.nombre|title}} {{empleado.apellido|title}}
+                    </h5>
+                    <h6 class="text-center fw-lighter">
+                        {{empleado.cargo|title}}
+                    </h6>
+                </div>
+            </div>
+            <div class="card card-body border-0 shadow mt-3">
+                <table class="table table-sm table-borderless">
+                    <tbody>
+                        <tr>
+                            <th scope="row">Estado</th>
+                            {% if empleado.usuario.is_superuser %}
+                            <td><span class="badge bg-warning">Super Administrador</span></td>
+                            {% elif empleado.usuario.is_staff %}
+
+                            <td><span class="badge bg-success">Activo</span><span class="badge bg-warning">Admin</span>
+                            </td>
+                            {% elif empleado.fechaEgreso %}
+                            <td><span class="badge bg-danger">Egresado</span></td>
+                            {% else %}
+                            <td><span class="badge bg-success">Activo</span></td>
+                            {% endif %}
+                        </tr>
+
+                        <tr>
+                            <th scope="row">Ficha</th>
+                            <td>{{empleado.ficha|title}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Supervisor</th>
+                            {% if empleado.supervisor %}
+                            <td><a
+                                    href="{% url 'profile' empleado.supervisor.ficha %}">{{empleado.supervisor|title}}</a>
+                            </td>
+                            {% elif empleado.cargo.supervisor %}
+                            <td>
+                                <span class="badge bg-danger">VACANTE</span>{{empleado.cargo.supervisor|title}}
+                            </td>
+                            {% else %}
+                            <td>
+                                N/A
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            {% if empleado.cargo.gerencia %}
+                            <th scope="row">Gerencia</th>
+                            <td><a
+                                    href="{% url 'gerenciadetails' empleado.cargo.gerencia.id %}">{{empleado.cargo.gerencia|title}}</a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            {% if empleado.cargo.gerencia.direccion %}
+                            <th scope="row">Direccion</th>
+                            <td>{{empleado.cargo.gerencia.direccion|title}}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <th scope="row">Fecha Ingreso</th>
+                            <td>{{empleado.fechaIngreso|date:"SHORT_DATE_FORMAT"}}</td>
+                        </tr>
+                        {% if empleado.fechaEgreso %}
+                        <tr>
+                            <th scope="row">Fecha Egreso</th>
+                            <td>{{empleado.fechaEgreso|date:"SHORT_DATE_FORMAT"}}</td>
+                        </tr>
+                        {% endif %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg my-2 p-2">
+            {% if user.empleado == empleado or empleado in user.empleado.subordinados or user.is_staff %}
+            <div class="card card-body border-0 shadow h-100">
+                <ul class="nav nav-underline nav-fill" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                            data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane"
+                            aria-selected="true">Resumen</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                            data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane"
+                            aria-selected="false">Objetivos</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-bs-toggle="tab"
+                            data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane"
+                            aria-selected="false">Evaluaciones</button>
+                    </li>
+                    {% if cantidad != 0 %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="minion-tab" data-bs-toggle="tab" data-bs-target="#minion-tab-pane"
+                            type="button" role="tab" aria-controls="minion-tab-pane"
+                            aria-selected="false">Colaboradores</button>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="comments-tab" data-bs-toggle="tab"
+                            data-bs-target="#comments-tab-pane" type="button" role="tab"
+                            aria-controls="comments-tab-pane" aria-selected="false">Comentarios</button>
+                    </li>
+                </ul>
+                <div class="tab-content h-100" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                        tabindex="0">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="card card-body border-0 shadow">
+                                    <table class="table table-sm table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Tiempo en GeniaCare</th>
+                                                <td>{{empleado.fechaIngreso|timesince}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Promedio de Desempeño</th>
+                                                <td>{{empleado.promedioResultadoFinal}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Evaluaciones realizadas</th>
+                                                <td>{{empleado.cantidadEvaluaciones}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Objetivos Propuestos</th>
+                                                <td>{{empleado.cantidadObjetivosTotales}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Actividades Propuestas</th>
+                                                <td>{{empleado.cantidadActividades}}</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <div class="card card-body border-0 shadow">
+                                    <h6 class="text-center">Peso de objetivos y competencias</h6>
+                                    <div class="chart-container">
+                                        <canvas id="distributionChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card card-body border-0 shadow">
+                                    <h6 class="text-center">Distribucion de objetivos</h6>
+                                    <div class="chart-container">
+                                        <canvas id="distributionChart2"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card card-body border-0 shadow">
+                                    <h6 class="text-center">Completacion de objetivos</h6>
+                                    <div class="chart-container">
+                                        <canvas id="distributionChart3"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
+                        tabindex="0">
+                        <div class="row justify-content-center mt-3">
+                            <div class="col-sm-3">
+                                <a class="btn btn-primary" href="{% url 'objectives' user.empleado.ficha %}">Ver
+                                    Objetivos</a>
+                            </div>
+                            <div class="col-sm-3">
+                                <a class="btn btn-primary" href="{% url 'objectives' user.empleado.ficha %}">Añadir
+                                    Objetivo</a>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-12">
+                                <div class="card card-body border-0 shadow p-1">
+                                    <div class="progress m-3" style="height: 40px;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark lead fw-bold"
+                                            role="progressbar" aria-label="Example 20px high"
+                                            style="width: {{empleado.objetivosPorcentaje.0|floatformat:0}}%; "
+                                            aria-valuenow="{{empleado.objetivosPorcentaje.0}}" aria-valuemin="0"
+                                            aria-valuemax="100">
+                                            {{empleado.objetivosPorcentaje.0|floatformat}}% Completado
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-between">
+                            <div class="col-md-6">
+                                <div class="card card-body border-0 shadow my-2 h-100">
+                                    <h6 class="text-center">Distribucion de Objetivos</h6>
+                                    <table class="table table-borderless ">
+                                        <tbody>
+                                            {% if empleado.distribucionObjetivosCantidad != None %}
+                                            {% for tipo in empleado.distribucionObjetivosCantidad %}
+                                            <tr>
+                                                <th scope="row">{{tipo.tipo}}</th>
+                                                <td>{{tipo.peso}}%</td>
+                                                <td>{{tipo.cantidad}}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% endif %}
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card card-body border-0 shadow my-2 h-100">
+                                    <h6 class="text-center">Cantidad de Objetivos</h6>
+                                    <table class="table table-borderless ">
+                                        <thead>
+                                            <th scope="col"></th>
+                                            <th scope="col">Cantidad</th>
+                                            <th scope="col">Completadas</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Objetivos</th>
+                                                <td>{{empleado.objetivosPorcentaje.1}}</td>
+                                                <td>{{empleado.objetivosPorcentaje.2}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Actividades</th>
+                                                <td>{{empleado.objetivosPorcentaje.3}}</td>
+                                                <td>{{empleado.objetivosPorcentaje.4}}</td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+                    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab"
+                        tabindex="0">
+                        {% if user.empleado == empleado %}
+                        <div class="row justify-content-center mt-3">    
+                            <div class="col-md-12">
+                                <div class="card card-body border-0 shadow h-100">
+                                    {% if periodo.estado == 'No ha comenzado' %}
+                                    <div class="alert alert-warning" role="alert">
+                                        <h4 class="alert-heading">No ha comenzado el proceso</h4>
+                                        <p>El periodo de evaluacion no ha comenzado, por lo que no se puede realizar
+                                            ninguna evaluacion.</p>
+                                        <hr>
+                                        <p class="mb-0">El periodo de evaluacion comienza el
+                                            {{periodo.fechaInicioEvaluaciones|date:"SHORT_DATE_FORMAT"}} y termina el
+                                            {{periodo.fechaFinEvaluaciones|date:"SHORT_DATE_FORMAT"}}.</p>
+                                    </div>
+                                    {% elif periodo.estado == 'En Proceso' %}
+                                    <div class="alert alert-success" role="alert">
+                                        <h4 class="alert-heading">En proceso</h4>
+                                        <p>El periodo de evaluacion esta en proceso, por lo que se puede realizar
+                                            evaluaciones.</p>
+                                        <hr>
+                                        <p class="mb-0">El periodo de evaluacion comenzo el
+                                            {{periodo.fechaInicioEvaluaciones|date:"SHORT_DATE_FORMAT"}} y termina el
+                                            {{periodo.fechaFinEvaluaciones|date:"SHORT_DATE_FORMAT"}}.</p>
+                                        <!-- realice su evaluacion aqui -->
+                                        <a class="btn btn-primary mt-2 w-100"
+                                            href="{% url 'newselftest' empleado.ficha %}">Realizar
+                                            Evaluacion</a>
+                                    </div>
+                                    {% elif periodo.estado == 'Prorroga' %}
+                                    <div class="alert alert-warning" role="alert">
+                                        <h4 class="alert-heading">Proceso prorroga</h4>
+                                        <p>El periodo de evaluacion esta en prorroga, por lo que se puede realizar
+                                            evaluaciones.</p>
+                                        <hr>
+                                        <p class="mb-0">El periodo de evaluacion comenzo el
+                                            {{periodo.fechaInicioEvaluaciones|date:"SHORT_DATE_FORMAT"}} y termino el
+                                            {{periodo.fechaFinEvaluaciones|date:"SHORT_DATE_FORMAT"}}.</p>
+                                        <!-- realice su evaluacion aqui -->
+                                        <a class="btn btn-primary mt-2"
+                                            href="{% url 'newselftest' empleado.ficha %}">Realizar
+                                            Evaluacion</a>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-danger" role="alert">
+                                        <h4 class="alert-heading">Proceso finalizado</h4>
+                                        <p>El periodo de evaluacion ha finalizado, por lo que no se puede realizar
+                                            ninguna evaluacion.</p>
+                                        <hr>
+                                        <p class="mb-0">El periodo de evaluacion comenzo el
+                                            {{periodo.fechaInicioEvaluaciones|date:"SHORT_DATE_FORMAT"}} y termino el
+                                            {{periodo.fechaFinEvaluaciones|date:"SHORT_DATE_FORMAT"}}.</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+
+                        <div class="row justify-content-center mt-2">
+                            <div class="col-md-12">
+                                <div class="card card-body border-0 shadow">
+                                    <h6 class="text-center">Evaluaciones</h6>
+                                {% for evaluacion in evaluaciones %}
+                                {% if evaluacion.estado == 0 and user.empleado == empleado %}
+                                <div class="card border-dark my-2">
+                                    <div class="ribbon-corner-gray"></div>
+                                    <div class="card-header border-dark text-bg-dark bg-dark">
+                                        {{evaluacion.fecha|date:"d/m/Y"}}
+                                        <span class="badge bg-secondary">Borrador</span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-borderless table-sm table-responsive m-0">
+                                            <thead class=" text-center">
+                                                <th scope="col">Periodo</th>
+                                                <th scope="col">Resultado</th>
+                                                <th scope="col"></th>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-center">{{evaluacion.periodo}}</td>
+                                                    <td>
+                                                        <table class="table table-sm table-hover">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <th scope="row">Objetivos:</th>
+                                                                    <td>{{evaluacion.resultadoObjetivos}}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">Competencias:</th>
+                                                                    <td>{{evaluacion.resultadoCompetencias}}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">Total:</th>
+                                                                    <td>{{evaluacion.resultadoFinal}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class="table table-borderless table-sm align-middle">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <a class="btn btn-outline-dark bi bi-arrow-right-circle w-100"
+                                                                            href="{% url 'edittest' empleado.ficha evaluacion.id %}">
+                                                                            <span> Continuar </span>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        <form
+                                                                            action="{% url 'discardtest' empleado.ficha evaluacion.id %}"
+                                                                            method="post" id="discard-form">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit"
+                                                                                class="btn btn-outline-danger bi bi-trash w-100"
+                                                                                onclick="return confirm('¿Está seguro de que desea descartar esta evaluación?')">
+                                                                                <span> Descartar </span>
+                                                                            </button>
+                                                                        </form>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                                {% elif evaluacion.estado == 1 %}
+                                <div class="card border-dark my-2">
+                                    <div class="ribbon-corner-info"></div>
+                                    <div class="card-header border-dark text-bg-dark bg-dark">
+                                        {{evaluacion.fecha|date:"d/m/Y"}}
+                                        <span class="badge bg-info">
+                                            Autoevaluacion
+                                        </span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-borderless table-sm table-responsive m-0">
+                                            <thead class=" text-center">
+                                                <th scope="col">Periodo</th>
+                                                <th scope="col">Resultado</th>
+                                                <th scope="col"></th>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-center">{{evaluacion.periodo}}</td>
+                                                    <td>
+                                                        <table class="table table-sm table-hover">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <th scope="row">Objetivos:</th>
+                                                                    <td>{{evaluacion.resultadoObjetivos}}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">Competencias:</th>
+                                                                    <td>{{evaluacion.resultadoCompetencias}}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">Total:</th>
+                                                                    <td>{{evaluacion.resultadoFinal}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class="table table-borderless table-sm align-middle">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <a class="btn btn-outline-dark bi bi-eye w-100"
+                                                                            href="{% url 'testdetails' empleado.ficha evaluacion.id %}">
+                                                                            <span> Ver </span>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                                {% if user.empleado == empleado.supervisor %}
+                                                                edit test
+                                                                <tr>
+                                                                    <td>
+                                                                        <a class="btn btn-outline-dark bi bi-pencil-square w-100"
+                                                                            href="{% url 'edittest' empleado.ficha evaluacion.id %}">
+                                                                            <span> Editar </span>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                                {% endif %}
+
+                                                                <tr>
+                                                                    <td>
+                                                                        <a class="btn btn-outline-dark bi bi-file-earmark-pdf w-100"
+                                                                            href="{% url 'printTest' evaluacion.id %}">
+                                                                            <span> PDF </span>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                    
+                                </div>
+                                {% elif evaluacion.estado == 2 %}
+                                <div class="card border-dark my-2">
+                                    <div class="ribbon-corner-success"></div>
+                                    <div class="card-header border-dark text-bg-dark bg-dark">
+                                        {{evaluacion.fecha|date:"d/m/Y"}}
+                                        <span class="badge bg-success ">
+                                            Definitiva
+                                        </span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <table class="table table-borderless table-sm table-responsive m-0">
+                                            <thead class=" text-center">
+                                                <th scope="col">Periodo</th>
+                                                <th scope="col">Resultado</th>
+                                                <th scope="col"></th>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-center">{{evaluacion.periodo}}</td>
+                                                    <td>
+                                                        <table class="table table-sm table-hover">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <th scope="row">Objetivos:</th>
+                                                                    <td>{{evaluacion.resultadoObjetivos}}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">Competencias:</th>
+                                                                    <td>{{evaluacion.resultadoCompetencias}}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row">Total:</th>
+                                                                    <td>{{evaluacion.resultadoFinal}}</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                    <td>
+                                                        <table class="table table-borderless table-sm align-middle">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <a class="btn btn-outline-dark bi bi-eye w-100"
+                                                                            href="{% url 'testdetails' empleado.ficha evaluacion.id %}">
+                                                                            <span> Ver </span>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>
+                                                                        <a class="btn btn-outline-dark bi bi-file-earmark-pdf w-100"
+                                                                            href="{% url 'printTest' evaluacion.id %}">
+                                                                            <span> PDF </span>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+
+
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {% endif %} 
+                                {% empty %}
+                                <div class="card card-body border-0 shadow">
+                                    <div class="text-center">
+                                        <p class="fs-2">No hay evaluaciones que mostrar...</p>
+                                        <img class="" src="{% static 'GCLOGO-GRISES.png' %}" alt=""
+                                            style="max-width: 50%; height: auto;">
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="comments-tab-pane" role="tabpanel" aria-labelledby="comments-tab"
+                        tabindex="0">
+
+                        <form action="{% url 'newcommmnent' empleado.ficha user.empleado.ficha %}" method="post">
+                            {% csrf_token %}
+                            <div class="card m-4">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <textarea class="form-control" name="comentario" id="comentario"
+                                                rows="3"></textarea>
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="submit" class="btn btn-outline-dark w-100">Enviar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        {% for comentario in empleado.comentariosRecibidos %}
+                        <div
+                            class="card m-4 {% if user.empleado == comentario.de %} text-bg-primary bg-primary border-light {% endif %}">
+                            <div class="card-body">
+                                <p class="fw-bold lead m-0">{{comentario.de}}</p>
+                                <p class="fw-ligth fst-italic">{{comentario.comentario}}</p>
+                                <p class="text-end m-0"><small>{{comentario.fecha|timesince}}</small></p>
+
+                            </div>
+                        </div>
+                        {% empty %}
+
+                        <div class="card m-4">
+                            <div class="card-body">
+                                <p class="fw-bold fs-2 text-center">No hay comentarios que mostrar</p>
+
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane fade" id="minion-tab-pane" role="tabpanel" aria-labelledby="minion-tab"
+                        tabindex="0">
+                        <div class="row justify-content-start">
+                            {% for i in subordinados %}
+                            <div class="col-md-6">
+                                <div class="card card-body border-2 rounded-4 p-0 my-2">
+                                    <a class="btn btn-outline-dark " href="{% url 'profile' i.ficha %}">
+                                    <div class="row justify-content-start">
+                                        
+                                        <div class="col-md-4">
+                                            <img src="{% if  i.imagen %} {{ i.imagen.url }} {% else %} /static/default-avatar.png {% endif %}" alt=" Sin imagen "
+                                            class="rounded-circle img-fluid img-thumbnail"
+                                            style="width: 92px; height: 92px; object-fit: cover;">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h6>{{i}}</h6>
+                                        
+                                        </div>
+                                    </div>
+                                </a>
+                                </div>
+                            </div>
+                            
+                            <!-- <section class="col-6 my-2">
+                                <div class="card cardbody">
+                                    <a class="btn btn-outline-dark " href="{% url 'profile' i.ficha %}">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                {% if i.imagen %}
+                                                <div class=""><img src="{{ i.imagen.url }}" alt=" Sin imagen "
+                                                        class="rounded-circle img-fluid img-thumbnail"
+                                                        style="width: 92px; height: 92px; object-fit: cover;">
+                                                </div>
+                                                {% else %}
+                                                <div class=""><img src="/static/default-avatar.png" alt=" Sin imagen "
+                                                        class="rounded-circle img-fluid img-thumbnail"
+                                                        style="width: 92px; height:92px;object-fit: cover;">
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col">
+                                                <p class="lead"> {{i|title}}</p>
+                                            </div>
+
+                                        </div>
+
+                                    </a>
+                                </div>
+                            </section> -->
+
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card card-body h-100">
+                <div class="text-center">
+                    <p class="fs-1 ">
+                        Lo sentimos, no tiene permisos para visualizar
+                    </p>
+                    <img class="" src="{% static 'GCLOGO-GRISES.png' %}" alt="" style="
+                    max-width: 50%;
+                    height: auto;">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+    // Register the plugin to all charts:
+    Chart.register(ChartDataLabels);
+
+    const ctx = document.getElementById('distributionChart');
+    const labels = ['Objetivos', 'Competencias']
+    const porcentajeObjetivos = '{{empleado.cargo.nivel.porObjetivos}}'; // Obtener el porcentaje de objetivos
+    const porcentajeCompetencias = '{{empleado.cargo.nivel.porCompetencias}}'; // Obtener el porcentaje de competencias
+    const data = {
+        labels: labels,
+        datasets: [{
+            axis: 'y',
+            label: 'Porcentaje de Distribucion',
+            data: [porcentajeObjetivos, porcentajeCompetencias],
+            fill: false,
+            backgroundColor: [
+                'rgb(0, 47, 135,0.8)',
+                'rgb(255, 131, 0,0.8)',
+            ],
+            borderColor: [
+                'rgb(0, 47, 135)',
+                'rgb(255, 131, 0)',
+            ],
+            borderWidth: 1
+        }]
+    };
+    new Chart(ctx, {
+        type: 'doughnut',
+        data,
+        options: {
+            indexAxis: 'y',
+            plugins: {
+                datalabels: { // This code is used to display data values
+                    color: 'black',
+                    formatter: (value) => `${value}%`, // Formatear los valores como porcentaje
+                    font: {
+                        weight: 'bold',
+                        size: 24
+                    }
+                }
+            }
+        }
+    });
+    {% if empleado.distribucionObjetivosCantidad != None %}
+    const ctx2 = document.getElementById('distributionChart2');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: [
+            {% for tipo in empleado.distribucionObjetivosCantidad %}
+                '{{tipo.tipo}}',
+            {% endfor %}
+            ],
+            datasets: [{
+                axis: 'x',
+                label: 'TIPO',
+                data: [
+                {% for tipo in empleado.distribucionObjetivosCantidad %}
+                    '{{tipo.peso}}',
+                {% endfor %}],
+                fill: false,
+                backgroundColor: [
+
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(187,33,36,0.8)'
+                    
+                ],
+                borderColor: [
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(54, 162, 235)',
+                    'rgba(187,33,36)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'x',
+            plugins: {
+                datalabels: { // This code is used to display data values
+                    color: 'black',
+                    formatter: (value) => `${value}%`,
+                    font: {
+                        weight: 'bold',
+                        size: 24
+                    }
+                }
+            }
+        }
+    });
+    {% endif %}
+    const ctx3 = document.getElementById('distributionChart3');
+    new Chart(ctx3, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Completados',
+                'Pendientes'
+            ],
+            datasets: [{
+                axis: 'x',
+                label: 'TIPO',
+                data: [
+                    '{{empleado.objetivosPorcentaje.2}}',
+                    '{{empleado.objetivosPorcentaje.1}}'
+                ],
+                fill: false,
+                backgroundColor: [
+
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(187,33,36,0.8)'
+                    
+                ],
+                borderColor: [
+                    'rgb(75, 192, 192)',
+                    'rgba(187,33,36)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'x',
+            plugins: {
+                datalabels: { // This code is used to display data values
+                    color: 'black',
+                    formatter: (value) => `${value}`,
+                    font: {
+                        weight: 'bold',
+                        size: 24
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+{% endblock %}

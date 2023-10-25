@@ -1,0 +1,37 @@
+{% extends 'main.html' %}     
+{% load static %}
+{% load custom_tags %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center">Nueva Gerencia</h1>
+        </div>
+    </div>
+    <div class="card card-body">
+        <form action="" method="post">
+
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% render_field field class="form-control" %}
+            </div>
+            {% endfor %}
+            <div class="form-group mt-2">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'seeGerencias' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+
+        </form>
+
+
+    </div>
+</div>
+
+
+{% endblock %}
+

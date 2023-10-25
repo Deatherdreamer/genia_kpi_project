@@ -1,0 +1,82 @@
+{% extends 'main.html '%}
+
+{% block content %}
+
+{% load static %}
+
+
+<main class="container">
+    <div class="row justify-content-center">
+        <section class="col-md-4 mt-5">
+            <form action="/signin/" method="POST" class="card card-body border-0 shadow ">
+
+                <div class="text-center">
+                    <img src="{% static 'GCLOGO-NEGRO.png' %}" class="img-fluid logo" width="140" alt="GeniaCare Logo Negro">
+                </div>
+
+               
+
+                <h3 class="text-center">Inicio de Sesión</h3>
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
+
+
+                {% csrf_token %}
+                <div class="form-group mt-2">
+                    <label for="id_username">Usuario:</label>
+                    <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username"
+                        maxlength="150" required="" id="id_username" placeholder="Escriba su Usuario..."
+                        class="form-control">
+                </div>
+                <div class="form-group mt-2">
+                    <label for="id_password">Contraseña:</label>
+                    <div class="input-group">
+                        <input type="password" name="password" autocomplete="current-password" required=""
+                            id="id_password" placeholder="Escriba su Usuario..." class="form-control">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-dark" type="button" id="togglePassword"
+                                title="Mostrar contraseña">
+                                <span class="bi bi-eye"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <a href="mailto:soporte@geniacare.com?Subject=PerformanceGC Reinicio Clave"
+                    class="text-end mt-2">¿Olvidó
+                    su contraseña?</a>
+
+                <button class="btn btn-dark mt-2 mb-2 ">
+                    Entrar
+                </button>
+
+            </form>
+
+        </section>
+    </div>
+</main>
+<!-- Toggle password script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#togglePassword').click(function () {
+            var passwordField = $('#id_password');
+            var passwordFieldType = passwordField.attr('type');
+            if (passwordFieldType == 'password') {
+                passwordField.attr('type', 'text');
+                $(this).html('<span class="bi bi-eye-slash"></span>');
+                $(this).attr('title', 'Ocultar contraseña');
+            } else {
+                passwordField.attr('type', 'password');
+                $(this).html('<span class="bi bi-eye"></span>');
+                $(this).attr('title', 'Mostrar contraseña');
+            }
+        });
+    });
+</script>
+
+{% endblock %}

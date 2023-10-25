@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evaluacion de Desempeño</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.25/datatables.min.css" />
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.css" />
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
+
+
+  <style>
+    .ribbon-corner-info {
+      position: absolute;
+      top: 0;
+      left: auto;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-top: 32px solid #007bff;
+      border-left: 32px solid transparent;
+    }
+
+    .ribbon-corner-success {
+      position: absolute;
+      top: 0;
+      left: auto;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-top: 32px solid #28a745;
+      border-left: 32px solid transparent;
+    }
+
+    .ribbon-corner-gray {
+      position: absolute;
+      top: 0;
+      left: auto;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-top: 32px solid #6c757d;
+      border-left: 32px solid transparent;
+    }
+
+    .logo:hover {
+      transform: scale(1.1);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .logo:not(:hover) {
+      transform: scale(1);
+      transition: transform 0.2s linear;
+    }
+
+    .nav-item-gc:hover .nav-link {
+      transform: scale(1.1);
+
+      transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    }
+
+    .nav-item-gc:not(:hover) .nav-link {
+      transform: scale(1);
+
+
+      transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+    }
+
+    /* width and height of the scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    /* background color of the scrollbar */
+    ::-webkit-scrollbar-track {
+      background-color: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    /* color of the scrollbar thumb */
+    ::-webkit-scrollbar-thumb {
+      background-color: #888;
+      border-radius: 5px;
+    }
+
+    /* color of the scrollbar thumb on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: #555;
+      border-radius: 5px;
+    }
+
+    /* width and color of the scrollbar for non-webkit-based browsers */
+    body {
+      scrollbar-width: thin;
+      scrollbar-color: #888 #f1f1f1;
+    }
+  </style>
+</head>
+
+<body class="bg-light bg-opacity-50">
+  <!-- BARRA DE NAVEGACION -->
+  <nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark py-1 " data-bs-theme="dark">
+    <div class="container">
+      <a class="navbar-brand  py-0" href="{% url 'index' %}">
+        <img src="{% static 'logo.png' %}" alt="GeniaCare" height="40" class="logo">
+      </a>
+      {% if user.is_authenticated %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- <form action="{% url 'search' %}" method="get" class="d-flex me-auto" role="search" data-bs-theme="light">
+          <input class="form-control me-2" name="q" type="search" placeholder="Buscar..." aria-label="Search">
+          <button class="btn btn-o utline-light bi bi-search" type="submit"></button>
+        </form> -->
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          {% if user.is_staff %}
+          <li class="nav-item-gc dropdown ">
+            <a class="nav-link dropdown-toggle text-white fs-5 bi bi-tools" href="" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Herramientas
+            </a>
+
+            <ul class="dropdown-menu">
+
+              <li><a class="dropdown-item text-white bi bi-calendar-week" href="/periodos"> Periodos</a></li>
+              <li><a class="dropdown-item text-white bi bi-people" href="/search"> Maestro</a></li>
+
+              <li><a class="dropdown-item text-white bi bi-person-add" href="{% url 'newemployee' %}"> Nuevo
+                  Empleado</a></li>
+              <li><a class="dropdown-item text-white bi bi-card-list" href="{% url 'seeCompetences' %}">
+                  Competencias</a></li>
+              <li><a class="dropdown-item text-white bi bi-bag" href="{% url 'seeCargos' %}"> Cargos</a></li>
+              <li><a class="dropdown-item text-white bi bi-building" href="{% url 'seeGerencias' %}"> Gerencias</a>
+              <li><a class="dropdown-item text-white bi bi-diagram-3" href="{% url 'seeDirecciones' %}"> Direcciones</a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item text-white bi bi-gear" href="{% url 'systemparameters' %}"> Parametros del
+                  Sistema</a>
+              </li>
+              {% if user.is_superuser %}
+
+              <li>
+                <a class="dropdown-item text-white bi bi-gear" href="/admin"> Panel de Administrador</a>
+              </li>
+              <li>
+                <a class="dropdown-item text-white bi bi-person-plus" href="{% url 'newUser' %}"> Nuevo Usuario</a>
+              </li>
+              <li>
+                <a class="dropdown-item text-white bi bi-person-lines-fill" href="{% url 'users' %}"> Lista de
+                  Usuarios</a>
+              </li>
+
+              {% endif %}
+            </ul>
+          </li>
+          {% endif %}
+
+
+          <li class="nav-item-gc dropdown ">
+            <a class="nav-link dropdown-toggle text-white fs-5" href="" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <img
+                src="{% if  user.empleado.imagen %} {{ user.empleado.imagen.url }} {% else %} /static/default-avatar.png {% endif %}"
+                alt=" Sin imagen " class="rounded-circle img-fluid" style="width: 24px; object-fit: cover;">
+              {{user.empleado.get_short_name}}
+            </a>
+            <ul class="dropdown-menu">
+              <li class="dropdown-header text-white">
+                <h6>{{ user.empleado}}</h6>
+                <span>{{  user.empleado.cargo }}</span>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item text-white" href="{% url 'profile' user.empleado.ficha %}">
+                  <i class="bi bi-person-circle"> Mi Perfil</i>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-white" href="{% url 'objectives' user.empleado.ficha %}">
+                  <i class="bi bi-percent"> Mis Objetivos</i>
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-white"
+                  href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal"
+                  target="_blank">
+                  <i class="bi bi-telephone"> Directorio Telefonico </i>
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item text-white bi bi-key" href="/changePassword">
+                  Cambiar Contraseña
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item text-white bi bi-box-arrow-left" href="/signout">
+                  Cerrar Sesión
+                </a>
+              </li>
+
+            </ul>
+          </li>
+
+         
+        </ul>
+      </div>
+      {% else %}
+      <div class="d-flex flex-grow-1 justify-content-center align-items-center">
+        <span class="navbar-text text-center fs-4 text-white w-100">¡Somos genios venezolanos, genios como TÚ!</span>
+      </div>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item-gc">
+          <a class="nav-link text-white fs-5 bi bi-box-arrow-in-right " aria-current="page" href="{% url 'signin' %}">
+            Entrar</a>
+
+        </li>
+      </ul>
+      {% endif %}
+    </div>
+  </nav>
+
+  {% block content %}
+
+  {% endblock %}
+
+
+
+  <script>
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl)
+    })
+  </script>
+
+
+</body>
+
+</html>

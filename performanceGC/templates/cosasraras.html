@@ -1,0 +1,10 @@
+{% extends 'main.html '%}
+{% load static %}
+{% load custom_tags %}
+
+{% block content %}
+{% for competencia in competencias %}
+<p>{{competencia.descripcion}}</p>
+{% endfor %}
+
+{% endblock %}

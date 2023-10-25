@@ -1,0 +1,118 @@
+{% extends 'main.html '%}
+{% load static %}
+{% block content %}
+
+<main class="container">
+    {{evaluacion}}
+
+    <div class="row">
+
+        <div class="col-6">
+            <canvas id="myChart"></canvas>
+
+        </div>
+        <div class="col-6">
+            <canvas id="myChart2"></canvas>
+
+        </div>
+    </div>
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['{{evaluacion.com1}}', '{{evaluacion.com2}}', '{{evaluacion.com3}}'],
+            datasets: [{
+                label: 'Obtenido',
+                data: ['{{evaluacion.comv1}}', '{{evaluacion.comv2}}', '{{evaluacion.comv3}}'],
+                borderWidth: 1
+            }, {
+                label: 'Esperado',
+                data: [4, 4, 4],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    ticks: {
+                        font: {
+                            size: 8,
+                            weight: 'bold' // Tamaño de fuente actual, puedes ajustarlo a tu gusto
+                        }
+                    }
+                }
+            },
+            indexAxis: 'y',
+            // Elements options apply to all of the options unless overridden in a dataset
+            // In this case, we are setting the border of each horizontal bar to be 2px wide
+            elements: {
+                bar: {
+                    borderWidth: 1,
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            size: 18
+                        }
+                    }
+                },
+
+                title: {
+                    display: true,
+                    text: 'Competencias Genericas GeniaCare'
+
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    const ctx2 = document.getElementById('myChart2');
+
+    new Chart(ctx2, {
+        type: 'radar',
+        data: {
+            labels: ['{{evaluacion.obj1}}', '{{evaluacion.obj2}}', '{{evaluacion.obj3}}'],
+            datasets: [{
+                label: 'Obtenido',
+                data: ['{{evaluacion.valor1}}', '{{evaluacion.valor2}}', '{{evaluacion.valor3}}'],
+                borderWidth: 1
+            }, {
+                label: 'Esperado',
+                data: [4, 4, 4],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            elements: {
+                line: { 
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                r: {
+                    min: 0, // Valor mínimo en la escala
+                    max: 4, // Valor máximo en la escala
+                    ticks: {
+                        stepSize: 1, // Tamaño del paso entre los valores
+                        precision: 0 // Sin decimales
+                    }
+                }
+            }
+        },
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'main.html '%}
+{% block content %}
+<main class="container">
+    <div class="card card-body mt-4">
+        <section class="row justify-content-center">
+            <h2 class="">Parametros de Sistema</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active" aria-current="page">Parametros</li>
+                </ol>
+            </nav>
+            <div class="col-md-3 mb-3">
+                <div class="card border-2 shadow h-100 ">
+
+                    <div class="card-body">
+                        <h5 class="text-center">Distribucion Porcentaje de Objetivos</h5>
+                        <a href="{% url 'systemparameterpercentajedistribution' %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-2 shadow h-100 ">
+                    <div class="card-body">
+                        <h5 class="text-center">Ajuste de Niveles</h5>
+                        <a href="#" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-2 shadow h-100 ">
+                    <div class="card-body">
+                        <h5 class="text-center">Exportar Gerencias</h5>
+                        <a href="{% url 'exportgerencias' %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-2 shadow h-100 ">
+                    <div class="card-body">
+                        <h5 class="text-center">Exportar Empleados</h5>
+                        <a href="{% url 'exportempleados' %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-2 shadow h-100 ">
+                    <div class="card-body">
+                        <h5 class="text-center">Exportar Cargos</h5>
+                        <a href="{% url 'exportcargos' %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-2 shadow h-100 ">
+                    <div class="card-body">
+                        <h5 class="text-center">Importar Cargos</h5>
+                        <a href="{% url 'importcargos' %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-2 shadow h-100 ">
+                    <div class="card-body">
+                        <h5 class="text-center">Importar Empleados</h5>
+                        <a href="{% url 'importempleados' %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            
+
+        </section>
+    </div>
+
+
+    {% endblock %}

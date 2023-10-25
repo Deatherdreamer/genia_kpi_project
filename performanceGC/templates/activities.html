@@ -1,0 +1,175 @@
+{% extends 'main.html ' %}
+{% load static %}
+{% block content %}
+
+
+<main class="container">
+    <div class="card  mt-4">
+        <div class="card-header text-bg-dark bg-dark">
+            <h5 class="lead fw-bold">OBJETIVO</h5>
+        </div>
+        <div class="card-body">
+            <h4 class=" lead fs-4">{{objetivo.texto}}</h4>
+
+        </div>
+    </div>
+    <section class="row mt-4">
+
+
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header text-bg-dark bg-dark">
+                    <h5 class="lead fw-bold">DETALLES</h5>
+
+                </div>
+
+                <div class="card-body p-0">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Empleado</th>
+                                <td>{{empleado}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Periodo</th>
+                                <td>{{objetivo.periodo}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Tipo</th>
+                                <td>{{objetivo.tipo}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Actividades</th>
+                                <td>{{objetivo.detallesActividades.0}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Completadas</th>
+                                <td>{{objetivo.detallesActividades.1}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer">
+                    <!-- btn to edit objetivo -->
+                    {% if request.user.empleado == empleado %}
+                    <a href="{% url 'editobjective' empleado.ficha objetivo.id %}"
+                        class="btn btn-lg btn-warning bi bi-pencil-square mb-2 w-100">
+                        Editar Objetivo
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'newactivity' empleado.ficha objetivo.id %}"
+                        class="btn btn-lg btn-primary bi bi-plus-circle mb-2 w-100">
+                        Añadir Actividad
+                    </a>
+
+                    <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-danger bi bi-x-circle w-100">
+                        Regresar
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col ">
+            <div class="card">
+                <div class="card-header text-bg-dark bg-dark">
+                    <h5 class="lead fw-bold">ACTIVIDADES</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table align-middle" style="width:100%">
+
+
+                        <tbody>
+                            {% for act in objetivo.actividades %}
+                            {% if act.estado %}
+                            <tr class="bg-success text-bg-dark  table-group-divider">
+                                <th class="fw-bold fs-5" style="width:65%">{{act.texto}}</th>
+                                <td style="width:10%">
+                                    <form action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}"
+                                        method="post">
+                                        {% csrf_token %}
+
+                                        <button class="btn btn-light" type="submit">
+                                            Desmarcar
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    {% if act.createdBy == user %}
+                                    <div class="d-flex justify-content-between">
+                                        <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}"
+                                            method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-light" onclick="confirmDelete()">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                        <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}"
+                                            class="btn btn-light">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+
+
+                                    {% endif %}
+
+
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr class="bg-danger text-bg-dark  table-group-divider">
+                                <th class="fw-bold fs-5" style="width:75%">{{act.texto}}</th>
+                                <td style="width:15%">
+                                    <form class=""
+                                        action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}"
+                                        method="post">
+                                        {% csrf_token %}
+
+                                        <button class="btn btn-light" type="submit">
+                                            Completar
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    {% if act.createdBy == user %}
+                                    <div class="d-flex justify-content-between">
+                                        <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}"
+                                            method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-light" onclick="confirmDelete()">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                        <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}"
+                                            class="btn btn-light">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<script>
+    function confirmDelete() {
+        var result = confirm('¿Está seguro de eliminar la actividad?');
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+</script>
+
+
+{% endblock %}

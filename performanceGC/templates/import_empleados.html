@@ -1,0 +1,13 @@
+{% extends 'main.html' %}
+
+{% block content %}
+  <h1>Import Empleados</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="empleados_file">Empleados File:</label>
+      <input type="file" name="empleados_file" id="empleados_file" class="form-control-file">
+    </div>
+    <button type="submit" class="btn btn-primary">Import</button>
+  </form>
+{% endblock %}

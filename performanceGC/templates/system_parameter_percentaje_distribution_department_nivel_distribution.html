@@ -1,0 +1,41 @@
+{% extends 'main.html '%}
+{% block content %}
+<main class="container">
+    <div class="card card-body mt-4">
+        <section class="row justify-content-center">
+            <h2 class="">Distribucion Porcentaje de Objetivos</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'systemparameters' %}">Parametros</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'systemparameterpercentajedistribution' %}">Distribucion
+                            Porcentaje</a></li>
+                    <li class="breadcrumb-item"><a
+                            href="{% url 'systemparameterpercentajedistributiondepartment' departamento %}">{{departamento.nombre|title}}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        <a
+                            href="{% url 'systemparameterpercentajedistributiondepartmentnivel' departamento nivel.valor %}">{{nivel|title}}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Ajustar Porcentaje</li>
+                </ol>
+            </nav>
+
+            <form action="#" method="POST">
+                {% csrf_token %}
+                {{form.as_p}}
+                <input type="submit" value="Guardar" class="btn btn-primary">
+            </form>
+            
+
+            
+
+
+
+            
+
+
+        </section>
+    </div>
+
+</main>
+{% endblock %}

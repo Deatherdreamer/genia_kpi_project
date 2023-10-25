@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+{% block content %}
+<main class="container">
+    <div class="row">
+        <section class="col-md-4 offset-md-4 mt-5">
+            <div class="card card-body">
+                
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <h3 class="text-center">Restaurar Empleado</h3>
+
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                   
+                    <div class="form-group">
+                        <label for="ficha">Ficha</label>
+                        <input type="text" class="form-control" name="ficha" id="ficha" value="{{ empleado.ficha }}" disabled>
+                        <label for="nombre">Empleado</label>
+                        <input type="text" class="form-control" name="nombre" id="nombre" value="{{ empleado }}" disabled>
+                    </div>                    
+                    <p class="text-center">¿Esta seguro de restaurar al Empleado?</p>                
+   
+                    <div class="form-group mt-2">
+                        <button type="submit" class="btn btn-danger">Restaurar</button>
+                        <a href="{% url 'profile' empleado.ficha %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+    
+                </form>
+            </div>
+            
+        </section>
+    </div>
+</main>       
+
+{% endblock %}

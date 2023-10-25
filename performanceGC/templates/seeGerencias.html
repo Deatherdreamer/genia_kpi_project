@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_tags %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center">Gerencias</h1>
+        </div>
+    </div>
+    <div class="card card-body">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            {% for direccion in direcciones %}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{direccion.id}}-tab"
+                    data-bs-toggle="tab" data-bs-target="#tab-{{direccion.id}}" type="button" role="tab"
+                    aria-controls="tab-{{direccion.id}}"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                    {{direccion}}
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            {% for direccion in direcciones %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{direccion.id}}"
+                role="tabpanel" aria-labelledby="tab-{{direccion.id}}-tab">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Gerencia</th>
+                            <th scope="col">Direccion</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gerencia in direccion.gerencias %}
+                        <tr>
+                            <td>{{gerencia.nombreText}}</td>
+                            <td>{{gerencia.direccion}}</td>
+                            <td class="text-end">
+                                <a href="{% url 'editGerencia' gerencia.id %}" class="btn btn-dark">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="{% url 'gerenciadetails' gerencia.id %}" class="btn btn-dark">
+                                    <i class="bi bi-search"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'addGerencia' %}" class="btn btn-primary">Nueva
+                    Gerencia</a>
+
+            </div>
+            {% endfor %}
+        </div>
+        {% endblock %}

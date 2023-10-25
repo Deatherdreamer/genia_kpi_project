@@ -1,0 +1,470 @@
+<!-- evaluacion_desempeno.html -->
+{% extends 'main.html' %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+
+
+<main class="container">
+  <div class="row">
+    <h1 style="text-align: center">Evaluación de Desempeño</h1>
+    <h2 style="text-align: center">NIVEL {{empleado.cargo.nivel.nivel}}</h2>
+
+    <form action="{% url 'newselftest' empleado.ficha %}" method="POST"
+      class="card card-body shadow-lg p-3 mb-5 bg-white rounded" onsubmit="return validarSumaObjetivos()">
+      {% csrf_token %}
+
+      <div class="row">
+        <div class="col-8">
+          <div class="row">
+            <div class="input-group mb-1 mt-2">
+              <div class="input-group-prepend col-3 ">
+                <span class="input-group-text " id="basic-addon1" style="font-weight: bold;">Nombre y
+                  Apellido: </span>
+              </div>
+              <input type="text" class="form-control col" placeholder="Username" aria-label="Username"
+                aria-describedby="basic-addon1" value="{{empleado}} " id="empleado" name="empleado" readonly>
+            </div>
+
+            <div class="input-group mb-1">
+              <div class="input-group-prepend col-3">
+                <span class="input-group-text" id="basic-addon1" style="font-weight: bold;">Cargo:
+                </span>
+              </div>
+              <input type="text" class="form-control col" placeholder="Username" aria-label="Username"
+                aria-describedby="basic-addon1" type="text" id="cargo" name="cargo" value="{{empleado.cargo}}" readonly>
+            </div>
+
+            <div class="input-group mb-1 ">
+              <div class="input-group-prepend col-3">
+                <span class="input-group-text" id="basic-addon1" style="font-weight: bold;">Gerencia:
+                </span>
+              </div>
+              <input type="text" class="form-control col" placeholder="Username" aria-label="Username"
+                aria-describedby="basic-addon1" type="text" id="gerencia" name="gerencia"
+                value="{{empleado.cargo.gerencia}}" readonly>
+            </div>
+          </div>
+
+        </div>
+        <div class="col">
+          <h5 class="text-center mt-2 mb-0 ">Supervisor</h5>
+          <h4 class="text-center font-weight-bold">
+            {{empleado.supervisor}}
+          </h4>
+          <h5 class="text-center lead font-italic">
+            {{empleado.supervisor.cargo}}
+          </h5>
+
+        </div>
+
+      </div>
+      <br>
+      <br>
+      <h3 class="text-center font-weight-bold">Objetivos</h3>
+      <table class="table table-striped table-borderless shadow p-3 mb-2 bg-white rounded">
+        <thead class="table-dark">
+          <tr>
+            <th class="col-3 fs-5">Objetivo</th>
+            <th class="col-1 fs-5"></th>
+            <th class="col-1 fs-5 text-nowrap">Peso (%)</th>
+            <th class="col-1 fs-5 text-nowrap">Valor (1-4)</th>
+            <th class="col-1 fs-5">Resultado</th>
+            <th class="col-4 fs-5">Observaciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in forms %}
+          <tr>
+
+            {% with alpha='peso'|addstr:forloop.counter beta='calcularResultadoObj('|addstr:forloop.counter|addstr:')' gamma='valor'|addstr:forloop.counter delta='resultado'|addstr:forloop.counter %}
+            <th colspan="2" scope="row">{% render_field form.0.objetivo class="form-control" readonly=true %}</th>
+
+            <td>{% render_field form.0.peso class="form-control" id=alpha oninput=beta %}</td>
+            <td>{% render_field form.0.valor class="form-control" id=gamma oninput=beta %}</td>
+            <td>{% render_field form.0.resultado class="form-control" id=delta readonly=true %}</td>
+
+            {% endwith %}
+            <td>{{form.0.comentarios}}</td>
+          </tr>
+          <tr>
+            <th class="align-middle text-center fs-5">Actividades</th>
+            <td colspan="5">
+              <table class="table table-sm">
+                <tbody>
+                  {% for form2 in form.1 %}
+                  <tr>
+                    <th class="align-middle">#{{ forloop.counter }}</th>
+                    <td>{% render_field form2.actividad class='form-control' readonly=true %}</td>
+                    <th class="align-middle">
+                      %:
+                    </th>
+                    <td>
+                      {% render_field form2.pesoActividad class='form-control' %}
+                    </td>
+                    <td></td>
+                  </tr>
+
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </td>
+          </tr>
+
+          {% endfor %}
+          <tr>
+            <td colspan="2" class="table-dark text-end align-middle fs-6 fw-bold">
+              Porcentaje:
+            </td>
+            <td class="align-middle fw-bold">
+              <input class="form-control fw-bold" type="text" name="totalObjPor"
+                value="{{empleado.cargo.nivel.porObjetivos}}%" readonly>
+
+            </td>
+            <td colspan="2" class="table-dark text-end align-middle fs-6 fw-bold">
+              Resultado Objetivos:
+            </td>
+            <td>
+              <input class="form-control fw-bold" type="text" name="totalObj" id="totalObj"
+                value="{{evaluacion.resultadoObjetivos}}" readonly>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <br>
+      <h3 class="text-center font-weight-bold">Competencias Genericas GeniaCare</h3>
+      <table id="tabla-competencias" class="table table-striped table-borderless">
+        <thead class="table-dark">
+          <tr>
+            <th class="col-7 fs-5">Competencia</th>
+            <th class="col-1 fs-5"></th>
+            <th class="col-1 fs-5 text-nowrap">Indicador (1-4)</th>
+            <th class="col-1 fs-5"></th>
+
+            <th class="col-1 fs-5 text-nowrap">Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in cantidadCompetencias %}
+          <tr>
+
+            {% with alpha='comc'|addstr:forloop.counter beta='showSelected('|addstr:forloop.counter|addstr:')' %}
+            <td>
+              {% render_field competencias.competencia class="form-control" id=alpha onchange=beta %}
+
+
+            </td>
+
+            <td>
+              {% with modalName='modal'|addstr:forloop.counter buttonName='button'|addstr:forloop.counter %}
+              <!-- Button trigger modal -->
+              <button disabled id="{{buttonName}}" type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#{{modalName}}">
+                <i class="bi bi-info-circle"></i>
+              </button>
+
+              <!-- Modal -->
+              <div class="modal fade" id='{{modalName}}' tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endwith %}
+            </td>
+            {% endwith %}
+
+
+            <td>
+              {% with alpha='comv'|addstr:forloop.counter beta='calcularResultadoCom('|addstr:forloop.counter|addstr:','|addstr:empleado.cargo.nivel.cantidadCompetencias|addstr:','|addstr:empleado.cargo.nivel.porCompetencias|addstr:')' gamma='showSelected('|addstr:forloop.counter|addstr:')' %}
+              {% render_field competencias.pesoCompetencia class="form-control" id=alpha oninput=beta onchange=gamma %}
+              {% endwith %}
+            </td>
+            <td>
+              {% with modalName='modalSig'|addstr:forloop.counter buttonName='buttonSig'|addstr:forloop.counter %}
+              <!-- Button trigger modal -->
+              <button disabled id="{{buttonName}}" type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#{{modalName}}">
+                <i class="bi bi-info-circle"></i>
+              </button>
+
+              <!-- Modal -->
+              <div class="modal fade" id='{{modalName}}' tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endwith %}
+
+            </td>
+            <td>
+              {% with alpha='comr'|addstr:forloop.counter %}
+              {% render_field competencias.resultadoCompetencia class="form-control" id=alpha %}
+              {% endwith %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tr>
+          <td class="table-dark text-end align-middle fs-6 fw-bold">
+            Porcentaje:
+          </td>
+          <td class="align-middle fw-bold">
+            <input class="form-control fw-bold" type="text" name="PorCom" id="PorCom"
+              value="{{empleado.cargo.nivel.porCompetencias}}%" readonly>
+
+          </td>
+          <td colspan="2" class="table-dark text-end align-middle fs-6 fw-bold">
+            Resultado Competencias:
+          </td>
+          <td>
+            <input value="{{form.totalCom.value}}" class="form-control fw-bold" type="text" name="totalCom"
+              id="totalCom" readonly>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+      <br>
+      <br>
+      <h3 class="text-center font-weight-bold">Detección De Necesidades De Formación
+      </h3>
+      <table id="tabla-competencias" class="table table-striped table-borderless">
+        <thead class="table-dark">
+          <tr>
+            <th class="col-6 fs-5">Competencias genéricas Genia Care
+            </th>
+            <th class="col-6 fs-5">Otras competencias del rol: conductuales y/o tecnicas
+            </th>
+          </tr>
+
+        </thead>
+        <tbody>
+          <tr>
+            <td><textarea class="form-control" name="deteccionCompetencia1" rows="3"></textarea></td>
+            <td><textarea class="form-control" name="deteccionTecConductual1" rows="3"></textarea></td>
+
+          </tr>
+          <tr>
+            <td><textarea class="form-control" name="deteccionCompetencia2" rows="3"></textarea></td>
+
+            <td><textarea class="form-control" name="deteccionTecConductual2" rows="3"></textarea></td>
+
+          </tr>
+          <tr>
+            <td><textarea class="form-control" name="deteccionCompetencia3" rows="3"></textarea></td>
+
+            <td><textarea class="form-control" name="deteccionTecConductual3" rows="3"></textarea></td>
+
+          </tr>
+        </tbody>
+
+      </table>
+
+      <div class="row">
+        <div class="col-md-2">
+          <label for="estado">Estado:</label><br>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="estado" id="borrador" value="0" checked>
+            <label class="form-check-label" for="borrador">
+              Borrador
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="estado" id="autoevaluacion" value="1">
+            <label class="form-check-label" for="autoevaluacion">
+              Autoevaluación
+            </label>
+          </div>
+          {% if empleado != user.empleado %}
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="estado" id="definitivo" value="2">
+            <label class="form-check-label" for="definitivo">
+              Definitivo
+            </label>
+          </div>
+          {% endif %}
+        </div>
+        <div class="col-md">
+          <label for="comentarios">Comentarios Adicionales:</label><br>
+          <textarea class="form-control" id="comentarios" name="comentarios" rows="5" cols="30"></textarea><br>
+        </div>
+      </div>
+
+
+
+
+
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-primary me-md-2" type="submit" onclick="confirmSave()">Guardar</button> <a
+          class="btn btn-outline-secondary" href="{% url 'profile' empleado.ficha %}">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script>
+  function showSelected(i) {
+    var select = document.getElementById("comc" + i);
+    var selectedValue = select.options[select.selectedIndex].value;
+    var botonDesc = document.getElementById("button" + i);
+    var modal2 = document.getElementById("modalSig" + i);
+    var botonSig = document.getElementById("buttonSig" + i);
+    var valor = document.getElementById("comv" + i).value;
+    if (selectedValue != "") {
+      botonDesc.disabled = false;
+      {% for competencia in competenciasTodas %}
+      if (selectedValue == "{{ competencia.id }}") {
+        var modal = document.getElementById("modal" + i);
+        // Get the title and body elements
+        var title = modal.querySelector('.modal-title');
+        var body = modal.querySelector('.modal-body');
+
+        // Change the title and body content
+        title.innerHTML = '{{competencia}}';
+        body.innerHTML = '{{competencia.descripcion|escapejs}}';  
+
+        
+        
+        switch(valor){
+          case '1':
+            botonSig.disabled = false;
+            modal2.querySelector('.modal-title').innerHTML = 'NO HAY DOMINIO';
+            modal2.querySelector('.modal-body').innerHTML = '{{competencia.significado1|escapejs}}';
+            break;
+          case '2':
+            botonSig.disabled = false;
+            modal2.querySelector('.modal-title').innerHTML = 'DOMINIO BASICO';
+            modal2.querySelector('.modal-body').innerHTML = '{{competencia.significado2|escapejs}}';
+            break;
+          case '3':
+            botonSig.disabled = false;
+            modal2.querySelector('.modal-title').innerHTML = 'DOMINIO PARCIAL';
+            modal2.querySelector('.modal-body').innerHTML = '{{competencia.significado3|escapejs}}';
+            break;
+          case '4':
+            botonSig.disabled = false;
+            modal2.querySelector('.modal-title').innerHTML = 'DOMINIO SUPERIOR';
+            modal2.querySelector('.modal-body').innerHTML = '{{competencia.significado4|escapejs}}';
+            break;
+          default:
+            botonSig.disabled = true;
+            break;
+        }
+
+      }
+      {% endfor %}
+    } else {
+      botonSig.disabled = true;
+
+      botonDesc.disabled = true;
+    }
+  }
+</script>
+
+<script>
+  function calcularResultadoObj(i) {
+    console.log(i)
+    console.log('hola')
+    var peso = document.getElementById("peso" + i).value;
+    var valor = document.getElementById("valor" + i).value;
+    var resultado = peso / 100 * valor;
+    document.getElementById("resultado" + i).value = resultado.toFixed(2);
+
+    var resultado_total = document.querySelectorAll("[name^=resultado]:not([id^=comr])");
+    var total = 0.0;
+    for (let i = 0; i < resultado_total.length; i++) {
+      if (resultado_total[i] !== '') {
+        console.log(resultado_total[i].value)
+
+        total += Number(resultado_total[i].value * 1);
+      }
+
+    }
+
+    document.getElementById("totalObj").value = total.toFixed(2);
+  }
+
+
+  function calcularResultadoCom(i, cant, por) {
+    var valor = document.getElementById("comv" + i).value;
+    var porcentaje = (por / cant) / 100;
+    var resultado = porcentaje * valor;
+    document.getElementById("comr" + i).value = resultado.toFixed(2);
+    var total = 0;
+
+    var resultado_total = document.querySelectorAll("[id ^=comr]");
+    for (let i = 0; i < resultado_total.length; i++) {
+      if (resultado_total[i] !== '') {
+        total += Number(resultado_total[i].value);
+      }
+
+    }
+    document.getElementById("totalCom").value = total.toFixed(2);
+
+
+  }
+
+
+
+  function validarSumaObjetivos() {
+    var totalObj = 0;
+    var pesos = document.querySelectorAll("[id ^=peso]");
+    for (let i = 0; i < pesos.length; i++) {
+      if (pesos[i] !== '') {
+        totalObj += Number(pesos[i].value);
+      }
+
+    }
+    var porObj = '{{empleado.cargo.nivel.porObjetivos}}';
+    if (totalObj != porObj) {
+      alert("La suma de los objetivos no es igual a " + porObj + "%");
+
+      document.getElementById("peso1").focus();
+      document.getElementById("peso1").scrollIntoView();
+      return false;
+    }
+    var selects = document.querySelectorAll("select[id^='comc']");
+    var values = [];
+
+    for (var i = 0; i < selects.length; i++) {
+      if (values.includes(selects[i].value)) {
+        alert("ERROR, TIENES COMPETENCIAS REPETIDAS.");
+        return false;
+      }
+
+      values.push(selects[i].value);
+    }
+    return true;
+
+  }
+
+  function confirmSave() {
+    if (confirm("¿Está seguro que desea guardar la Prueba?")) {
+      // If the user clicks "OK" in the confirmation dialog, submit the form
+      document.getElementById("test-form").submit();
+    }
+  }
+</script>
+
+
+{% endblock %}
