@@ -68,21 +68,30 @@ def users(request):
 
 @login_required
 def masterEmployee(request):
-    # q = request.GET.get('q') if request.GET.get('q') != None else ''
-    q = request.GET.get('q', '')
-
-    empleado = Empleado.objects.filter(
-        Q(nombre__icontains=q) |
-        Q(apellido__icontains=q) |
-        Q(ficha__icontains=q) |
-        Q(cedula__icontains=q) |
-        Q(ceco__icontains=q) |
-        Q(cargo__nombreText__icontains=q) |
-        Q(cargo__gerencia__nombreText__icontains=q)
-    ).order_by('cargo__nivel__valor').exclude(fechaEgreso__isnull=False)
+    if request.user.is_staff:
+        empleados = Empleado.objects.all().order_by(
+            'cargo__nivel__valor').exclude(fechaEgreso__isnull=False)
+    else:
+        empleados = request.user.empleado.subordinados()
     return render(request, 'master.html', {
-        'empleados': empleado
+        'empleados': empleados
     })
+            
+    # # q = request.GET.get('q') if request.GET.get('q') != None else ''
+    # q = request.GET.get('q', '')
+
+    # empleado = Empleado.objects.filter(
+    #     Q(nombre__icontains=q) |
+    #     Q(apellido__icontains=q) |
+    #     Q(ficha__icontains=q) |
+    #     Q(cedula__icontains=q) |
+    #     Q(ceco__icontains=q) |
+    #     Q(cargo__nombreText__icontains=q) |
+    #     Q(cargo__gerencia__nombreText__icontains=q)
+    # ).order_by('cargo__nivel__valor').exclude(fechaEgreso__isnull=False)
+    # return render(request, 'master.html', {
+    #     'empleados': empleado
+    # })
 
 
 @login_required

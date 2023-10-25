@@ -217,11 +217,11 @@
                         tabindex="0">
                         <div class="row justify-content-center mt-3">
                             <div class="col-sm-3">
-                                <a class="btn btn-primary" href="{% url 'objectives' user.empleado.ficha %}">Ver
+                                <a class="btn btn-primary" href="{% url 'objectives' empleado.ficha %}">Ver
                                     Objetivos</a>
                             </div>
                             <div class="col-sm-3">
-                                <a class="btn btn-primary" href="{% url 'objectives' user.empleado.ficha %}">Añadir
+                                <a class="btn btn-primary" href="{% url 'newobjective' empleado.ficha %}">Añadir
                                     Objetivo</a>
                             </div>
                         </div>
@@ -320,9 +320,24 @@
                                             {{periodo.fechaInicioEvaluaciones|date:"SHORT_DATE_FORMAT"}} y termina el
                                             {{periodo.fechaFinEvaluaciones|date:"SHORT_DATE_FORMAT"}}.</p>
                                         <!-- realice su evaluacion aqui -->
-                                        <a class="btn btn-primary mt-2 w-100"
+                                        {% if empleado.cantidadObjetivos == 0 %}
+                                        <!-- pequeña advertencia sobre falta de objetivos -->
+                                        <div class="alert alert-warning" role="alert">
+                                            <h4 class="alert-heading">No tiene objetivos</h4>
+                                            <p>Usted no tiene objetivos asignados, por lo que no puede realizar una
+                                                evaluacion.</p>
+                                            <hr>
+                                            <p class="mb-0">Puede crear objetivos en el siguiente enlace.</p>
+                                            <a class="btn btn-primary mt-2"
+                                                href="{% url 'objectives' empleado.ficha %}">Crear Objetivos</a>
+                                        </div>
+                                        {% else %}
+                                        <a class="btn btn-primary mt-2"
                                             href="{% url 'newselftest' empleado.ficha %}">Realizar
                                             Evaluacion</a>
+                                        {% endif %}
+
+                                        
                                     </div>
                                     {% elif periodo.estado == 'Prorroga' %}
                                     <div class="alert alert-warning" role="alert">
@@ -814,7 +829,7 @@
                 label: 'TIPO',
                 data: [
                     '{{empleado.objetivosPorcentaje.2}}',
-                    '{{empleado.objetivosPorcentaje.1}}'
+                    '{{empleado.objetivosPorcentaje.5}}'
                 ],
                 fill: false,
                 backgroundColor: [

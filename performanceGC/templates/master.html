@@ -7,7 +7,7 @@
         <div class="col-md-12">
             <div class="table-responsive card card-body border-0 shadow mt-4">
 
-                <h5 class="text-center  fst-italic"> Lista de Empleados </h5>
+                <h5 class="text-center  fst-italic"> Lista de Colaboradores </h5>
 
                 <table class="table table-borderless table-striped table-hover mt-5" id="employeeTable">
                     <thead class="table-dark">
@@ -23,7 +23,6 @@
                     <tbody class="">
                         {% for empleado in empleados %}
 
-                        {% if empleado in user.empleado.subordinados or empleado == user.empleado or user.is_staff %}
 
                         <tr class="align-middle">
                             <th scope="row">{{empleado.ficha}}</th>
@@ -35,7 +34,6 @@
                                         class="bi bi-search"></i></a>
                             </td>
                         </tr>
-                        {% endif %}
 
                         {% empty %}
 
