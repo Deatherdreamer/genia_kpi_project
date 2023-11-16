@@ -30,13 +30,17 @@
                         <thead>
                             <th>Tipo</th>
                             <th>Porcentaje</th>
+                            <th></th>
                         </thead>
                         <tbody>
-                            {% for distribucion in distribucionObjetivos %}
+                            {% for dist in distribucionObjetivos %}
                             <tr>
-                                <td>{{distribucion.tipo|title}}</td>
-                                <td>{{distribucion.peso}}%</td>
-
+                                <td>{{dist.tipo|title}}</td>
+                                <td>{{dist.peso}}%</td>
+                                <td>
+                                    <a
+                                        href="{% url 'systemparameterpercentajedistributiondepartmentniveldistributionedit' departamento nivel.valor distribucion.id dist.id %}">Editar</a> 
+                                    
                             </tr>
                             {% endfor %}
                         </tbody>

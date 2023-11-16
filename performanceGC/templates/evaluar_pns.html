@@ -1,0 +1,51 @@
+{% extends 'main.html' %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+<main class="container">
+    <section class="row justify-content-center">
+        <div class="col md-10">
+            <div class="card card-body border-0 shadow-lg mt-4">
+
+                <h2 class="text-center">Formato de Evaluacion Personal Nomina Semanal</h2>
+                <h4 class="text-center">Evaluacion de {{empleado}}</h4>
+
+                <hr>
+                <form action="{% url 'evaluarpns' empleado.id %}" method="POST">
+                    {% csrf_token %}
+                    <table class="table table-sm align-middle  text-center border-1 border-dark">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 60%;">Factor</th>
+                                <th>Siempre cumple</th>
+                                <th>A veces cumple</th>
+                                <th>Nunca cumple</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider table-light">
+                            {% for factor in factores %}
+                            <tr>
+                                <th>
+                                    <textarea class="form-control" name="{{factor}}" id="" cols="30" rows="2" readonly>{{factor.nombre}}</textarea>
+                                </th>
+                                <td>
+                                    <input checked class="form-check-input" type="radio" name="factor{{forloop.counter}}" value="3">
+                                </td>
+                                <td>
+                                    <input class="form-check-input" type="radio" name="factor{{forloop.counter}}" value="2">
+                                </td>
+                                <td>
+                                    <input class="form-check-input" type="radio" name="factor{{forloop.counter}}" value="1">
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock content %}

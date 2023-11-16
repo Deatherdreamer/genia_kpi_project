@@ -33,6 +33,10 @@ class Niveles(models.Model):
         (11, 'OPERARIO'),
         (12, 'AUXILIAR')
     )
+    formatos = (
+        ('pns', 'Personal de Nomina Semanal'),
+        ('pnm', 'Personal de Nomina Mensual')              
+        )
 
     valor = models.IntegerField(choices=CHOICES)
     porCompetencias = models.IntegerField(default=50)
@@ -40,15 +44,30 @@ class Niveles(models.Model):
     cantidadObjetivos = models.IntegerField(default=4)
     porObjetivos = models.IntegerField(default=50)
     nivel = models.ForeignKey(Nivel, on_delete=models.CASCADE, default=1)
+    formato_de_evaluacion = models.TextField(choices=formatos, default='pnm')
 
     def __str__(self):
         return f'Nivel {self.valor} - {self.get_choice_value()}'
     
     def get_choice_value(self):
         return dict(self.CHOICES)[self.valor]
+    
+    def get_formato_de_evaluacion(self):
+        return dict(self.formatos)[self.formato_de_evaluacion]
+        
+        
 
     def cargos(self):
         return self.cargo_set.all()
+    
+    def cantidad_cargos(self):
+        return self.cargo_set.all().count()
+    
+    def cantidad_empleados(self):
+        suma = 0
+        for cargo in self.cargos():
+            suma += cargo.empleado_set.filter(fechaEgreso__isnull=True).count()
+        return suma
 
 class Direccion(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
@@ -163,6 +182,7 @@ class Empleado(models.Model):
     cargo = models.ForeignKey(Cargo, on_delete=models.CASCADE)
     usuario = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True, blank=True)
+    es_evaluado = models.BooleanField(default=True)
 
     # save function that deactivates the usuario if the empleado is given a fechaEgreso
     def save(self, *args, **kwargs):
@@ -555,4 +575,47 @@ class Preguntas_Frecuentes(models.Model):
     respuesta = models.TextField()
     def __str__(self):
         return self.pregunta
+    
+class Factores_de_evaluacion_PNS(models.Model):
+    nombre = models.TextField()
+    enfoque = models.CharField(max_length=200, choices=(
+        ('Buenas practicas operativas', 'Buenas Practicas Operativas'),
+        ('Procesos', 'Procesos'),
+        ('Seguridad y salud laboral', 'Seguridad y Salud Laboral'),
+        ('Competencias actidudinales', 'Competencias Actitudinales')        
+    ), default='Buenas practicas operativas')
+    
+    def __str__(self):
+        return f'{self.enfoque} - {self.nombre}'
+    
+class Evaluacion_PNS(models.Model):
+    periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE)
+    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    resultado = models.IntegerField(default=0)
+    fecha = models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'Evaluacion de {self.empleado.nombre} {self.empleado.apellido} - {self.periodo}'
+    
+    def factores(self):
+        return self.evaluacion_pns_bpo_set.all()
+    
+    def calcular_resultado(self):
+        factores = self.factores()
+        resultado = 0
+        for factor in factores:
+            resultado += factor.valor
+        self.resultado = resultado
+        self.save()
+        
+    
+class Evaluacion_PNS_BPO(models.Model):
+    evaluacion = models.ForeignKey(Evaluacion_PNS, on_delete=models.CASCADE)
+    factor = models.ForeignKey(Factores_de_evaluacion_PNS, on_delete=models.CASCADE)
+    valor = models.IntegerField(default=0, validators=[
+        MinValueValidator(1), MaxValueValidator(3)])
+    
+    def __str__(self):
+        return f'{self.evaluacion} - {self.factor}'
+
     

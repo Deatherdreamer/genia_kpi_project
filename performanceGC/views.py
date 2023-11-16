@@ -565,6 +565,19 @@ def discardEvaluacion(request, e_ficha, eval_id):
         return redirect('profile', e_ficha=empleado.ficha)
     else:
         return redirect('profile', e_ficha=empleado.ficha)
+    
+@login_required
+def evaluar_pns(request, e_ficha):
+    empleado = get_object_or_404(Empleado, ficha=e_ficha)
+    periodo = Periodo.objects.last()
+    factores = Factores_de_evaluacion_PNS.objects.all()
+    if request.method == 'POST':
+        pass
+    return render(request, 'evaluar_pns.html', {
+        'empleado': empleado,
+        'periodo': periodo,
+        'factores': factores
+    })
 
 
 def loginUser(request):
@@ -857,6 +870,22 @@ def system_parameters(request):
     return render(request, 'system_parameters.html')
 
 @login_required(login_url='signin')
+def system_parameters_niveles(request):
+    niveles = Niveles.objects.all().order_by('valor')
+    return render(request, 'system_parameters_niveles.html', {
+        'niveles': niveles
+    })
+    
+@login_required(login_url='signin')
+def system_parameters_niveles_detail(request,nivel):
+    nivel = get_object_or_404(Niveles, valor=nivel)
+    return render(request, 'system_parameters_niveles_detail.html', {
+        'nivel': nivel
+    })
+    
+    
+
+@login_required(login_url='signin')
 def system_parameter_percentaje_distribution(request):
     departamentos = Departamento.objects.all()
     return render(request, 'system_parameter_percentaje_distribution.html', {
@@ -921,6 +950,33 @@ def system_parameter_percentaje_distribution_department_nivel_distribution(reque
         'nivel': nivel,
         'departamento': departamento,
         'distribucion': distribucion,
+        'form': form
+    })
+
+@login_required(login_url='signin')
+def system_parameter_percentaje_distribution_department_nivel_distribution_edit(request, department, nivel, distribucion, dist_obj):
+    departamento = get_object_or_404(Departamento, nombre=department)
+    nivel = get_object_or_404(Niveles, valor=nivel)
+    distribucion = get_object_or_404(Distribucion, pk=distribucion)
+    dist_obj = get_object_or_404(DistribucionObjetivo, pk=dist_obj)
+    if request.method == 'GET':
+        return render(request, 'system_parameter_percentaje_distribution_department_nivel_distribution.html', {
+            'nivel': nivel,
+            'departamento': departamento,
+            'distribucion': distribucion,
+            'dist_obj': dist_obj,
+            'form': DistribucionObjetivoForm(instance=dist_obj)
+        })
+    else:
+        form = DistribucionObjetivoForm(request.POST, instance=dist_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('systemparameterpercentajedistributiondepartmentnivel', department=department, nivel=nivel.valor)
+    return render(request, 'system_parameter_percentaje_distribution_department_nivel_distribution.html', {
+        'nivel': nivel,
+        'departamento': departamento,
+        'distribucion': distribucion,
+        'dist_obj': dist_obj,
         'form': form
     })
     

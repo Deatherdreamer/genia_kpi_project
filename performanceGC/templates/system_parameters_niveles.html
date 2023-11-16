@@ -1,0 +1,31 @@
+{% extends 'main.html '%}
+{% block content %}
+<main class="container">
+    <div class="card card-body mt-4">
+        <section class="row justify-content-center">
+            <h2 class="">Niveles</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'systemparameters' %}">Parametros</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Niveles</li>
+                </ol>
+            </nav>
+            {% for nivel in niveles %}
+            <div class="col-md-4 my-2">
+                <div class="card border-0 shadow h-100">
+
+                    <div class="card-body">
+                        <h5 class="text-center">{{nivel}}</h5>
+                        <h6 class="text-center">{{nivel.get_choice_value}}</h6>
+                        <a href="{% url 'systemparametersnivelesdetail' nivel.valor %}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+
+        </section>
+    </div>
+
+
+    {% endblock %}

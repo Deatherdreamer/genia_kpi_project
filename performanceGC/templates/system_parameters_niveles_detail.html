@@ -1,0 +1,70 @@
+{% extends 'main.html '%}
+{% block content %}
+<main class="container">
+    <div class="card card-body mt-4">
+        <section class="row justify-content-center">
+            <h2 class="">Niveles</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'systemparameters' %}">Parametros</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'systemparametersniveles' %}">Niveles</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{nivel}}</li>
+                </ol>
+            </nav>
+
+            <div class="col-md-9">
+                <div class="card card-body border-0 shadow">
+                    <table class="table table-borderless table-sm">
+                        <tbody>
+                            <tr>
+                                <th>Grupo</th>
+                                <td>{{nivel.nivel}}</td>
+                            </tr>
+                            <tr>
+                                <th>Valor</th>
+                                <td>{{nivel.get_choice_value}}</td>
+                            </tr>
+                            <tr>
+                                <th>Porcentaje por Objetivos</th>
+                                <td>{{nivel.porObjetivos}}%</td>
+                            </tr>
+                            <tr>
+                                <th>Porcentaje por Competencias</th>
+                                <td>{{nivel.porCompetencias}}%</td>
+                            </tr>
+                            <tr>
+                                <th>Cantidad de Competencias a evaluar</th>
+                                <td>{{nivel.cantidadCompetencias}}</td>
+                            </tr>
+                            <tr>
+                                <th>Formato de Evaluacion para el nivel</th>
+                                <td>{{nivel.get_formato_de_evaluacion}}</td>
+                            </tr>
+                            <tr>
+                                <th>Cargos en este nivel</th>
+                                <td>{{nivel.cantidad_cargos}}</td>
+                            </tr>
+                            <tr>
+                                <th>Colaboradores activos en este nivel</th>
+                                <td>{{nivel.cantidad_empleados}}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    
+
+                </div>
+            </div>
+            <div class="col">
+                
+                
+            </div>
+
+
+            
+
+        </section>
+    </div>
+
+
+    {% endblock %}

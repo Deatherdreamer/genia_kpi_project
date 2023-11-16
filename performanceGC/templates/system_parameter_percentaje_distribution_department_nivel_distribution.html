@@ -23,17 +23,15 @@
             <form action="#" method="POST">
                 {% csrf_token %}
                 {{form.as_p}}
-                <input type="submit" value="Guardar" class="btn btn-primary">
-            </form>
+                <div class="d-flex gap-2">                    
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="{% url 'systemparameterpercentajedistributiondepartmentnivel' departamento nivel.valor %}"
+                        class="btn btn-danger ml-2">Cancelar</a>
+
+                </div>
+            </form>          
             
-
-            
-
-
-
-            
-
-
+                   
         </section>
     </div>
 
