@@ -20,6 +20,7 @@ urlpatterns = [
     path('systemparameters/import/empleados/', views.import_empleados, name='importempleados'),
     
     path('debugTests/', views.debugTests, name='debugtests'),
+     path('draw_graph/', views.draw_graph, name='draw_graph'),
 
     path('signin/', views.loginUser, name='signin'),
     path('signout/', views.logoutUser, name='signout'),
