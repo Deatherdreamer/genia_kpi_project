@@ -5,14 +5,23 @@ from .models import *
 
 
 class EmpleadoForm(forms.ModelForm):
+    fechaIngreso = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'))
+    fechaNacimiento = forms.DateField(
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'))
+    
+    
     class Meta:
         model = Empleado
         exclude = ['fechaEgreso', 'usuario']
         widgets = {
-            'nombre': forms.TextInput(),
-            'apellido': forms.TextInput(),
-            'fechaIngreso': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'fechaNacimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'apellido': forms.TextInput( attrs={'class': 'form-control'}),
+            'cedula': forms.TextInput(attrs={'class': 'form-control'}),
+            'ficha': forms.TextInput(attrs={'class': 'form-control'}),
+            'cargo': forms.Select(attrs={'class': 'form-select'}),
+            'ceco': forms.TextInput(attrs={'class': 'form-control'}),
+            
         }
     def __init__(self, *args, **kwargs):
         super(EmpleadoForm, self).__init__(*args, **kwargs)

@@ -142,9 +142,11 @@ def addEmployee(request):
 @staff_member_required(login_url='signin')
 def editEmployee(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
+    form = EmpleadoForm(instance=empleado)
+
     if request.method == 'GET':
         return render(request, 'addEmployee.html', {
-            'form': EmpleadoForm(instance=empleado),
+            'form': form,
             'modificar': True,
             'empleado': empleado
         })
@@ -988,7 +990,7 @@ def export_cargos(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="cargos.xlsx"'
 
-    cargos = Cargo.objects.all()
+    cargos = Cargo.objects.all().order_by('nivel__valor')
     cargos_data = []
     for cargo in cargos:
         cargos_data.append({
@@ -996,7 +998,8 @@ def export_cargos(request):
             'Nombre': cargo.nombreText,
             'Superior': cargo.supervisor.nombreText if cargo.supervisor else '',
             'Gerencia': cargo.gerencia.nombreText if cargo.gerencia else '',
-            'Direccion': cargo.direccion.nombre if cargo.direccion else '',        
+            'Direccion': cargo.direccion.nombre if cargo.direccion else '',      
+            'Relativo en Infocent' : cargo.nombre_infocent if cargo.nombre_infocent else '',
                         
 
         })

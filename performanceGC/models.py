@@ -161,6 +161,7 @@ class Cargo(models.Model):
     nivel = models.ForeignKey(Niveles, on_delete=models.CASCADE, null=True)
     gerencia = models.ForeignKey(Gerencia, on_delete=models.CASCADE, null=True, blank=True)
     direccion = models.ForeignKey(Direccion, on_delete=models.CASCADE, null=True, blank=True)
+    nombre_infocent = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.nombreText
@@ -184,11 +185,11 @@ class Empleado(models.Model):
         User, on_delete=models.CASCADE, null=True, blank=True)
     es_evaluado = models.BooleanField(default=True)
 
-    # save function that deactivates the usuario if the empleado is given a fechaEgreso
+    # save function that deactivates the usuario if the empleado is given a fechaEgreso 
     def save(self, *args, **kwargs):
         if self.usuario:
             if self.fechaEgreso:
-                self.usuario.is_active = False
+                self.usuario.is_active = False 
                 self.usuario.save()
             else:
                 self.usuario.is_active = True
