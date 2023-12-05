@@ -147,11 +147,13 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 MEDIA_URL = '/media/'
 LOGIN_URL = '/signin'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/signin'
+STATIC_ROOT = "/home/geniaca1/public_html/kpi.geniacare.com/static/"
+MEDIA_ROOT = "/home/geniaca1/public_html/kpi.geniacare.com/media/"
 
 
 # Default primary key field type
