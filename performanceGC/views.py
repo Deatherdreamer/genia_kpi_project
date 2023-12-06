@@ -17,8 +17,8 @@ from .forms import *
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 import pandas as pd    
-import networkx as nx
-import matplotlib.pyplot as plt
+from django.views.generic import ListView
+
 
 
 
@@ -1139,46 +1139,53 @@ def import_empleados(request):
         print('Empleados importados')
                 
         return redirect('systemparameters')
+
+
+class Preguntas_Frecuentes_List(ListView):
+    model = Preguntas_Frecuentes
+    template_name = 'preguntas_frecuentes.html'
+    context_object_name = 'preguntas_frecuentes'
+    
     
 
 
-def hierarchy_pos(G, root=None, width=1., vert_gap = 0.2, vert_loc = 0, xcenter = 0.5):
-    pos = _hierarchy_pos(G, root, width, vert_gap, vert_loc, xcenter)
-    return pos
+# def hierarchy_pos(G, root=None, width=1., vert_gap = 0.2, vert_loc = 0, xcenter = 0.5):
+#     pos = _hierarchy_pos(G, root, width, vert_gap, vert_loc, xcenter)
+#     return pos
 
-def _hierarchy_pos(G, root, width=1., vert_gap = 0.3, vert_loc = 0, xcenter = 0.5, pos = None, parent = None, parsed = []):
-    if pos is None:
-        pos = {root:(xcenter,vert_loc)}
-    else:
-        pos[root] = (xcenter, vert_loc)
-    children = list(G.neighbors(root))
-    if not isinstance(G, nx.DiGraph) and parent is not None:
-        children.remove(parent)  
-    if len(children)!=0:
-        dx = width/len(children) 
-        nextx = xcenter - width/2 - dx/2
-        for child in children:
-            nextx += dx
-            pos = _hierarchy_pos(G,child, width = dx, vert_gap = vert_gap, vert_loc = vert_loc-vert_gap, xcenter=nextx, pos=pos, parent = root, parsed=parsed)
-    return pos
+# def _hierarchy_pos(G, root, width=1., vert_gap = 0.3, vert_loc = 0, xcenter = 0.5, pos = None, parent = None, parsed = []):
+#     if pos is None:
+#         pos = {root:(xcenter,vert_loc)}
+#     else:
+#         pos[root] = (xcenter, vert_loc)
+#     children = list(G.neighbors(root))
+#     if not isinstance(G, nx.DiGraph) and parent is not None:
+#         children.remove(parent)  
+#     if len(children)!=0:
+#         dx = width/len(children) 
+#         nextx = xcenter - width/2 - dx/2
+#         for child in children:
+#             nextx += dx
+#             pos = _hierarchy_pos(G,child, width = dx, vert_gap = vert_gap, vert_loc = vert_loc-vert_gap, xcenter=nextx, pos=pos, parent = root, parsed=parsed)
+#     return pos
 
-def draw_graph(request):
-    G = nx.DiGraph()
+# def draw_graph(request):
+#     G = nx.DiGraph()
 
-    # Get all Cargo objects
-    cargos = Cargo.objects.all().order_by('nivel__valor').exclude(nombreText='System administrator')
+#     # Get all Cargo objects
+#     cargos = Cargo.objects.all().order_by('nivel__valor').exclude(nombreText='System administrator')
 
-    # Add nodes and edges to the graph
-    for cargo in cargos:
-        G.add_node(cargo.nombreText)
-        if cargo.supervisor:
-            G.add_edge(cargo.supervisor.nombreText, cargo.nombreText)
+#     # Add nodes and edges to the graph
+#     for cargo in cargos:
+#         G.add_node(cargo.nombreText)
+#         if cargo.supervisor:
+#             G.add_edge(cargo.supervisor.nombreText, cargo.nombreText)
 
-    # Create a larger figure
-    plt.figure(figsize=(600, 50))  # Adjust as needed
+#     # Create a larger figure
+#     plt.figure(figsize=(600, 50))  # Adjust as needed
 
-    # Draw the graph
-    pos = hierarchy_pos(G, cargos[0].nombreText)  # assuming cargos[0] is the root
-    nx.draw(G, pos=pos, with_labels=True)
-    plt.savefig('graph.png')
-    return HttpResponse('Graph has been saved as graph.png')
+#     # Draw the graph
+#     pos = hierarchy_pos(G, cargos[0].nombreText)  # assuming cargos[0] is the root
+#     nx.draw(G, pos=pos, with_labels=True)
+#     plt.savefig('graph.png')
+#     return HttpResponse('Graph has been saved as graph.png')

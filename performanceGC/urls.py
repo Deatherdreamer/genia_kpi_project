@@ -11,17 +11,13 @@ urlpatterns = [
     path('systemparameters/percentajedistribution/<str:department>/', views.system_parameter_percentaje_distribution_department, name='systemparameterpercentajedistributiondepartment'),
     path('systemparameters/percentajedistribution/<str:department>/nivel_<str:nivel>/', views.system_parameter_percentaje_distribution_department_nivel, name='systemparameterpercentajedistributiondepartmentnivel'),
     path('systemparameters/percentajedistribution/<str:department>/nivel_<str:nivel>/<int:distribucion>/add/', views.system_parameter_percentaje_distribution_department_nivel_distribution, name='systemparameterpercentajedistributiondepartmentniveldistribution'),
-    path('systemparameters/percentajedistribution/<str:department>/nivel_<str:nivel>/<int:distribucion>/<int:dist_obj>/edit/', views.system_parameter_percentaje_distribution_department_nivel_distribution_edit, name='systemparameterpercentajedistributiondepartmentniveldistributionedit'),
-    
+    path('systemparameters/percentajedistribution/<str:department>/nivel_<str:nivel>/<int:distribucion>/<int:dist_obj>/edit/', views.system_parameter_percentaje_distribution_department_nivel_distribution_edit, name='systemparameterpercentajedistributiondepartmentniveldistributionedit'), 
     path('systemparameters/export/cargos/', views.export_cargos, name='exportcargos'),
     path('systemparameters/export/gerencias/', views.export_gerencias, name='exportgerencias'),
     path('systemparameters/export/empleados/', views.export_empleados, name='exportempleados'),
     path('systemparameters/import/cargos/', views.import_cargos, name='importcargos'),
-    path('systemparameters/import/empleados/', views.import_empleados, name='importempleados'),
-    
+    path('systemparameters/import/empleados/', views.import_empleados, name='importempleados'),    
     path('debugTests/', views.debugTests, name='debugtests'),
-     path('draw_graph/', views.draw_graph, name='draw_graph'),
-
     path('signin/', views.loginUser, name='signin'),
     path('signout/', views.logoutUser, name='signout'),
     path('newUser/', views.createUser, name='newUser'),
@@ -64,6 +60,7 @@ urlpatterns = [
     path('editDireccion/<int:direccion_id>/', views.editDireccion, name='editDireccion'),
     path('printTest/<int:eval_id>/', views.download_pdf, name='printTest'),
     path('profile/<int:para_ficha>/newcommmnent_<int:de_ficha>', views.addComentario, name='newcommmnent'),
+    path('faq/', views.Preguntas_Frecuentes_List.as_view(), name='faq'),
 
 
 
