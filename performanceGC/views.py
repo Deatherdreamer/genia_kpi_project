@@ -1091,11 +1091,14 @@ def import_empleados(request):
     if request.method == 'GET':
         return render(request, 'import_empleados.html')
     else:
+        print('Importando empleados...')
         empleados_file = request.FILES['empleados_file']
         empleados = pd.read_excel(empleados_file)
+        print('Empleados leídos...')
         for index, row in empleados.iterrows():
             cargo = Cargo.objects.filter(nombreText=row['CARGO']).first()
             if cargo is None:
+                print(f'No se encontró el cargo {row["CARGO"]} en el sistema')
                 continue
             ceco = row['CECO']            
             ficha = row['FICHA']
@@ -1108,14 +1111,13 @@ def import_empleados(request):
             existing_empleado = Empleado.objects.filter(ficha=ficha).first()
             print(f'Procesando empleado {ficha}')
             if existing_empleado:
-                # try:
-                #     username = f"{nombre.split()[0].lower()}.{apellido.split()[0].lower()}"
-                #     password = '1234'
-                #     user = User.objects.create_user(username=username, password=password)
-                #     existing_empleado.usuario = user
-                # except:
-                #     print(f'Error creating user for {ficha}') 
-                # Update the existing empleado
+                try:
+                    username = f"{nombre.split()[0].lower()}.{apellido.split()[0].lower()}"
+                    password = '1234'
+                    user = User.objects.create_user(username=username, password=password)
+                    existing_empleado.usuario = user
+                except:
+                    print(f'Error creating user for {ficha}') 
                 existing_empleado.cargo = cargo
                 existing_empleado.ceco = ceco
                 existing_empleado.cedula = cedula
@@ -1133,7 +1135,7 @@ def import_empleados(request):
 
                 except:
                     print(f'Error creating user for {ficha}') 
-                newEmpleado = Empleado(cargo=cargo, ceco=ceco, ficha=ficha, cedula=cedula, nombre=nombre, apellido=apellido, fechaIngreso=fechaIngreso)
+                newEmpleado = Empleado(cargo=cargo, ceco=ceco, ficha=ficha, cedula=cedula, nombre=nombre, apellido=apellido, fechaIngreso=fechaIngreso, usuario=user)
                 newEmpleado.save()
             print(f'Empleado {ficha} importado')
         print('Empleados importados')
@@ -1145,6 +1147,8 @@ class Preguntas_Frecuentes_List(ListView):
     model = Preguntas_Frecuentes
     template_name = 'preguntas_frecuentes.html'
     context_object_name = 'preguntas_frecuentes'
+    
+    
     
     
 
