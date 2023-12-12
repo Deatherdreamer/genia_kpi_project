@@ -1,0 +1,39 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<main class="container">
+    <h4 class="text-center mt-4">
+        Compentencias de Nivel {{ nivel|title }}
+    </h4>
+    <section class="row justify-content-center">
+    <div class="col">
+        <div class="card card-body border-0 shadow">
+            <table class="table table-bordered  ">
+                <thead class="table-dark text-center">
+                    <th>Competencia</th>
+                    <th style="width: 40%;">Descripcion</th>
+                    <th>Valor 1</th>
+                    <th>Valor 2</th>
+                    <th>Valor 3</th>
+                    <th>Valor 4</th>
+                </thead>
+                <tbody class="">
+                    {% for competencia in competencias %}
+                    <tr>
+                        <td><strong>{{ competencia.nombre|title }}</strong></td>
+                        <td>{{ competencia.descripcion }}</td>
+                        <td>{{ competencia.significado1 }}</td>
+                        <td>{{ competencia.significado2 }}</td>
+                        <td>{{ competencia.significado3 }}</td>
+                        <td>{{ competencia.significado4 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+        
+    </section>
+</main>
+{% endblock %}

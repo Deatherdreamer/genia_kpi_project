@@ -8,7 +8,9 @@ class EmpleadoForm(forms.ModelForm):
     fechaIngreso = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'))
     fechaNacimiento = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'))
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'),
+        required=False
+    )
     
     
     class Meta:

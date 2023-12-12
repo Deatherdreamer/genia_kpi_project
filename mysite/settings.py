@@ -107,6 +107,8 @@ else:
     }
 
     
+#VERSION
+VERSION = '1.1.0'
 
 
 # Password validation

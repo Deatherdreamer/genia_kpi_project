@@ -201,7 +201,7 @@
               aria-expanded="false">
               <img
                 src="{% if  user.empleado.imagen %} {{ user.empleado.imagen.url }} {% else %} /static/default-avatar.png {% endif %}"
-                alt=" Sin imagen " class="rounded-circle img-fluid" style="width: 24px; object-fit: cover;">
+                alt="" class="rounded-circle img-fluid" style="width: 32px; height: 32px; object-fit: cover;">
               {{user.empleado.get_short_name}}
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -223,8 +223,14 @@
                 </a>
               </li>
               <li>
+                <a class="dropdown-item text-white bi bi-graph-up-arrow" href="{% url 'competences' %}">
+                  Competencias
+                </a>
+              </li>
+              <li>
                 <a class="dropdown-item text-white bi bi-people" href="/search"> Colaboradores</a>
               </li>
+              
               <li>
                 <a class="dropdown-item text-white"
                   href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal"
@@ -238,6 +244,7 @@
                   Preguntas Frecuentes
                 </a>
               </li>
+              
 
               <li>
                 <a class="dropdown-item text-white bi bi-key" href="/changePassword">
