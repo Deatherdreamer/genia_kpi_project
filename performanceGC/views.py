@@ -63,7 +63,6 @@ def users(request):
                                         'empleado__cargo__nivel__valor')
     return render(request, 'users.html', {'users': users})
 
-
 @login_required
 def masterEmployee(request):
     if request.user.is_staff:
@@ -91,7 +90,6 @@ def masterEmployee(request):
     #     'empleados': empleado
     # })
 
-
 @login_required
 def profileView(request, e_ficha):
     def subordinados(e):
@@ -114,7 +112,6 @@ def profileView(request, e_ficha):
         'periodo': periodo
     })
 
-
 @staff_member_required(login_url='signin')
 def addEmployee(request):
     if request.method == 'GET':
@@ -133,7 +130,6 @@ def addEmployee(request):
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
-
 
 @staff_member_required(login_url='signin')
 def editEmployee(request, e_ficha):
@@ -160,7 +156,6 @@ def editEmployee(request, e_ficha):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-
 @staff_member_required(login_url='signin')
 def deleteEmployee(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -179,9 +174,6 @@ def deleteEmployee(request, e_ficha):
                 'empleado': empleado,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
-
-# function based view to clear fechaEgreso of an employee
-
 
 @staff_member_required(login_url='signin')
 def reingreso(request, e_ficha):
@@ -202,7 +194,6 @@ def reingreso(request, e_ficha):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-
 @login_required
 def addComentario(request, de_ficha, para_ficha):
     de = get_object_or_404(Empleado, ficha=de_ficha)
@@ -216,7 +207,6 @@ def addComentario(request, de_ficha, para_ficha):
     except Exception as e:
         return redirect('profile', e_ficha=para.ficha)
     
-
 # view to see the current period
 @staff_member_required(login_url='signin')
 def periodos(request):
@@ -224,7 +214,6 @@ def periodos(request):
     return render(request, 'periodo.html', {
         'periodos': periodos
     })
-
 
 @staff_member_required(login_url='signin')
 def editPeriodo(request, id):
@@ -254,7 +243,6 @@ def editPeriodo(request, id):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-
 @login_required
 def objectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -265,7 +253,6 @@ def objectives(request, e_ficha):
         'periodo': periodo,
         'objetivos': objetivos
     })
-
 
 @login_required
 def createObjectives(request, e_ficha):
@@ -286,9 +273,6 @@ def createObjectives(request, e_ficha):
 
         return redirect('objectives', e_ficha=empleado.ficha)
 
-# view to edit an objective
-
-
 @login_required
 def editObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -305,7 +289,6 @@ def editObjectives(request, e_ficha, o_id):
         newObjective.save()
         return redirect('objectives', e_ficha=empleado.ficha)
 
-
 @login_required
 def activities(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -315,7 +298,6 @@ def activities(request, e_ficha, o_id):
         'empleado': empleado,
         'objetivo': objetivo
     })
-
 
 @login_required
 def updateActivities(request, e_ficha, o_id, a_id):
@@ -328,7 +310,6 @@ def updateActivities(request, e_ficha, o_id, a_id):
         return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
     else:
         return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
-
 
 @login_required
 def editActivities(request, e_ficha, o_id, a_id):
@@ -348,7 +329,6 @@ def editActivities(request, e_ficha, o_id, a_id):
         newActivity.save()
         return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
 
-
 @login_required
 def deleteActivities(request, e_ficha, o_id, a_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -357,7 +337,6 @@ def deleteActivities(request, e_ficha, o_id, a_id):
     if request.method == 'POST':
         actividad.delete()
     return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
-
 
 @login_required
 def createActivities(request, e_ficha, o_id):
@@ -378,7 +357,6 @@ def createActivities(request, e_ficha, o_id):
 
         return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
 
-
 @login_required
 def dashboard_view(request):
     evaluacion = get_object_or_404(Evaluacion, id=10)
@@ -386,7 +364,6 @@ def dashboard_view(request):
         'valor': "ROJO",
         'evaluacion': evaluacion
     })
-
 
 @login_required
 def testDetails(request, e_ficha, eval_id):
@@ -413,7 +390,6 @@ def testDetails(request, e_ficha, eval_id):
         'evaluacion': evaluacion,
         'competencias': forms3,
     })
-
 
 @login_required
 def evaluar_desempeno(request, e_ficha):
@@ -480,7 +456,6 @@ def evaluar_desempeno(request, e_ficha):
                 competencia.save()
 
         return redirect('profile', e_ficha=empleado.ficha)
-
 
 @login_required
 def editEvaluacion(request, e_ficha, eval_id):
@@ -551,8 +526,6 @@ def editEvaluacion(request, e_ficha, eval_id):
                 comp.save()
         return redirect('profile', e_ficha=empleado.ficha)
 
-
-# discardEvaluacion
 @login_required
 def discardEvaluacion(request, e_ficha, eval_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -578,7 +551,6 @@ def evaluar_pns(request, e_ficha):
         'factores': factores
     })
 
-
 def loginUser(request):
     # Si el usuario ya inició sesión, redireccionar a su perfil
     if request.user.is_authenticated:
@@ -601,14 +573,10 @@ def loginUser(request):
                 empleado = get_object_or_404(Empleado, usuario=user)
                 return redirect('profile', e_ficha=empleado.ficha)
 
-
 @login_required
 def logoutUser(request):
     logout(request)
     return redirect('index')
-
-# vista para cambiar contraseña
-
 
 @login_required
 def changePassword(request):
@@ -628,9 +596,6 @@ def changePassword(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-# vista para ver competencias
-
-
 @staff_member_required(login_url='signin')
 def seeCompetences(request):
     # cargar registros de nivel
@@ -640,9 +605,6 @@ def seeCompetences(request):
         'niveles': nivel,
         'competencias': competencias,
     })
-
-# vista para agregar competencias
-
 
 @staff_member_required(login_url='signin')
 def addCompetence(request):
@@ -660,9 +622,6 @@ def addCompetence(request):
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
-
-# vista para editar competencias
-
 
 @staff_member_required(login_url='signin')
 def editCompetence(request, competence_id):
@@ -682,16 +641,12 @@ def editCompetence(request, competence_id):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-
 @staff_member_required(login_url='signin')
 def seeCargos(request):
     niveles = Niveles.objects.all().order_by('valor')
     return render(request, 'seeCargos.html', {
         'niveles': niveles,
     })
-
-# view to edit a cargo
-
 
 @staff_member_required(login_url='signin')
 def editCargo(request, cargo_id):
@@ -711,9 +666,6 @@ def editCargo(request, cargo_id):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-# view to add a cargo
-
-
 @staff_member_required(login_url='signin')
 def addCargo(request):
     if request.method == 'GET':
@@ -731,18 +683,12 @@ def addCargo(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-# view to see all gerencias
-
-
 @staff_member_required(login_url='signin')
 def seeGerencias(request):
     direcciones = Direccion.objects.all()
     return render(request, 'seeGerencias.html', {
         'direcciones': direcciones,
     })
-
-# view to modify a gerencia
-
 
 @staff_member_required(login_url='signin')
 def editGerencia(request, gerencia_id):
@@ -762,9 +708,6 @@ def editGerencia(request, gerencia_id):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-# view to add a gerencia
-
-
 @staff_member_required(login_url='signin')
 def addGerencia(request):
     if request.method == 'GET':
@@ -782,12 +725,10 @@ def addGerencia(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-
 @staff_member_required(login_url='signin')
 def gerenciaDetails(request, gerencia_id):
     gerencia = get_object_or_404(Gerencia, pk=gerencia_id)
     return render(request, 'gerencia.html', {'gerencia': gerencia})
-
 
 # view to see all direcciones
 @staff_member_required(login_url='signin')
@@ -796,9 +737,6 @@ def seeDirecciones(request):
     return render(request, 'seeDirecciones.html', {
         'direcciones': direcciones,
     })
-
-# view to modify a direccion
-
 
 @staff_member_required(login_url='signin')
 def editDireccion(request, direccion_id):
@@ -818,9 +756,6 @@ def editDireccion(request, direccion_id):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-# view to add a direccion
-
-
 @staff_member_required(login_url='signin')
 def addDireccion(request):
     if request.method == 'GET':
@@ -837,7 +772,6 @@ def addDireccion(request):
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
-
 
 @login_required(login_url='signin')
 def download_pdf(request, eval_id):
@@ -881,8 +815,8 @@ def system_parameters_niveles_detail(request,nivel):
     return render(request, 'system_parameters_niveles_detail.html', {
         'nivel': nivel
     })
-    
-    
+  
+  
 
 @login_required(login_url='signin')
 def system_parameter_percentaje_distribution(request):
