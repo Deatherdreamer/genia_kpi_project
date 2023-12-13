@@ -10,6 +10,19 @@
                 {{empleado.nombre|title}} {{empleado.apellido|title}}
             </h5>
 
+            {% comment %} Mensaje de alerta para recordar a los usuarios que el objetivo debe ser de tipo smart {% endcomment %}
+
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Recuerda!</strong> Los objetivos deben ser de tipo SMART.
+                <br>SMART es un acrónimo en inglés que significa: Specific, Measurable, Achievable, Relevant y Time-bound.
+                <br>En español: Específico, Medible, Alcanzable, Relevante y Limitado en el Tiempo.
+                <br>Un objetivo SMART es un objetivo que cumple con estas 5 características.
+                <br>Si no sabes lo que es SMART, puedes consultar nuestras <a class="alert-link" href="{% url 'faq' %}">preguntas frequentes</a>.
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+
 
 
             {% csrf_token %}

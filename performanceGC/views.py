@@ -19,10 +19,6 @@ from xhtml2pdf import pisa
 import pandas as pd    
 from django.views.generic import ListView
 
-
-
-
-
 # Create your views here.
 
 
@@ -281,7 +277,6 @@ def createObjectives(request, e_ficha):
             'empleado': empleado,
             'tipos': empleado.distribucionObjetivos()})
     else:
-        print(request.POST)
         form = ObjectivesForm(request.POST)
         newObjective = form.save(commit=False)
         newObjective.empleado = empleado
