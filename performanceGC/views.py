@@ -19,21 +19,14 @@ from xhtml2pdf import pisa
 import pandas as pd    
 from django.views.generic import ListView
 
-# Create your views here.
-
-
 def index(request):
     return render(request, 'index.html')
-
 
 def debugTests(request):
     competencias = Competencias.objects.all()
     return render(request, 'cosasraras.html',
                   {'competencias': competencias})
 
-
-# view to create a new user
-# decorator to allow only superusers to access this view
 @staff_member_required
 def createUser(request):
     empleados = Empleado.objects.all().filter(fechaEgreso__isnull=True).filter(
@@ -52,10 +45,6 @@ def createUser(request):
     else:
         form = UserCreationForm()
     return render(request, 'createUser.html', {'form': form, 'empleados': empleados})
-
-# view to see all user ordered by is superuser, staff and normal user
-# decorator to allow only superusers to access this view
-
 
 @staff_member_required
 def users(request):
@@ -816,8 +805,6 @@ def system_parameters_niveles_detail(request,nivel):
         'nivel': nivel
     })
   
-  
-
 @login_required(login_url='signin')
 def system_parameter_percentaje_distribution(request):
     departamentos = Departamento.objects.all()

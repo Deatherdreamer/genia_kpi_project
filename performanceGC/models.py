@@ -308,9 +308,15 @@ class Periodo(models.Model):
     fechaFinEvaluaciones = models.DateField(
         'Fecha de Fin', null=True, blank=True)
     evaluacionesHabilitadas = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Periodo {self.año_inicio} - {self.año_fin}'
+    
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            Periodo.objects.filter(is_active=True).update(is_active=False)
+        super(Periodo, self).save(*args, **kwargs)
 
     def objetivosPeriodo(self):
         return self.objetivos_set.all().count()
@@ -341,6 +347,14 @@ class Periodo(models.Model):
         except:
             return 'Fechas no definidas'
 
+class Company_Objectives(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    period = models.ForeignKey(Periodo, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f'{self.period} - {self.title}'
+    
 
 class Objetivos(models.Model):
     periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE)
