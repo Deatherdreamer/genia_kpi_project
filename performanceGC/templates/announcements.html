@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+<main class="container">
+    <section class="row justify-content-center">
+        <div class="col-md-8">
+            {% for announcement in announcements %}
+                <div class="card mb-4 box-shadow">
+                    <div class="card-body">
+                        <h3 class="card-title py-2">
+                            {{ announcement.title }}                            
+                        </h3>
+                        <p class="card-text">
+                            {{ announcement.text }}
+                        </p>
+
+                    </div>
+                    
+
+                </div> 
+            {% empty %}
+                <p>No announcements yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}

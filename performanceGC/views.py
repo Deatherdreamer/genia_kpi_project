@@ -1073,3 +1073,9 @@ class Preguntas_Frecuentes_List(ListView):
     template_name = 'preguntas_frecuentes.html'
     context_object_name = 'preguntas_frecuentes'
     
+@login_required(login_url='signin')
+def announcements_view(request):
+    announcements = Announcements.objects.all().order_by('-created_at')
+    return render(request, 'announcements.html', {
+        'announcements': announcements
+    })
