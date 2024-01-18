@@ -24,6 +24,8 @@ admin.site.register(Preguntas_Frecuentes)
 admin.site.register(Factores_de_evaluacion_PNS)
 admin.site.register(Evaluacion_PNS)
 admin.site.register(Evaluacion_PNS_BPO)
+admin.site.register(Announcements)
+admin.site.register(Company_Objectives)
 
 
 # admin.site.register(ValoresCompetencias)

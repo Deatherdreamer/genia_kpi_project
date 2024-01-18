@@ -4,27 +4,32 @@
 {% load widget_tweaks %}
 
 {% block content %}
-<main class="container">
+  <main class="container">
     <section class="row justify-content-center">
-        <div class="col-md-8">
-            {% for announcement in announcements %}
-                <div class="card mb-4 box-shadow">
-                    <div class="card-body">
-                        <h3 class="card-title py-2">
-                            {{ announcement.title }}                            
-                        </h3>
-                        <p class="card-text">
-                            {{ announcement.text }}
-                        </p>
+        <h4 class="text-center my-4">Tablero de Anuncios</h4>
+        <div class="col-md-4 mb-4">
+            <div class="card card-body shadow border-0">
+                <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%"
+                            class="card-img-top">
+                <a href="{% url 'index' %}" class="btn btn-dark btn-block mt-3">Volver a Inicio</a>
+                <a href="{% url 'profile' user.empleado.ficha  %}" class="btn btn-dark btn-block mt-3">Ir a Perfil</a>
 
-                    </div>
-                    
-
-                </div> 
-            {% empty %}
-                <p>No announcements yet.</p>
-            {% endfor %}
+            </div>
         </div>
+      <div class="col-md-8">
+        
+        {% for announcement in announcements %}
+          <div class="card mb-4 shadow border-0">
+            <div class="card-body">
+              <h5 class="card-title">{{announcement.title}}</h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">{{announcement.date}}</h6>
+              {{announcement.text}}
+            </div>
+          </div>
+          {% empty %}
+          <p>No announcements yet.</p>
+        {% endfor %}
+      </div>
     </section>
-</main>
+  </main>
 {% endblock %}

@@ -91,7 +91,7 @@ def profileView(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     empleados_subordinados = subordinados(empleado)
     evaluaciones = EvaluacionDesempeno.objects.filter(empleado=empleado)
-    periodo = Periodo.objects.get(año_inicio=datetime.now().year)
+    periodo = Periodo.objects.get(is_active=True)
 
     return render(request, 'profile.html', {
         'empleado': empleado,
@@ -1075,7 +1075,16 @@ class Preguntas_Frecuentes_List(ListView):
     
 @login_required(login_url='signin')
 def announcements_view(request):
-    announcements = Announcements.objects.all().order_by('-created_at')
+    announcements = Announcements.objects.all().order_by('date')
     return render(request, 'announcements.html', {
         'announcements': announcements
+    })
+    
+@login_required(login_url='signin')
+def company_objectives_view(request):
+    periodo = Periodo.objects.get(is_active=True)
+    company_objectives = Company_Objectives.objects.filter(period=periodo)
+    return render(request, 'company_objectives.html', {
+        'periodo': periodo,
+        'company_objectives': company_objectives
     })

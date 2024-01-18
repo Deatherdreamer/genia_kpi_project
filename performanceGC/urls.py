@@ -62,6 +62,7 @@ urlpatterns = [
     path('profile/<int:para_ficha>/newcommmnent_<int:de_ficha>', views.addComentario, name='newcommmnent'),
     path('faq/', views.Preguntas_Frecuentes_List.as_view(), name='faq'),
     path('competences/' , views.competencias_by_my_level, name='competences'),
-    path('announcements/', views.announcements, name='announcements'),
+    path('announcements/', views.announcements_view, name='announcements'),
+    path('companyobjectives/', views.company_objectives_view, name='companyobjectives'),
 
 ]
