@@ -1,0 +1,46 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_tags %}
+{% load widget_tweaks %}
+
+{% block content %}
+  <main class="container">
+    <section class="row justify-content-center">
+      <h4 class="text-center my-4">Crear un nuevo Anuncio</h4>
+      <div class="col-md-4">
+        <div class="card card-body shadow border-0">
+          <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%" class="card-img-top" />
+          <a href="{% url 'announcements' %}" class="btn btn-dark btn-block mt-3">Regresar a Anuncios</a>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card card-body shadow border-0">
+          <form action="{% url 'announcements_add' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if error %}
+              <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+
+            <div class="form-group mb-4">
+              <label for="title">Encabezado</label>
+              <input type="text" name="title" class="form-control" value="{% if form.title.value %}{{ form.title.value }}{% endif %}" />
+            </div>
+            
+            <div class="form-group mb-4">
+              <label for="text">Descripción</label>
+              <textarea name="text" class="form-control" rows="3">{% if form.text.value %}{{ form.text.value }}{% endif %}</textarea>
+              
+            </div>
+
+            <div class="form-group mb-4">
+              <label for="image">Imagen</label>
+              <input type="file" name="image" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-dark btn-block">Publicar</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}

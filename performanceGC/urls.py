@@ -63,6 +63,7 @@ urlpatterns = [
     path('faq/', views.Preguntas_Frecuentes_List.as_view(), name='faq'),
     path('competences/' , views.competencias_by_my_level, name='competences'),
     path('announcements/', views.announcements_view, name='announcements'),
+    path('announcements/new/', views.announcements_add, name='announcements_add'),
     path('companyobjectives/', views.company_objectives_view, name='companyobjectives'),
 
 ]

@@ -82,15 +82,6 @@ class DistribucionObjetivoForm(forms.ModelForm):
             'peso': forms.NumberInput(attrs={'class': 'form-control', 'step': '5', 'value': '0'}),
         }
 
-                
-        
-
-
-
-
-
-
-
 
 class ActivitiesForm(forms.ModelForm):
     class Meta:
@@ -191,9 +182,24 @@ class CompetenciasEvaluacionForm(forms.ModelForm):
                 nivel=nivel)
 
 # class form for cargo
-
-
 class CargoForm(forms.ModelForm):
     class Meta:
         model = Cargo
         fields = '__all__'
+
+
+#class form for announcements
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcements
+        fields = '__all__'
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'text': forms.Textarea(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'title': 'Encabezado',
+            'text': 'Mensaje del anuncio',
+            'image': 'Imagen',
+        }

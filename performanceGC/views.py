@@ -7,8 +7,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UserCreationForm
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required 
 from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.db import transaction
@@ -1075,10 +1075,27 @@ class Preguntas_Frecuentes_List(ListView):
     
 @login_required(login_url='signin')
 def announcements_view(request):
-    announcements = Announcements.objects.all().order_by('date')
+    announcements = Announcements.objects.all().order_by('-date')
     return render(request, 'announcements.html', {
         'announcements': announcements
     })
+    
+@staff_member_required(login_url='signin')
+def announcements_add(request):
+    if request.method == 'GET':
+        return render(request, 'announcements_add.html', {
+            'form': AnnouncementForm()
+        })
+    else:
+        form = AnnouncementForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('announcements')
+        else:
+            return render(request, 'announcements_add.html', {
+                'form': form,
+                'error': 'Ha ocurrido un error, intente de nuevo.'
+            })
     
 @login_required(login_url='signin')
 def company_objectives_view(request):

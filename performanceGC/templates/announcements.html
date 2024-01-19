@@ -11,6 +11,10 @@
             <div class="card card-body shadow border-0">
                 <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%"
                             class="card-img-top">
+                {% if user.is_staff %}
+                <a href="{% url 'announcements_add' %}" class="btn btn-dark btn-block mt-3">Crear Anuncio</a>
+                {% endif %}
+
                 <a href="{% url 'index' %}" class="btn btn-dark btn-block mt-3">Volver a Inicio</a>
                 <a href="{% url 'profile' user.empleado.ficha  %}" class="btn btn-dark btn-block mt-3">Ir a Perfil</a>
 
@@ -25,6 +29,11 @@
               <h6 class="card-subtitle mb-2 text-body-secondary">{{announcement.date}}</h6>
               {{announcement.text}}
             </div>
+            {% if announcement.image %}
+            <div class="text-center">
+              <img src="{{announcement.image.url}}" class="card-img-bottom" alt="{{announcement.title}}" style="max-height: 80%; max-width: 80%; object-fit: cover; object-position: center; margin: auto; display: block; margin-bottom: 1rem; margin-top: 1rem; border-radius: 5px; border: 1px solid #ddd; padding: 5px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);">
+            </div>
+            {% endif %}
           </div>
           {% empty %}
           <p>No announcements yet.</p>
