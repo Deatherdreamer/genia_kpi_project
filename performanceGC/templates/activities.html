@@ -4,7 +4,7 @@
 
 
 <main class="container">
-    <div class="card  mt-4">
+    <div class="card border-0 shadow mt-4">
         <div class="card-header text-bg-dark bg-dark">
             <h5 class="lead fw-bold">OBJETIVO</h5>
         </div>
@@ -17,7 +17,7 @@
 
 
         <div class="col-4">
-            <div class="card">
+            <div class="card border-0 shadow">
                 <div class="card-header text-bg-dark bg-dark">
                     <h5 class="lead fw-bold">DETALLES</h5>
 
@@ -52,18 +52,25 @@
 
                 <div class="card-footer">
                     <!-- btn to edit objetivo -->
-                    {% if request.user.empleado == empleado %}
+                    {% if request.user.empleado == empleado %}                    
                     <a href="{% url 'editobjective' empleado.ficha objetivo.id %}"
                         class="btn btn-lg btn-warning bi bi-pencil-square mb-2 w-100">
                         Editar Objetivo
                     </a>
+                    <form action="{% url 'discardobjective' empleado.ficha objetivo.id %}" method="post" class="mb-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-lg btn-danger bi bi-trash w-100" onclick="return confirmDelete();">
+                            Eliminar Objetivo
+                        </button>
+                    </form>
+
                     {% endif %}
                     <a href="{% url 'newactivity' empleado.ficha objetivo.id %}"
                         class="btn btn-lg btn-primary bi bi-plus-circle mb-2 w-100">
                         Añadir Actividad
                     </a>
 
-                    <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-danger bi bi-x-circle w-100">
+                    <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-outline-secondary bi bi-x-circle w-100">
                         Regresar
                     </a>
                 </div>
@@ -72,7 +79,7 @@
 
         </div>
         <div class="col ">
-            <div class="card">
+            <div class="card border-0 shadow">
                 <div class="card-header text-bg-dark bg-dark">
                     <h5 class="lead fw-bold">ACTIVIDADES</h5>
                 </div>
@@ -137,7 +144,7 @@
                                         <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}"
                                             method="post">
                                             {% csrf_token %}
-                                            <button type="submit" class="btn btn-light" onclick="confirmDelete()">
+                                            <button type="submit" class="btn btn-light" onclick="return confirmDelete();">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
@@ -162,14 +169,10 @@
 
 <script>
     function confirmDelete() {
-        var result = confirm('¿Está seguro de eliminar la actividad?');
-        if (result) {
-            return true;
-        } else {
-            return false;
-        }
+        return confirm('¿Está seguro de eliminar este Elemento?');
     }
 </script>
+
 
 
 {% endblock %}

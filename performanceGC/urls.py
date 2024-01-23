@@ -26,6 +26,7 @@ urlpatterns = [
     path('profile/<int:e_ficha>/objectives/', views.objectives, name='objectives'),
     path('profile/<int:e_ficha>/objectives/new/', views.createObjectives, name='newobjective'),
     path('profile/<int:e_ficha>/objectives/obj_<int:o_id>/edit/', views.editObjectives, name='editobjective'),
+    path('profile/<int:e_ficha>/objectives/obj_<int:o_id>/discard/', views.deleteObjectives, name='discardobjective'),
     path('profile/<int:e_ficha>/objectives/obj_<int:o_id>/', views.activities, name='activities'),
     path('profile/<int:e_ficha>/objectives/obj_<int:o_id>/act_<int:a_id>/complete/', views.updateActivities, name='completeactivity'),
     path('profile/<int:e_ficha>/objectives/obj_<int:o_id>/act_<int:a_id>/discard/', views.deleteActivities, name='discardactivity'),

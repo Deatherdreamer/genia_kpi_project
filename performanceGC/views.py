@@ -279,6 +279,15 @@ def editObjectives(request, e_ficha, o_id):
         return redirect('objectives', e_ficha=empleado.ficha)
 
 @login_required
+def deleteObjectives(request, e_ficha, o_id):
+    empleado = get_object_or_404(Empleado, ficha=e_ficha)
+    objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    if request.method == 'POST':
+        objetivo.delete()
+    return redirect('objectives', e_ficha=empleado.ficha)
+
+
+@login_required
 def activities(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = empleado.objetivos_set.get(pk=o_id)
@@ -994,10 +1003,19 @@ def import_cargos(request):
                 existing_cargo.supervisor = superior
                 existing_cargo.gerencia = gerencia
                 existing_cargo.direccion = direccion
+                if row['Relativo en Infocent'] == 'nan':
+                    existing_cargo.nombre_infocent = ''
+                else:                    
+                    existing_cargo.nombre_infocent = row['Relativo en Infocent']     
+                    try:
+                        existing_cargo.nombre_infocent = existing_cargo.nombre_infocent.strip() 
+                    except:
+                        pass
+                
                 existing_cargo.save()
             else:
                 # Create a new cargo
-                newCargo = Cargo(nivel=nivel, nombreText=nombre, supervisor=superior, gerencia=gerencia, direccion=direccion)
+                newCargo = Cargo(nivel=nivel, nombreText=nombre, supervisor=superior, gerencia=gerencia, direccion=direccion, nombre_infocent=row['Relativo en Infocent'])
                 newCargo.save()
                 
         return redirect('systemparameters')
@@ -1012,7 +1030,12 @@ def import_empleados(request):
         empleados = pd.read_excel(empleados_file)
         print('Empleados leídos...')
         for index, row in empleados.iterrows():
-            cargo = Cargo.objects.filter(nombreText=row['CARGO']).first()
+            nombre_infocent = row['CARGO']
+            if nombre_infocent == 'nan':
+                print(f'No se encontró el cargo {row["CARGO"]} en el sistema')
+                continue
+            cargo = Cargo.objects.filter(nombre_infocent=nombre_infocent.strip()).first()
+            
             if cargo is None:
                 print(f'No se encontró el cargo {row["CARGO"]} en el sistema')
                 continue

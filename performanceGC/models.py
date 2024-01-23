@@ -312,7 +312,7 @@ class Periodo(models.Model):
     is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Periodo {self.año_inicio} - {self.año_fin}'
+        return f'Período {self.año_inicio} - {self.año_fin}'
     
     def save(self, *args, **kwargs):
         if self.is_active:
