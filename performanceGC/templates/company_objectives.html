@@ -7,13 +7,31 @@
   <main class="container">
     <section class="row justify-content-center">
       <h4 class="text-center mt-4">Objetivos Estratégicos de la Organización</h4>
-      <h5 class="text-center mb-4">{{ periodo }}</h5>
+      <h5 class="text-center mb-4">
+        {{ periodo }}
+        {% if user.is_staff %}
+          <a href="{% url 'companyobjectives_add' %}" class="btn btn-primary btn-sm">Crear Objetivo</a>
+        {% endif %}
+      </h5>
+
       <div class="row justify-content-center">
         {% for objective in company_objectives %}
           <div class="col-md-6 my-2">
-            <div class="card card-body shadow border-0 h-100">
-              <h4 class="card-title">{{ objective.title }}</h4>
-              <p class="card-text lead">{{ objective.description }}</p>
+            <div class="card shadow border-0 h-100">
+              <div class="card-body">
+                <h4 class="card-title">{{ objective.title }}</h4>
+                <p class="card-text lead">{{ objective.description }}</p>
+              </div>
+              {% if user.is_staff %}
+                <div class="card-footer bg-white">
+                  <a href="{% url 'companyobjectives_edit' objective.id %}" class="btn btn-primary btn-sm">Editar</a>
+                  <form action="{% url 'companyobjectives_delete' objective.id %}" method="post" class="d-inline">
+                    {% csrf_token %}                    
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este objetivo?')">Eliminar</button>
+                  </form>
+                </div>
+
+              {% endif %}
             </div>
           </div>
         {% endfor %}

@@ -66,5 +66,7 @@ urlpatterns = [
     path('announcements/', views.announcements_view, name='announcements'),
     path('announcements/new/', views.announcements_add, name='announcements_add'),
     path('companyobjectives/', views.company_objectives_view, name='companyobjectives'),
-
+    path('companyobjectives/new/', views.company_objectives_add, name='companyobjectives_add'),
+    path('companyobjectives/edit/<int:obj_id>/', views.company_objectives_edit, name='companyobjectives_edit'),
+    path('companyobjectives/delete/<int:obj_id>/', views.company_objectives_delete, name='companyobjectives_delete'),
 ]

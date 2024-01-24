@@ -62,9 +62,14 @@ class EvaluacionForm(forms.ModelForm):
     class Meta:
         model = Evaluacion
         fields = '__all__'
-
-
+        
 class ObjectivesForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.empleado = kwargs.pop('empleado', None)
+        super(ObjectivesForm, self).__init__(*args, **kwargs)
+        if self.empleado is not None:
+            self.fields['tipo'].queryset = self.empleado.distribucionObjetivos()
+
     class Meta:
         model = Objetivos
         fields = ['texto', 'tipo']
@@ -72,6 +77,23 @@ class ObjectivesForm(forms.ModelForm):
             'texto': forms.Textarea(attrs={'class': 'form-control'}),
             'tipo': forms.Select(attrs={'class': 'form-select'}),
         }
+        labels = {
+            'texto': 'Objetivo',
+            'tipo': 'Tipo de objetivo',
+        }
+
+# class ObjectivesForm(forms.ModelForm):
+#     class Meta:
+#         model = Objetivos
+#         fields = ['texto', 'tipo']
+#         widgets = {
+#             'texto': forms.Textarea(attrs={'class': 'form-control'}),
+#             'tipo': forms.Select(attrs={'class': 'form-select'}),
+#         }
+#         labels = {
+#             'texto': 'Objetivo',
+#             'tipo': 'Tipo de objetivo',
+#         }
 
 class DistribucionObjetivoForm(forms.ModelForm):
     class Meta:
@@ -203,3 +225,17 @@ class AnnouncementForm(forms.ModelForm):
             'text': 'Mensaje del anuncio',
             'image': 'Imagen',
         }
+        
+class CompanyObjectivesForm(forms.ModelForm):
+    class Meta:
+        model = Company_Objectives
+        fields = ['title', 'description']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'title': 'Titulo',
+            'description': 'Descripcion',
+        }
+        

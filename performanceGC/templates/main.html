@@ -296,6 +296,20 @@
       {% endif %}
     </div>
   </nav>
+  <!-- FIN DE BARRA DE NAVEGACION -->
+
+  {% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}"
+      role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  
 
   {% block content %}
 

@@ -4,7 +4,7 @@
 <main class="container">
     <div class="row">
         <form action="{% url 'newobjective' empleado.ficha %}" method="post"
-            class="card card-body shadow-lg p-3 m-5 bg-white rounded">
+            class="card card-body border-0 shadow mt-4">
             <h4 class="text-center fw-bolder fst-italic">Nuevo Objetivo para {{periodo}}</h4>
             <h5 class="text-center ">
                 {{empleado.nombre|title}} {{empleado.apellido|title}}
@@ -23,25 +23,31 @@
             </div>
 
 
+            {% comment %} Info para los usuarios indicando que los objetivos deben estar alineados con los objetivos estrategicos de la compañia {% endcomment %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Recuerda!</strong> Los objetivos deben estar alineados con los objetivos estratégicos de la compañía.
+                <br>Si no sabes cuales son los objetivos estratégicos de la compañía, puedes consultarlos en el <a class="alert-link" href="{% url 'companyobjectives' %}" target="_blank">siguiente enlace</a>.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+
+
+
 
 
             {% csrf_token %}
+           {% for field in form %}
             <div class="mb-3">
-                <label for="texto" class="form-label">Texto</label>
-                <textarea class="form-control" id="texto" name="texto" rows="3"></textarea>
-                
+                {{field.label_tag}}
+                {{field}}
+                {% if field.help_text %}
+                <small class="text-muted">{{field.help_text}}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                <div class="alert alert-danger">{{error}}</div>
+                {% endfor %}
             </div>
-
-            <div class="mb-3">
-                <label for="tipo" class="form-label">Tipo</label>
-                <select class="form-select" id="tipo" name="tipo">
-                    {% for tipo in tipos %}
-                    <option value="{{tipo.id}}">{{tipo}}</option>
-                    {% endfor %}
-                </select>
-                
-            </div>
-
+            {% endfor %}
             <div class="d-flex justify-content-between mt-3">
                 <button type="submit" class="btn btn-lg btn-primary bi bi-plus-circle flex-grow-1 me-4">
                     Añadir Objetivo

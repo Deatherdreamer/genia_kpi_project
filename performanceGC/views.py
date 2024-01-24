@@ -18,6 +18,8 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 import pandas as pd    
 from django.views.generic import ListView
+from django.contrib import messages
+
 
 def index(request):
     return render(request, 'index.html')
@@ -246,21 +248,60 @@ def objectives(request, e_ficha):
 @login_required
 def createObjectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
-    periodo = Periodo.objects.last()
+    periodo = Periodo.objects.get(is_active=True)
+    if not empleado.distribucionObjetivos():
+        messages.error(request, 'ERROR. No se ha definido la distribución de objetivos para el empleado. Por favor, contacte al administrador del sistema.')        
+        
+        return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'GET':
         return render(request, 'crudObjectives.html', {
             'periodo': periodo,
             'empleado': empleado,
-            'tipos': empleado.distribucionObjetivos()})
+            'form': ObjectivesForm(empleado=empleado)            
+        })
     else:
-        form = ObjectivesForm(request.POST)
-        newObjective = form.save(commit=False)
-        newObjective.empleado = empleado
-        newObjective.periodo = Periodo.objects.last()
-        newObjective.createdBy = request.user
-        newObjective.save()
-
-        return redirect('objectives', e_ficha=empleado.ficha)
+        form = ObjectivesForm(request.POST or None, empleado=empleado)
+        if form.is_valid():
+            with transaction.atomic():
+                objetivo = form.save(commit=False)                
+                objetivo.empleado = empleado
+                objetivo.periodo = periodo
+                objetivo.createdBy = request.user
+                objetivo.save()
+                messages.success(request, 'Objetivo creado exitosamente.')
+                return redirect('objectives', e_ficha=empleado.ficha)
+        else:
+            return render(request, 'crudObjectives.html', {
+                'form': form,
+                'error': 'Ha ocurrido un error, intente de nuevo.',
+                'periodo': periodo,
+                'empleado': empleado,            
+            })
+    
+    
+    # if request.method == 'GET':
+    #     return render(request, 'crudObjectives.html', {
+    #         'periodo': periodo,
+    #         'empleado': empleado,
+    #         'tipos': empleado.distribucionObjetivos()})
+    # else:
+    #     form = ObjectivesForm(request.POST)
+    #     if form.is_valid():
+    #         newObjective = form.save(commit=False)
+    #         newObjective.empleado = empleado
+    #         newObjective.periodo = periodo
+    #         newObjective.save()
+    #         return redirect('objectives', e_ficha=empleado.ficha)
+    #     else:
+    #         return render(request, 'crudObjectives.html', {
+    #             'form': form,
+    #             'periodo': periodo,
+    #             'empleado': empleado,
+    #             'tipos': empleado.distribucionObjetivos(),
+    #             'error': 'Ha ocurrido un error, intente de nuevo.'
+    #         })
+            
+        
 
 @login_required
 def editObjectives(request, e_ficha, o_id):
@@ -1128,3 +1169,55 @@ def company_objectives_view(request):
         'periodo': periodo,
         'company_objectives': company_objectives
     })
+    
+@staff_member_required(login_url='signin')
+def company_objectives_add(request):
+    period = Periodo.objects.get(is_active=True)
+    if request.method == 'GET':
+        return render(request, 'company_objectives_add.html', {
+            'form': CompanyObjectivesForm(),
+            'periodo': period            
+        })
+    else:
+        form = CompanyObjectivesForm(request.POST)
+        if form.is_valid():            
+            newCompanyObjective = form.save(commit=False)
+            newCompanyObjective.period = period
+            newCompanyObjective.save()
+            messages.success(request, 'Objetivo agregado')
+            return redirect('companyobjectives')
+        else:
+            messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
+            return render(request, 'company_objectives_add.html', {
+                'form': form,
+                'periodo': period
+            })
+            
+@staff_member_required(login_url='signin')
+def company_objectives_edit(request, obj_id):
+    company_objective = get_object_or_404(Company_Objectives, pk=obj_id)
+    if request.method == 'GET':
+        return render(request, 'company_objectives_add.html', {
+            'form': CompanyObjectivesForm(instance=company_objective),
+            'company_objective': company_objective
+        })
+    else:
+        form = CompanyObjectivesForm(request.POST, instance=company_objective)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Objetivo actualizado')
+            return redirect('companyobjectives')
+        else:
+            messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
+            return render(request, 'company_objectives_add.html', {
+                'form': form,
+                'company_objective': company_objective
+            })
+
+@staff_member_required(login_url='signin')
+def company_objectives_delete(request, obj_id):
+    company_objective = get_object_or_404(Company_Objectives, pk=obj_id)
+    if request.method == 'POST':
+        company_objective.delete()
+        messages.success(request, 'Objetivo eliminado')
+    return redirect('companyobjectives')

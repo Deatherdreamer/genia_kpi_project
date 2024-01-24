@@ -1,13 +1,29 @@
 {% extends 'main.html' %}
 
 {% block content %}
-  <h1>Import Empleados</h1>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form-group">
-      <label for="empleados_file">Empleados File:</label>
-      <input type="file" name="empleados_file" id="empleados_file" class="form-control-file">
+<main class="container">
+  <section class="row justify-content-center">
+    <div class="col-md-9">
+
+      <form method="post" enctype="multipart/form-data" class="card card-body border-0 shadow mt-4">
+        <h4 class="text-center"> Importar Maestro de Empleados</h4>
+        {% comment %} ADVERTENCIA SOBRE SOBRESCRITURA DE DATOS {% endcomment %}
+        <div class="alert alert-warning" role="alert">
+          <h4 class="alert-heading">¡Atención!</h4>
+          <p class="mb-0">La importación de datos sobrescribirá los datos existentes en la base de datos.</p>
+        </div>
+        
+        {% csrf_token %}
+        <div class="form-group my-2">
+          <label for="empleados_file">Maestro de Empleados</label>
+          <input type="file" name="empleados_file" id="empleados_file" class="form-control">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Ejecutar</button>
+      </form>
     </div>
-    <button type="submit" class="btn btn-primary">Import</button>
-  </form>
+  </section>
+</main>
+  
+ 
 {% endblock %}
