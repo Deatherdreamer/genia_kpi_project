@@ -1,151 +1,158 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<main class="container-xxl">
-    <section class="row mt-4">
-        <div class="col-4">
-            <div class="card border-0 shadow">
-                <div class="card-header lead fw-bolder text-center bg-dark">
-                    <a href="{% url 'profile' empleado.ficha %}" class=" btn btn-dark bi bi-arrow-left">
-                        {{empleado|title}}</a>
+  <main class="container">
+    <section class="row justify-content-center">
+      <div class="col-md-4 my-4">
+        <div class="card border-0 shadow">
+          <div class="card-header lead fw-bolder text-center bg-dark">
+            <a href="{% url 'profile' empleado.ficha %}" class="btn btn-dark bi bi-arrow-left">{{ empleado|title }}</a>
+          </div>
 
-                </div>
-
-                <div class="card-body">
-
-                    <h5 class="text-center">{{periodo}}</h5>
-                    <!-- nuevo objetivo -->
-                    <div class="row ps-5 pe-5">
-                        <a href="{% url 'newobjective' empleado.ficha %}" class="btn btn-primary"><i
-                                class="bi bi-plus-circle"></i> Nuevo Objetivo</a>
-                    </div>
-
-
-
-
-                    <div class="chart-container mx-auto mt-4 mb-4"
-                        style="position: relative; max-width: 256px; height: auto;">
-                        <canvas id="completionChart"></canvas>
-                    </div>
-
-                    <div class="chart-container mx-auto mt-4"
-                        style="position: relative; max-width: 256px; height: auto;">
-                        <canvas id="typeChart"></canvas>
-                    </div>
-                </div>
-
+          <div class="card-body">
+            <h5 class="text-center">{{ periodo }}</h5>
+            <!-- nuevo objetivo -->
+            <div class="row ps-5 pe-5">
+              <a href="{% url 'newobjective' empleado.ficha %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Objetivo</a>
             </div>
 
-        </div>
-        <div class="col-8">
-            <div class="card card border-0 shadow">
-                <div class="card-header text-center text-bg-dark bg-dark">
-                    <div class="row">
-                        <div class="col">
-                            <h5 class="text-center  fst-italic"> Lista de Objetivos </h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-
-
-
-                    {% for obj in objetivos %}
-                    <div class="card m-4 border-dark">
-                        <div class="card-header lead fw-bolder text-bg-dark bg-dark">
-                            {{obj.texto}}
-                        </div>
-                        <div class="card-body ">
-                            <div class="row">
-                                <div class="col-8">
-                                    <div class="row mt-2">
-                                        <div class="col-4 fw-bold">
-                                            Creado por
-                                        </div>
-                                        <div class="col">
-                                            {{obj.createdBy.empleado}}
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-4 fw-bold">
-                                            Creado el
-                                        </div>
-                                        <div class="col">
-                                            {{obj.created|date:"d-m-Y"}}
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-4 fw-bold">
-                                            Tipo
-                                        </div>
-                                        <div class="col">
-                                            {{obj.tipo}}
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-4 fw-bold">
-                                            Actividades
-                                        </div>
-                                        <div class="col">
-                                            {{obj.detallesActividades.0}}
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-4 fw-bold">
-                                            Completadas
-                                        </div>
-                                        <div class="col">
-                                            {{obj.detallesActividades.1}}
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col">
-                                    <div class="progress mt-2" style="height: 50px;">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated {% if obj.porcentaje == 100 %} bg-success {% else %} bg-dark {% endif %} fw-bold"
-                                            role="progressbar" style="width: {{ obj.porcentaje|floatformat:0 }}%;"
-                                            aria-valuenow="{{empleado.objetivosPorcentaje.0}}" aria-valuemin="0"
-                                            aria-valuemax="100">
-                                            {{obj.porcentaje|floatformat}}%
-                                        </div>
-                                    </div>
-                                    <div class="mt-4 ">
-                                        <a href="{% url 'activities' empleado.ficha obj.id %}"
-                                            class="btn btn-dark w-100">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M8 12c-2.756 0-5-2.686-5-6s2.244-6 5-6 5 2.686 5 6-2.244 6-5 6zm0-10c-2.206 0-4 2.239-4 5s1.794 5 4 5 4-2.239 4-5-1.794-5-4-5zm0 7c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z" />
-                                                <path
-                                                    d="M8 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm0 1a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" />
-                                            </svg>
-                                            Detalles
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>                            
-
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="alert alert-warning" role="alert">
-                        No hay objetivos creados para este periodo
-                    </div>
-
-                    {% endfor %}
-                </div>
-
-
+            <div class="chart-container mx-auto mt-4 mb-4" style="position: relative; max-width: 256px; height: auto;">
+              <canvas id="completionChart"></canvas>
             </div>
-        </div>
 
+            <div class="chart-container mx-auto mt-4" style="position: relative; max-width: 256px; height: auto;">
+              <canvas id="typeChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8 my-4">
+        <div class="card card border-0 shadow">
+          <div class="card-header text-center text-bg-dark bg-dark">
+            <div class="row">
+              <div class="col">
+                <h4 class="text-center">Objetivos Generales</h4>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            {% for obj in objetivos %}
+              <div class="card border-1 mb-4 rounded-4 border-dark" style="--bs-bg-opacity: .2;">
+                <div class="card-body">
+                  <h5 class="card-title">{{ obj.texto }}</h5>
+                  <h6 class="card-subtitle mb-2 text-body-secondary">Creado por {{ obj.createdBy.empleado|title }} el {{ obj.created|date:'d-m-Y' }}</h6>
+                  <p class="card-text">{{ obj.tipo }}</p>
+                  <div class="row justify-content-start">
+                    <div class="col-2">
+                        <div class="text-center">
+                            <p class="card-text m-0 fs-4" data-toggle="tooltip" title=" Objetivos especificos">
+                                <i class="bi bi-bullseye"></i>
+                            </p>
+                            <p class="card-text m-0 fs-5">{{ obj.detallesActividades.0 }}</p>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="text-center">
+                            <p class="card-text m-0 fs-4" data-toggle="tooltip" title="Objetivos completados">
+                                <i class="bi bi-clipboard-check"></i>
+                            </p>
+                            <p class="card-text m-0 fs-5">{{ obj.detallesActividades.1 }}</p>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="text-center">
+                            <p class="card-text m-0 fs-4" data-toggle="tooltip" title="Porcentaje">
+                                <i class="bi bi-percent"></i>
+                            </p>
+                            <p class="card-text m-0 fs-5">{{ obj.porcentaje|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="text-center">
+                            <p class="card-text m-0 fs-4" data-toggle="tooltip" title="Notas">
+                                <i class="bi bi-chat"></i>
+                            </p>
+                            <p class="card-text m-0 fs-5">{{ obj.notes.count }}</p>
+                        </div>
+                    </div>
+                    <div class="col d-flex flex-column">
+                        <div class="ml-auto d-flex justify-content-end align-items-end mt-auto">
+                            <div class="ps-1">
+                                <a href="{% url 'activities' empleado.ficha obj.id %}" class="btn btn-info text-center">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </div>
+                            <div class="ps-1">
+                                <a href="{% url 'editobjective' empleado.ficha obj.id %}" class="btn btn-warning text-center">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </div>
+                            <div class="ps-1">
+                                <a href="{% url 'discardobjective' empleado.ficha obj.id %}" class="btn btn-danger text-center">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              {% comment %} <div class="card m-4 border-dark">
+                <div class="card-header lead fw-bolder text-bg-dark bg-dark">{{ obj.texto }}</div>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="row mt-2">
+                        <div class="col-4 fw-bold">Creado por</div>
+                        <div class="col">{{ obj.createdBy.empleado }}</div>
+                      </div>
+                      <div class="row mt-2">
+                        <div class="col-4 fw-bold">Creado el</div>
+                        <div class="col">{{ obj.created|date:'d-m-Y' }}</div>
+                      </div>
+                      <div class="row mt-2">
+                        <div class="col-4 fw-bold">Tipo</div>
+                        <div class="col">{{ obj.tipo }}</div>
+                      </div>
+                      <div class="row mt-2">
+                        <div class="col-4 fw-bold">Actividades</div>
+                        <div class="col">{{ obj.detallesActividades[0] }}</div>
+                      </div>
+                      <div class="row mt-2">
+                        <div class="col-4 fw-bold">Completadas</div>
+                        <div class="col">{{ obj.detallesActividades[1] }}</div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="progress mt-2" style="height: 50px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated {% if obj.porcentaje == 100 %}{% endif %} fw-bold" role="progressbar" style="width: {{ obj.porcentaje|floatformat:0 }}%;" aria-valuenow="{{ empleado.objetivosPorcentaje[0] }}" aria-valuemin="0" aria-valuemax="100">{{ obj.porcentaje|floatformat }}%</div>
+                      </div>
+                      <div class="mt-4">
+                        <a href="{% url 'activities' empleado.ficha obj.id %}" class="btn btn-dark w-100">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                            <path d="M8 12c-2.756 0-5-2.686-5-6s2.244-6 5-6 5 2.686 5 6-2.244 6-5 6zm0-10c-2.206 0-4 2.239-4 5s1.794 5 4 5 4-2.239 4-5-1.794-5-4-5zm0 7c-1.105 0-2-.895-2-2s.895-2 2-2 2 .895 2 2-.895 2-2 2z" />
+                            <path d="M8 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zm0 1a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" />
+                          </svg>Detalles
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> {% endcomment %}
+              {% empty %}
+              <div class="alert alert-warning" role="alert">No hay objetivos creados para este periodo</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </section>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-
-<script>
+  <script>
     // Register the plugin to all charts:
     Chart.register(ChartDataLabels);
 
@@ -243,6 +250,9 @@
     {% endif %}
 </script>
 
-
-
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+</script>
 {% endblock %}

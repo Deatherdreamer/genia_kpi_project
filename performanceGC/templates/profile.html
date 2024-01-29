@@ -52,7 +52,7 @@
                     </h6>
                 </div>
             </div>
-            <div class="card card-body border-0 shadow mt-3">
+            <div class="card card-body border-0 shadow-lg mt-3">
                 <table class="table table-sm table-borderless">
                     <tbody>
                         <tr>
@@ -157,9 +157,9 @@
                 <div class="tab-content h-100" id="myTabContent">
                     <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
                         tabindex="0">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="card card-body border-0 shadow">
+                        <div class="row justify-content-center mt-2">
+                            <div class="col-md p-1">
+                                <div class="card card-body border-1 border-secondary rounded-4">
                                     <table class="table table-sm table-borderless">
                                         <tbody>
                                             <tr>
@@ -189,48 +189,58 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-md-4">
-                                <div class="card card-body border-0 shadow">
+                        <div class="row justify-content-center my-2">
+                            <div class="col-md px-1">
+                                <div class="card card-body border-1 border-secondary rounded-4">
                                     <h6 class="text-center">Porcentaje del Nivel</h6>
                                     <div class="chart-container">
                                         <canvas id="distributionChart"></canvas>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="card card-body border-0 shadow">
+                            <div class="col-md px-1">
+                                <div class="card card-body border-1 border-secondary rounded-4">
                                     <h6 class="text-center">Distribucion de objetivos</h6>
                                     <div class="chart-container">
                                         <canvas id="distributionChart2"></canvas>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card card-body border-0 shadow">
+                            </div>                           
+                        </div>
+                        <div class="row justify-content-center my-2">
+                            <div class="col-md px-1">
+                                <div class="card card-body border-1 border-secondary rounded-4">
                                     <h6 class="text-center">Estatus de objetivos</h6>
                                     <div class="chart-container">
                                         <canvas id="distributionChart3"></canvas>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            <div class="col-md px-1">
+                                <div class="card card-body border-1 border-secondary rounded-4">
+                                    <h6 class="text-center">Objetivos por Tipo</h6>
+                                    <div class="chart-container">
+                                        <canvas id="typeChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div> 
                     </div>
                     <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
                         tabindex="0">
-                        <div class="row justify-content-center mt-3">
-                            <div class="col-sm-3">
-                                <a class="btn btn-primary" href="{% url 'objectives' empleado.ficha %}">Ver
-                                    Objetivos</a>
+                        <div class="row justify-content-center mt-2">
+                            <div class="col-sm-6 text-center">
+                                <a class="btn btn-primary" href="{% url 'objectives' empleado.ficha %}">Ver Objetivos</a>
                             </div>
-                            <div class="col-sm-3">
-                                <a class="btn btn-primary" href="{% url 'newobjective' empleado.ficha %}">Añadir
-                                    Objetivo</a>
+                            <div class="col-sm-6 text-center">
+                                <a class="btn btn-primary" href="{% url 'newobjective' empleado.ficha %}">Añadir Objetivo</a>
                             </div>
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-sm-12">
-                                <div class="card card-body border-0 shadow p-1">
+                        <div class="row my-2">
+                            <div class="col-md p-1">
+                                <div class="card card-body border-1 border-secondary rounded-4 p-0">
+                                    <h6 class="text-center mt-2 mb-0">Porcentaje</h6>
                                     <div class="progress m-3" style="height: 40px;">
                                         <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark lead fw-bold"
                                             role="progressbar" aria-label="Example 20px high"
@@ -244,8 +254,8 @@
                             </div>
                         </div>
                         <div class="row justify-content-between">
-                            <div class="col-md-6">
-                                <div class="card card-body border-0 shadow my-2 h-100">
+                            <div class="col-md px-1">
+                                <div class="card card-body border-1 border-secondary rounded-4 my-1 h-100">
                                     <h6 class="text-center">Distribucion de Objetivos</h6>
                                     <table class="table table-borderless ">
                                         <tbody>
@@ -264,8 +274,8 @@
 
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card card-body border-0 shadow my-2 h-100">
+                            <div class="col-md px-1">
+                                <div class="card card-body border-1 border-secondary rounded-4 my-1 h-100">
                                     <h6 class="text-center">Cantidad de Objetivos</h6>
                                     <table class="table table-borderless ">
                                         <thead>
@@ -862,7 +872,56 @@
             }
         }
     });
-</script>
+    
+    const ctx4 = document.getElementById('typeChart');
+    new Chart(ctx4, {
+        type: 'doughnut',
+        data: {
+            labels: [
+            {% for tipo in empleado.distribucionObjetivosCantidad %}
+                '{{tipo.tipo}}',
+            {% endfor %}
+            ],
+            datasets: [{
+                axis: 'x',
+                label: 'TIPO',
+                data: [
+                {% for tipo in empleado.distribucionObjetivosCantidad %}
+                    '{{tipo.cantidad}}',
+                {% endfor %}],
+                fill: false,
+                backgroundColor: [
 
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(187,33,36,0.8)'
+                    
+                ],
+                borderColor: [
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(54, 162, 235)',
+                    'rgba(187,33,36)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'x',
+            plugins: {
+                datalabels: { // This code is used to display data values
+                    color: 'black',
+                    formatter: Math.round,
+                    font: {
+                        weight: 'bold',
+                        size: 16
+                    }
+                }
+            }
+        }
+    });
+
+</script>
 
 {% endblock %}

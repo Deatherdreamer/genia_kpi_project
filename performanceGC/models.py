@@ -234,13 +234,13 @@ class Empleado(models.Model):
             return 0
 
     def cantidadObjetivos(self):
-        return self.objetivos_set.filter(periodo=Periodo.objects.last()).count()
+        return self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True)).count()
     
     def cantidadObjetivosTotales(self):
         return self.objetivos_set.all().count()
     
     def cantidadActividades(self):
-        objetivos = self.objetivos_set.all()
+        objetivos = self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True))
         cantidad = 0
         for objetivo in objetivos:
             cantidad += objetivo.actividades_set.all().count()
@@ -248,21 +248,22 @@ class Empleado(models.Model):
 
     def objetivosPorcentaje(self):
         try:
-            objetivo = self.objetivos_set.all()
+            objetivo = self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True))
             valor = 0
             completo = 0
             incompletas = 0
             totalActividades = 0
             totalActividadesCompletas = 0
+            cantidad = self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True)).count()
             for obj in objetivo:
                 valor += obj.porcentaje()
                 if (obj.porcentaje() >= float(100)):
                     completo += 1
                 totalActividades += obj.detallesActividades()[0]
                 totalActividadesCompletas += obj.detallesActividades()[1]
-            valor /= self.objetivos_set.count()
-            incompletas = self.objetivos_set.count() - completo
-            return valor, self.objetivos_set.count(), completo, totalActividades, totalActividadesCompletas, incompletas
+            valor /= cantidad
+            incompletas = cantidad - completo
+            return valor, cantidad, completo, totalActividades, totalActividadesCompletas, incompletas
         except:
             return 0, 0, 0, 0, 0, 0
         
@@ -283,7 +284,7 @@ class Empleado(models.Model):
             resultado = {}
             resultado['tipo'] = dist.tipo 
             resultado['peso'] = dist.peso
-            cantidadObjetivos = self.objetivos_set.filter(tipo=dist).count()
+            cantidadObjetivos = self.objetivos_set.filter(tipo=dist, periodo=Periodo.objects.get(is_active=True)).count()
             resultado['cantidad'] = cantidadObjetivos
             resultados.append(resultado)
 
@@ -364,9 +365,6 @@ class Announcements(models.Model):
     
     def __str__(self):
         return self.title
-    
-    
-    
 
 class Objetivos(models.Model):
     periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE)
@@ -392,7 +390,18 @@ class Objetivos(models.Model):
 
     def actividades(self):
         return self.actividades_set.all()
+    
+    def notes(self):
+        return self.objectives_notes_set.all()
+    
 
+class Objectives_notes(models.Model):
+    objetivo = models.ForeignKey(Objetivos, on_delete=models.CASCADE)
+    note = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.objetivo} - {self.note}'
 
 class Actividades(models.Model):
     objetivo = models.ForeignKey(Objetivos, on_delete=models.CASCADE)

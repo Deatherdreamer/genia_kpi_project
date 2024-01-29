@@ -1,35 +1,26 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
+  <main class="container">
+    <div class="row justify-content-center">
+      <div class="col-md">
+        <form action="{% url 'newactivity' empleado.ficha objetivo.id %}" method="post" class="card card-body border-0 shadow mt-5">
+          <h3 class="text-center fw-bolder fst-italic">{{ objetivo.texto }}</h3>
+          <h4 class="text-center fw-bolder fst-italic">Nueva actividad</h4>
+          <h5 class="text-center">{{ empleado.nombre|title }} {{ empleado.apellido|title }}</h5>
 
-<main class="container">
-    <div class="row">
-        <form action="{% url 'newactivity' empleado.ficha objetivo.id %}" method="post"
-            class="card card-body shadow-lg p-3 m-5 bg-white rounded">
-            <h3 class="text-center fw-bolder fst-italic">{{objetivo.texto}}</h4>
-                <h4 class="text-center fw-bolder fst-italic">Nueva actividad</h4>
-                <h5 class="text-center ">
-                    {{empleado.nombre|title}} {{empleado.apellido|title}}
-                </h5>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="{{ form.texto.id_for_label }}" class="form-label">Texto</label>
+            {{ form.texto }}
+          </div>
 
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="{{ form.texto.id_for_label }}" class="form-label">Texto</label>
-                    {{ form.texto }}
-                </div>
-
-                <div class="d-flex justify-content-between mt-3">
-                    <button type="submit" class="btn btn-lg btn-primary bi bi-plus-circle flex-grow-1 me-4">
-                        Añadir Actividad
-                    </button>
-                    <a href="{% url 'activities' empleado.ficha objetivo.id %}"
-                        class="btn btn-lg btn-danger bi bi-x-circle flex-grow-1">
-                        Cancelar</a>
-                </div>
-
+          <div class="d-flex justify-content-between mt-3">
+            <button type="submit" class="btn btn-lg btn-primary bi bi-plus-circle flex-grow-1 me-4">Añadir Actividad</button>
+            <a href="{% url 'activities' empleado.ficha objetivo.id %}" class="btn btn-lg btn-danger bi bi-x-circle flex-grow-1">Cancelar</a>
+          </div>
         </form>
+      </div>
     </div>
-</main>
-
-
+  </main>
 {% endblock %}

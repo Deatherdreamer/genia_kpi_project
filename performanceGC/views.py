@@ -1,15 +1,12 @@
-import io
+
 import os
 from django.conf import settings
-
-from django.templatetags.static import static
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UserCreationForm
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required 
-from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.db import transaction
 from .models import *
@@ -237,8 +234,8 @@ def editPeriodo(request, id):
 @login_required
 def objectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
-    periodo = Periodo.objects.last()
-    objetivos = empleado.objetivos_set.filter(periodo=periodo)
+    periodo = Periodo.objects.get(is_active=True)
+    objetivos = empleado.objetivos_set.filter(periodo=periodo)   
     return render(request, 'objectives.html', {
         'empleado': empleado,
         'periodo': periodo,
@@ -307,6 +304,9 @@ def createObjectives(request, e_ficha):
 def editObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    if request.user != objetivo.createdBy:
+        messages.error(request, 'ERROR. No se puede editar el objetivo porque no fue creado por usted.')
+        return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'GET':
         return render(request, 'editObjetive.html', {
             'objetivo': objetivo,
@@ -323,6 +323,9 @@ def editObjectives(request, e_ficha, o_id):
 def deleteObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    if request.user != objetivo.createdBy:
+        messages.error(request, 'ERROR. No se puede eliminar el objetivo porque no fue creado por usted.')
+        return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'POST':
         objetivo.delete()
     return redirect('objectives', e_ficha=empleado.ficha)

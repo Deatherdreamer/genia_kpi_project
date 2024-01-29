@@ -26,6 +26,7 @@ admin.site.register(Evaluacion_PNS)
 admin.site.register(Evaluacion_PNS_BPO)
 admin.site.register(Announcements)
 admin.site.register(Company_Objectives)
+admin.site.register(Objectives_notes)
 
 
 # admin.site.register(ValoresCompetencias)

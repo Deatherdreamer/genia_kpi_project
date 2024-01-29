@@ -1,63 +1,49 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<main class="container">
+  <main class="container">
     <div class="row">
-        <form action="{% url 'newobjective' empleado.ficha %}" method="post"
-            class="card card-body border-0 shadow mt-4">
-            <h4 class="text-center fw-bolder fst-italic">Nuevo Objetivo para {{periodo}}</h4>
-            <h5 class="text-center ">
-                {{empleado.nombre|title}} {{empleado.apellido|title}}
-            </h5>
+      <form action="{% url 'newobjective' empleado.ficha %}" method="post" class="card card-body border-0 shadow mt-4">
+        <h4 class="text-center fw-bolder fst-italic">Nuevo Objetivo para {{ periodo }}</h4>
+        <h5 class="text-center">{{ empleado.nombre|title }} {{ empleado.apellido|title }}</h5>
 
-            {% comment %} Mensaje de alerta para recordar a los usuarios que el objetivo debe ser de tipo smart {% endcomment %}
+        {% comment %}Mensaje de alerta para recordar a los usuarios que el objetivo debe ser de tipo smart{% endcomment %}
 
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Recuerda!</strong> Los objetivos deben ser de tipo SMART.
-                <br>SMART es un acrónimo en inglés que significa: Specific, Measurable, Achievable, Relevant y Time-bound.
-                <br>En español: Específico, Medible, Alcanzable, Relevante y Limitado en el Tiempo.
-                <br>Un objetivo SMART es un objetivo que cumple con estas 5 características.
-                <br>Si no sabes lo que es SMART, puedes consultar nuestras <a class="alert-link" href="{% url 'faq' %}">preguntas frequentes</a>.
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <strong>Recuerda!</strong> Los objetivos deben ser de tipo SMART.
+          <br />SMART es un acrónimo en inglés que significa: Specific, Measurable, Achievable, Relevant y Time-bound.
+          <br />En español: Específico, Medible, Alcanzable, Relevante y Limitado en el Tiempo.
+          <br />Un objetivo SMART es un objetivo que cumple con estas 5 características.
+          <br />Si no sabes lo que es SMART, puedes consultar nuestras <a class="alert-link" href="{% url 'faq' %}">preguntas frequentes</a>.
 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
+        {% comment %}Info para los usuarios indicando que los objetivos deben estar alineados con los objetivos estrategicos de la compañia{% endcomment %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          <strong>Recuerda!</strong> Los objetivos deben estar alineados con los objetivos estratégicos de la compañía.
+          <br />Si no sabes cuales son los objetivos estratégicos de la compañía, puedes consultarlos en el <a class="alert-link" href="{% url 'companyobjectives' %}" target="_blank">siguiente enlace</a>.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-            {% comment %} Info para los usuarios indicando que los objetivos deben estar alineados con los objetivos estrategicos de la compañia {% endcomment %}
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <strong>Recuerda!</strong> Los objetivos deben estar alineados con los objetivos estratégicos de la compañía.
-                <br>Si no sabes cuales son los objetivos estratégicos de la compañía, puedes consultarlos en el <a class="alert-link" href="{% url 'companyobjectives' %}" target="_blank">siguiente enlace</a>.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            
-
-
-
-
-
-            {% csrf_token %}
-           {% for field in form %}
-            <div class="mb-3">
-                {{field.label_tag}}
-                {{field}}
-                {% if field.help_text %}
-                <small class="text-muted">{{field.help_text}}</small>
-                {% endif %}
-                {% for error in field.errors %}
-                <div class="alert alert-danger">{{error}}</div>
-                {% endfor %}
-            </div>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="mb-3">
+            <label class="form-label fs-5 fw-bolder">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <small class="text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="alert alert-danger">{{ error }}</div>
             {% endfor %}
-            <div class="d-flex justify-content-between mt-3">
-                <button type="submit" class="btn btn-lg btn-primary bi bi-plus-circle flex-grow-1 me-4">
-                    Añadir Objetivo
-                </button>
-                <a href="{% url 'objectives' empleado.ficha %}"
-                    class="btn btn-lg btn-danger bi bi-x-circle flex-grow-1">
-                    Cancelar</a>
-            </div>
-
-        </form>
+          </div>
+        {% endfor %}
+        <div class="d-flex justify-content-between mt-3">
+          <button type="submit" class="btn btn-lg btn-primary bi bi-plus-circle flex-grow-1 me-4">Añadir Objetivo</button>
+          <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-danger bi bi-x-circle flex-grow-1">Cancelar</a>
+        </div>
+      </form>
     </div>
-</main>
+  </main>
 {% endblock %}
