@@ -110,7 +110,7 @@ class ActivitiesForm(forms.ModelForm):
         model = Actividades
         fields = ['texto']
         widgets = {
-            'texto': forms.Textarea(attrs={'class': 'form-control'}),
+            'texto': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
         }
 
 
@@ -239,3 +239,13 @@ class CompanyObjectivesForm(forms.ModelForm):
             'description': 'Descripcion',
         }
         
+class ObjectivesNotesForm(forms.ModelForm):
+    class Meta:
+        model = Objectives_notes
+        fields = ['note']
+        widgets = {
+            'note': forms.Textarea(attrs={'class': 'form-control', 'rows': '3'})
+        }
+        labels = {
+            'note': 'Texto de la Nota',
+        }

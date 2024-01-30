@@ -1,178 +1,260 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
+  <main class="container">
+    <section class="row mt-4">
+      <div class="col-12">
+        <div class="card border-0 shadow">
+          <div class="card-body">
+            <h4 class="card-title text-center">Objetivo General</h4>
+            <h5 class="card-subtitle mb-2">{{ objetivo.texto }}</h5>
+            <p class="card-text">Empleado: {{ empleado|title }}</p>
+            <p class="card-text">{{ objetivo.periodo }}</p>
+            <p class="card-text">Tipo: {{ objetivo.tipo }}</p>
+          </div>
+          <div class="card-footer">
+            <div class="row">
+              <div class="col">
+                <a href="{% url 'newactivity' empleado.ficha objetivo.id %}" class="btn btn-lg btn-primary bi bi-plus-circle w-100">Añadir</a>
+              </div>
+              <div class="col">
+                <a href="{% url 'editobjective' empleado.ficha objetivo.id %}" class="btn btn-lg btn-warning bi bi-pencil-square w-100">Editar</a>
+              </div>
+              <div class="col">
+                <form action="{% url 'discardobjective' empleado.ficha objetivo.id %}" method="post" class="">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-lg btn-danger bi bi-trash w-100" onclick="return confirmDelete();">Eliminar</button>
+                </form>
+              </div>
+
+              <div class="col">
+                <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-secondary bi bi-arrow-return-left w-100">Regresar</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="row mt-2">
+      <div class="col-md-8">
+        <div class="card card-body border-0 shadow">
+          <h5 class="card-title text-center">Objetivos Especificos <span class="badge bg-secondary">{{ objetivo.actividades|length }}</span></h5>
+          {% for act in objetivo.actividades %}
+            <div class="card my-1">
+              <div class="card-body border-start border-5 rounded-2 border-{% if act.estado %}success{% else %}danger{% endif %}">
+                <h6 class="card-title lead">{{ act.texto }}</h6>
+                <h6 class="card-subtitle mb-2 text-body-secondary">Asignado por: {{ act.createdBy.empleado|title }}</h6>
+                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha de creación: {{ act.created|date:"d/m/Y" }}</h6>
+                {% if act.estado %}
+                  <h6 class="card-subtitle mb-2 text-body-secondary">Fecha de completado: {{ act.updated|date:"d/m/Y" }}</h6>
+                {% endif %}
+                
+                <p class="card-text">
+                  {% if act.estado %}
+                    <span class="badge bg-success">Completado</span>
+                  {% else %}
+                    <span class="badge bg-danger">Pendiente</span>
+                  {% endif %}
+                </p>
+                <div class="d-flex">
+                    <form action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}" method="post" class="pe-1">
+                      {% csrf_token %}
+                      <button class="btn btn-outline-{% if act.estado %}danger{% else %}success{% endif %}" type="submit">
+                        {% if act.estado %}
+                        <i class="bi bi-x-circle"></i>
+                          
+                        {% else %}
+                        <i class="bi bi-check-circle"></i>
+                          
+                        {% endif %}
+                      </button>
+                    </form>
+                      <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}" method="post" class="pe-1">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-dark" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>
+                      </form>
+                      <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}" class="btn btn-outline-dark"><i class="bi bi-pencil-square"></i></a>
+                  </div> 
+
+              </div>
+            </div>
+            {% empty %}
+              <p class="lead text-center">No hay objetivos especificos creados para este objetivo, añada uno.</p>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-body border-0 shadow">
+          <h5 class="card-title text-center">Notas <span class="badge bg-secondary">{{ objetivo.notes|length }}</span> </h5>
+            <form action="{% url 'new_note' empleado.ficha objetivo.id %}" method="post" class="mb-2">
+              {% csrf_token %}
+              {% for field in form %}
+                <div class="mb-3">
+                  {{ field.label_tag }}
+                  {{ field }}
+                  {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <p style="color: red">{{ error }}</p>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Agregar...</button>
 
 
-<main class="container">
+              
+              </div>
+            </form>
+
+            {% for note in objetivo.notes %}
+                <div class="card my-1">
+                <div class="card-body border-start border-5 rounded-2 border-primary">
+                    <h6 class="card-title">{{ note.note }}</h6>
+                    <p class="m-0"><small class="card-subtitle text-body-secondary">{{ note.created_by.empleado|title }}</small></p>
+                    <small class="card-subtitle text-body-secondary">{{ note.created_at|date:"d/m/Y" }}</small>
+                    <div class="d-flex">
+                        <form action="{% url 'discard_note' empleado.ficha objetivo.id note.id %}" method="post" class="pe-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-dark" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+                </div>
+            {% empty %}
+                <p class="lead text-center">Sin notas...</p>
+            {% endfor %}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  {% comment %}
+  <main class="container">
     <div class="card border-0 shadow mt-4">
-        <div class="card-header text-bg-dark bg-dark">
-            <h5 class="lead fw-bold">OBJETIVO</h5>
-        </div>
-        <div class="card-body">
-            <h4 class=" lead fs-4">{{objetivo.texto}}</h4>
-
-        </div>
+      <div class="card-header text-bg-dark bg-dark">
+        <h5 class="lead fw-bold">OBJETIVO</h5>
+      </div>
+      <div class="card-body">
+        <h4 class="lead fs-4">{{ objetivo.texto }}</h4>
+      </div>
     </div>
     <section class="row mt-4">
+      <div class="col-4">
+        <div class="card border-0 shadow">
+          <div class="card-header text-bg-dark bg-dark">
+            <h5 class="lead fw-bold">DETALLES</h5>
+          </div>
 
+          <div class="card-body p-0">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <th scope="row">Empleado</th>
+                  <td>{{ empleado }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Periodo</th>
+                  <td>{{ objetivo.periodo }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Tipo</th>
+                  <td>{{ objetivo.tipo }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Actividades</th>
+                  <td>{{ objetivo.detallesActividades[0] }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Completadas</th>
+                  <td>{{ objetivo.detallesActividades[1] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="col-4">
-            <div class="card border-0 shadow">
-                <div class="card-header text-bg-dark bg-dark">
-                    <h5 class="lead fw-bold">DETALLES</h5>
+          <div class="card-footer">
+            <!-- btn to edit objetivo -->
+            {% if request.user.empleado == empleado %}
+              <a href="{% url 'editobjective' empleado.ficha objetivo.id %}" class="btn btn-lg btn-warning bi bi-pencil-square mb-2 w-100">Editar Objetivo</a>
+              <form action="{% url 'discardobjective' empleado.ficha objetivo.id %}" method="post" class="mb-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-lg btn-danger bi bi-trash w-100" onclick="return confirmDelete();">Eliminar Objetivo</button>
+              </form>
+            {% endif %}
+            <a href="{% url 'newactivity' empleado.ficha objetivo.id %}" class="btn btn-lg btn-primary bi bi-plus-circle mb-2 w-100">Añadir Actividad</a>
 
-                </div>
-
-                <div class="card-body p-0">
-                    <table class="table">
-                        <tbody>
-                            <tr>
-                                <th scope="row">Empleado</th>
-                                <td>{{empleado}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Periodo</th>
-                                <td>{{objetivo.periodo}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Tipo</th>
-                                <td>{{objetivo.tipo}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Actividades</th>
-                                <td>{{objetivo.detallesActividades.0}}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Completadas</th>
-                                <td>{{objetivo.detallesActividades.1}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="card-footer">
-                    <!-- btn to edit objetivo -->
-                    {% if request.user.empleado == empleado %}                    
-                    <a href="{% url 'editobjective' empleado.ficha objetivo.id %}"
-                        class="btn btn-lg btn-warning bi bi-pencil-square mb-2 w-100">
-                        Editar Objetivo
-                    </a>
-                    <form action="{% url 'discardobjective' empleado.ficha objetivo.id %}" method="post" class="mb-2">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-lg btn-danger bi bi-trash w-100" onclick="return confirmDelete();">
-                            Eliminar Objetivo
-                        </button>
-                    </form>
-
-                    {% endif %}
-                    <a href="{% url 'newactivity' empleado.ficha objetivo.id %}"
-                        class="btn btn-lg btn-primary bi bi-plus-circle mb-2 w-100">
-                        Añadir Actividad
-                    </a>
-
-                    <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-outline-secondary bi bi-x-circle w-100">
-                        Regresar
-                    </a>
-                </div>
-
-            </div>
-
+            <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-outline-secondary bi bi-x-circle w-100">Regresar</a>
+          </div>
         </div>
-        <div class="col ">
-            <div class="card border-0 shadow">
-                <div class="card-header text-bg-dark bg-dark">
-                    <h5 class="lead fw-bold">ACTIVIDADES</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table align-middle" style="width:100%">
+      </div>
+      <div class="col">
+        <div class="card border-0 shadow">
+          <div class="card-header text-bg-dark bg-dark">
+            <h5 class="lead fw-bold">ACTIVIDADES</h5>
+          </div>
+          <div class="card-body">
+            <table class="table align-middle" style="width:100%">
+              <tbody>
+                {% for act in objetivo.actividades %}
+                  {% if act.estado %}
+                    <tr class="bg-success text-bg-dark table-group-divider">
+                      <th class="fw-bold fs-5" style="width:65%">{{ act.texto }}</th>
+                      <td style="width:10%">
+                        <form action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}" method="post">
+                          {% csrf_token %}
 
+                          <button class="btn btn-light" type="submit">Desmarcar</button>
+                        </form>
+                      </td>
+                      <td>
+                        {% if act.createdBy == user %}
+                          <div class="d-flex justify-content-between">
+                            <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}" method="post">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-light" onclick="confirmDelete()"><i class="bi bi-trash"></i></button>
+                            </form>
+                            <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}" class="btn btn-light"><i class="bi bi-pencil-square"></i></a>
+                          </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% else %}
+                    <tr class="bg-danger text-bg-dark table-group-divider">
+                      <th class="fw-bold fs-5" style="width:75%">{{ act.texto }}</th>
+                      <td style="width:15%">
+                        <form class="" action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}" method="post">
+                          {% csrf_token %}
 
-                        <tbody>
-                            {% for act in objetivo.actividades %}
-                            {% if act.estado %}
-                            <tr class="bg-success text-bg-dark  table-group-divider">
-                                <th class="fw-bold fs-5" style="width:65%">{{act.texto}}</th>
-                                <td style="width:10%">
-                                    <form action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}"
-                                        method="post">
-                                        {% csrf_token %}
-
-                                        <button class="btn btn-light" type="submit">
-                                            Desmarcar
-                                        </button>
-                                    </form>
-                                </td>
-                                <td>
-                                    {% if act.createdBy == user %}
-                                    <div class="d-flex justify-content-between">
-                                        <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}"
-                                            method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-light" onclick="confirmDelete()">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                        <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}"
-                                            class="btn btn-light">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                    </div>
-
-
-                                    {% endif %}
-
-
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr class="bg-danger text-bg-dark  table-group-divider">
-                                <th class="fw-bold fs-5" style="width:75%">{{act.texto}}</th>
-                                <td style="width:15%">
-                                    <form class=""
-                                        action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}"
-                                        method="post">
-                                        {% csrf_token %}
-
-                                        <button class="btn btn-light" type="submit">
-                                            Completar
-                                        </button>
-                                    </form>
-                                </td>
-                                <td>
-                                    {% if act.createdBy == user %}
-                                    <div class="d-flex justify-content-between">
-                                        <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}"
-                                            method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-light" onclick="return confirmDelete();">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                        <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}"
-                                            class="btn btn-light">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                    </div>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endif %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                          <button class="btn btn-light" type="submit">Completar</button>
+                        </form>
+                      </td>
+                      <td>
+                        {% if act.createdBy == user %}
+                          <div class="d-flex justify-content-between">
+                            <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}" method="post">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-light" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>
+                            </form>
+                            <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}" class="btn btn-light"><i class="bi bi-pencil-square"></i></a>
+                          </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
-
+      </div>
     </section>
-</main>
+  </main> {% endcomment %}
 
-<script>
+  <script>
     function confirmDelete() {
-        return confirm('¿Está seguro de eliminar este Elemento?');
+      return confirm('¿Está seguro de eliminar este Elemento?')
     }
-</script>
-
-
-
+  </script>
 {% endblock %}

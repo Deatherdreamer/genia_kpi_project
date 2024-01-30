@@ -119,27 +119,20 @@
       height: 100vh;
     }
 
-  {% comment %} body::before {
-    content: "";
-    background: url("{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}");
-    opacity: 0.4;  /* Adjust opacity here */
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: absolute;
-    z-index: -1;   
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
-  }
-   {% endcomment %}
+    .obj-details:hover{
+      background-color: #fafafa;
+      transform: scale(1.1);
+      transition: transform 0.2s ease-in-out;
+
+
+    }
+
   </style>
 </head>
 
-<body class="bg-light bg-image" >
+<body class="bg-image" style="background-color: #f1f1f1; ">
   <!-- BARRA DE NAVEGACION -->
-  <nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark py-1 " data-bs-theme="dark">
+  <nav class="navbar navbar-expand-lg bg-black border-bottom border-bottom-dark py-1 " data-bs-theme="dark">
     <div class="container">
       <a class="navbar-brand  py-0" href="{% url 'index' %}">
         <img src="{% static 'logo.png' %}" alt="GeniaCare" height="40" class="logo">
@@ -204,6 +197,7 @@
 
               {% endif %}
             </ul>
+
           </li>
           {% endif %}
 
@@ -324,7 +318,11 @@
     })
   </script>
 
-
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+</script>
 </body>
 
 </html>

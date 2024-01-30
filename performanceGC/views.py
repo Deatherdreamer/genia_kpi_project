@@ -326,6 +326,9 @@ def deleteObjectives(request, e_ficha, o_id):
     if request.user != objetivo.createdBy:
         messages.error(request, 'ERROR. No se puede eliminar el objetivo porque no fue creado por usted.')
         return redirect('objectives', e_ficha=empleado.ficha)
+    if objetivo.porcentaje() > 0:
+        messages.error(request, 'ERROR. No se puede eliminar el objetivo se ha asignado un porcentaje de cumplimiento.')
+        return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'POST':
         objetivo.delete()
     return redirect('objectives', e_ficha=empleado.ficha)
@@ -338,8 +341,39 @@ def activities(request, e_ficha, o_id):
 
     return render(request, 'activities.html', {
         'empleado': empleado,
-        'objetivo': objetivo
+        'objetivo': objetivo,
+        'form': ObjectivesNotesForm(),
     })
+    
+@login_required
+def add_note_to_objective(request, e_ficha, o_id):
+    if request.method == 'POST':
+        empleado = get_object_or_404(Empleado, ficha=e_ficha)
+        objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+        form = ObjectivesNotesForm(request.POST)
+        if form.is_valid():
+            newNote = form.save(commit=False)
+            newNote.objetivo = objetivo
+            newNote.created_by = request.user
+            newNote.save()
+            return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+        else:
+            return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+    else:
+        messages.error(request, 'ERROR')
+        return redirect('objectives', e_ficha=empleado.ficha)
+    
+def discard_note_from_objective(request, e_ficha, o_id, note_id):    
+    empleado = get_object_or_404(Empleado, ficha=e_ficha)
+    objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    note = get_object_or_404(Objectives_notes, pk=note_id, objetivo=objetivo)
+    if note.created_by != request.user:
+        messages.error(request, 'ERROR. No se puede eliminar la nota porque no fue creada por usted.')
+        return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+    if request.method == 'POST':
+        note.delete()
+    return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+
 
 @login_required
 def updateActivities(request, e_ficha, o_id, a_id):
@@ -359,11 +393,13 @@ def editActivities(request, e_ficha, o_id, a_id):
     objetivo = empleado.objetivos_set.get(pk=o_id)
     actividad = get_object_or_404(Actividades, pk=a_id, objetivo=objetivo)
     if request.method == 'GET':
-        return render(request, 'editActivities.html', {
+        return render(request, 'crudActivities.html', {
             'objetivo': objetivo,
             'empleado': empleado,
             'actividad': actividad,
-            'form': ActivitiesForm(instance=actividad)
+            'form': ActivitiesForm(instance=actividad),
+            'modificar': True
+            
         })
     else:
         form = ActivitiesForm(request.POST, instance=actividad)

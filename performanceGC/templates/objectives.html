@@ -16,13 +16,17 @@
               <a href="{% url 'newobjective' empleado.ficha %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Objetivo</a>
             </div>
 
-            <div class="chart-container mx-auto mt-4 mb-4" style="position: relative; max-width: 256px; height: auto;">
-              <canvas id="completionChart"></canvas>
+            <div class="card card-body my-4 border-dark rounded-4">
+              <div class="chart-container mx-auto " style="position: relative; max-width: 256px; height: auto;">
+                <canvas id="completionChart"></canvas>
+              </div>
+            </div>
+            <div class="card card-body my-4 border-dark rounded-4">
+              <div class="chart-container mx-auto " style="position: relative; max-width: 256px; height: auto;">
+                <canvas id="typeChart"></canvas>
+              </div>
             </div>
 
-            <div class="chart-container mx-auto mt-4" style="position: relative; max-width: 256px; height: auto;">
-              <canvas id="typeChart"></canvas>
-            </div>
           </div>
         </div>
       </div>
@@ -44,7 +48,7 @@
                   <p class="card-text">{{ obj.tipo }}</p>
                   <div class="row justify-content-start">
                     <div class="col-2">
-                        <div class="text-center">
+                        <div class="text-center obj-details">
                             <p class="card-text m-0 fs-4" data-toggle="tooltip" title=" Objetivos especificos">
                                 <i class="bi bi-bullseye"></i>
                             </p>
@@ -52,7 +56,7 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <div class="text-center">
+                        <div class="text-center obj-details">
                             <p class="card-text m-0 fs-4" data-toggle="tooltip" title="Objetivos completados">
                                 <i class="bi bi-clipboard-check"></i>
                             </p>
@@ -60,7 +64,7 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <div class="text-center">
+                        <div class="text-center obj-details">
                             <p class="card-text m-0 fs-4" data-toggle="tooltip" title="Porcentaje">
                                 <i class="bi bi-percent"></i>
                             </p>
@@ -68,7 +72,7 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <div class="text-center">
+                        <div class="text-center obj-details">
                             <p class="card-text m-0 fs-4" data-toggle="tooltip" title="Notas">
                                 <i class="bi bi-chat"></i>
                             </p>
@@ -88,9 +92,12 @@
                                 </a>
                             </div>
                             <div class="ps-1">
-                                <a href="{% url 'discardobjective' empleado.ficha obj.id %}" class="btn btn-danger text-center">
-                                    <i class="bi bi-trash"></i>
-                                </a>
+                              <form action="{% url 'discardobjective' empleado.ficha obj.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger text-center bi bi-trash w-100" onclick="return confirm('¿Está seguro que desea eliminar este objetivo?')">
+                                    
+                                </button>
+                            </form>
                             </div>
                         </div>
                     </div>
@@ -250,9 +257,5 @@
     {% endif %}
 </script>
 
-<script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-      })
-</script>
+
 {% endblock %}

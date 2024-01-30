@@ -167,7 +167,7 @@
                                                 <td>{{empleado.fechaIngreso|timesince}}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Promedio de Desempeño</th>
+                                                <th scope="row">Promedio de desempeño</th>
                                                 <td>{{empleado.promedioResultadoFinal}}</td>
                                             </tr>
                                             <tr>
@@ -175,11 +175,11 @@
                                                 <td>{{empleado.cantidadEvaluaciones}}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Objetivos Propuestos</th>
+                                                <th scope="row">Objetivos generales</th>
                                                 <td>{{empleado.cantidadObjetivosTotales}}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Actividades Propuestas</th>
+                                                <th scope="row">Objetivos especificos</th>
                                                 <td>{{empleado.cantidadActividades}}</td>
                                             </tr>
 
@@ -281,16 +281,16 @@
                                         <thead>
                                             <th scope="col"></th>
                                             <th scope="col">Cantidad</th>
-                                            <th scope="col">Completadas</th>
+                                            <th scope="col">Completados</th>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <th scope="row">Objetivos</th>
+                                                <th scope="row">Generales</th>
                                                 <td>{{empleado.objetivosPorcentaje.1}}</td>
                                                 <td>{{empleado.objetivosPorcentaje.2}}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Actividades</th>
+                                                <th scope="row">Especificos</th>
                                                 <td>{{empleado.objetivosPorcentaje.3}}</td>
                                                 <td>{{empleado.objetivosPorcentaje.4}}</td>
 
@@ -872,7 +872,7 @@
             }
         }
     });
-    
+    {% if empleado.distribucionObjetivosCantidad != None %}
     const ctx4 = document.getElementById('typeChart');
     new Chart(ctx4, {
         type: 'doughnut',
@@ -921,6 +921,7 @@
             }
         }
     });
+    {% endif %}
 
 </script>
 

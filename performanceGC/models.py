@@ -398,6 +398,7 @@ class Objetivos(models.Model):
 class Objectives_notes(models.Model):
     objetivo = models.ForeignKey(Objetivos, on_delete=models.CASCADE)
     note = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -409,6 +410,8 @@ class Actividades(models.Model):
     estado = models.BooleanField(default=False, blank=True)
     createdBy = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
 
     def __str__(self):
         return self.objetivo.texto + '-' + self.texto
