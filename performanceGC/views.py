@@ -7,6 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, Us
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required 
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.db.models import Q
 from django.db import transaction
 from .models import *
@@ -18,13 +19,14 @@ from django.views.generic import ListView
 from django.contrib import messages
 
 
+
 def index(request):
     return render(request, 'index.html')
 
-def debugTests(request):
-    competencias = Competencias.objects.all()
-    return render(request, 'cosasraras.html',
-                  {'competencias': competencias})
+# def debugTests(request):
+#     competencias = Competencias.objects.all()
+#     return render(request, 'cosasraras.html',
+#                   {'competencias': competencias})
 
 @staff_member_required
 def createUser(request):
@@ -363,6 +365,7 @@ def add_note_to_objective(request, e_ficha, o_id):
         messages.error(request, 'ERROR')
         return redirect('objectives', e_ficha=empleado.ficha)
     
+@login_required   
 def discard_note_from_objective(request, e_ficha, o_id, note_id):    
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
@@ -629,6 +632,7 @@ def evaluar_pns(request, e_ficha):
         'factores': factores
     })
 
+@ensure_csrf_cookie
 def loginUser(request):
     # Si el usuario ya inició sesión, redireccionar a su perfil
     if request.user.is_authenticated:
