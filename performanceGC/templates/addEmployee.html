@@ -38,6 +38,13 @@
                 {{ field }}
                 <label class="custom-file-label" for="{{ field.id_for_label }}">Seleccionar Archivo</label>
               </div>
+            {% elif field.field.widget.input_type == 'select' %}
+              <select class="form-control form-select" name="{{ field.name }}" id="{{ field.id_for_label }}" required>
+                {% for choice in field.field.choices %}
+                  <option value="{{ choice.0 }}" {% if choice.0 == field.value %}selected{% endif %}>{{ choice.1 }}</option>
+                {% endfor %}
+              </select>
+
             {% else %}
               {{ field }}
             {% endif %}
@@ -59,10 +66,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
-  <script>
-    $(document).ready(function () {
-      $('.select2').select2()
-    })
+  <script>  
     
     function openNewWindow() {
       window.open("{% url 'addCargo' %}", '_blank', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=800,height=600')

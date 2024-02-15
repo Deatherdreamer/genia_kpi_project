@@ -1,7 +1,14 @@
 from django.contrib import admin
 from .models import *
+from simple_history.admin import SimpleHistoryAdmin
 
-admin.site.register(Empleado)
+admin.site.site_title = "Genia Performance 360 Pro"
+admin.site.site_header = "Genia Performance 360 Pro"
+admin.site.index_title = "Panel de Administración Genia Performance 360 Pro"
+
+
+
+admin.site.register(Empleado, SimpleHistoryAdmin)
 admin.site.register(Cargo)
 admin.site.register(Gerencia)
 admin.site.register(Niveles)

@@ -44,8 +44,16 @@
               <div class="card border-1 mb-4 rounded-4 border-dark" style="--bs-bg-opacity: .2;">
                 <div class="card-body">
                   <h5 class="card-title">{{ obj.texto }}</h5>
-                  <h6 class="card-subtitle mb-2 text-body-secondary">Creado por {{ obj.createdBy.empleado|title }} el {{ obj.created|date:'d-m-Y' }}</h6>
-                  <p class="card-text">{{ obj.tipo }}</p>
+                  <h6 class="card-subtitle mb-1 text-body-secondary">Creado por {{ obj.createdBy.empleado|title }} el {{ obj.created|date:'d-m-Y' }}</h6>
+                  <p class="card-text m-0">{{ obj.tipo }}</p>
+                  <p class="card-text">
+                    {% if obj.is_aproved %}
+                      <span class="badge bg-success">Aprobado</span>
+                    {% else %}
+                      <span class="badge bg-danger">Por Aprobar</span>
+                    {% endif %}
+                  </p>
+                  
                   <div class="row justify-content-start">
                     <div class="col-2">
                         <div class="text-center obj-details">

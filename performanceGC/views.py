@@ -14,6 +14,7 @@ from .models import *
 from .forms import *
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from openpyxl import Workbook
 import pandas as pd    
 from django.views.generic import ListView
 from django.contrib import messages
@@ -81,23 +82,15 @@ def masterEmployee(request):
     # })
 
 @login_required
-def profileView(request, e_ficha):
-    def subordinados(e):
-        cargos_subordinados = Cargo.objects.filter(supervisor=e.cargo)
-        empleados_subordinados = Empleado.objects.filter(
-            cargo__in=cargos_subordinados).order_by('cargo__nivel__valor').exclude(fechaEgreso__isnull=False)
-        subordinados = list(empleados_subordinados)
-
-        return subordinados
+def profileView(request, e_ficha):   
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
-    empleados_subordinados = subordinados(empleado)
+    cargo = empleado.cargo   
     evaluaciones = EvaluacionDesempeno.objects.filter(empleado=empleado)
     periodo = Periodo.objects.get(is_active=True)
 
     return render(request, 'profile.html', {
         'empleado': empleado,
-        'subordinados': empleados_subordinados,
-        'cantidad': len(empleados_subordinados),
+        'cargo': cargo,
         'evaluaciones': evaluaciones,
         'periodo': periodo
     })
@@ -306,8 +299,9 @@ def createObjectives(request, e_ficha):
 def editObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
-    if request.user != objetivo.createdBy:
-        messages.error(request, 'ERROR. No se puede editar el objetivo porque no fue creado por usted.')
+    
+    if request.user != objetivo.createdBy and not request.user.is_staff and not empleado in request.user.empleado.subordinados():
+        messages.error(request, 'ERROR. No tiene permisos para editar el objetivo.')
         return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'GET':
         return render(request, 'editObjetive.html', {
@@ -340,7 +334,6 @@ def deleteObjectives(request, e_ficha, o_id):
 def activities(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = empleado.objetivos_set.get(pk=o_id)
-
     return render(request, 'activities.html', {
         'empleado': empleado,
         'objetivo': objetivo,
@@ -657,8 +650,15 @@ def loginUser(request):
 
 @login_required
 def logoutUser(request):
-    logout(request)
-    return redirect('index')
+    if request.method == 'POST':
+        messages.success(request, 'Sesión cerrada exitosamente.')
+        logout(request)
+    else:
+        messages.error(request, 'ERROR. No se pudo cerrar la sesión.')
+        
+    return redirect('signin')
+    
+
 
 @login_required
 def changePassword(request):
@@ -1264,3 +1264,38 @@ def company_objectives_delete(request, obj_id):
         company_objective.delete()
         messages.success(request, 'Objetivo eliminado')
     return redirect('companyobjectives')
+
+@staff_member_required(login_url='signin')
+def generate_report_per_department(request):
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=reporte_departamentos.xlsx'
+    workbook = Workbook()
+    # Remove the default sheet created
+    workbook.remove(workbook.active)
+    departamentos = Departamento.objects.all()
+
+    for departamento in departamentos:
+        worksheet = workbook.create_sheet(title=departamento.nombre)
+        worksheet.append([departamento.nombre])
+        worksheet.append(['Objetivos Generales', departamento.get_amount_objetivos_generales()])
+        worksheet.append(['Objetivos Especificos', departamento.get_amount_objetivos_especificos()])
+        worksheet.append(['Ficha', 'Nombre', 'Apellido', 'Cargo', 'Gerencia', 'Direccion', 'Objetivos Generales', 'Objetivos Especificos', 'Status'])
+        empleados = Empleado.objects.filter(cargo__gerencia__departamento=departamento, fechaEgreso__isnull=True)
+        for empleado in empleados:
+            worksheet.append([empleado.ficha, empleado.nombre, empleado.apellido, empleado.cargo.nombreText, empleado.cargo.gerencia.nombreText, empleado.cargo.gerencia.direccion.nombre, empleado.cantidadObjetivos(), empleado.cantidadActividades(),'Si' if empleado.cantidadObjetivos() > 0 else 'No'])
+        
+        # Adjust column widths
+        for column in worksheet.columns:
+            max_length = 0
+            column = [cell for cell in column]
+            for cell in column:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2)
+            worksheet.column_dimensions[column[0].column_letter].width = adjusted_width
+
+    workbook.save(response)
+    return response

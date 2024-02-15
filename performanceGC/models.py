@@ -3,12 +3,20 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator
+from simple_history.models import HistoricalRecords
 
 
 # Create your models here.
 
 class Nivel(models.Model):
     nivel = models.TextField()
+    
+    class Meta:
+        ordering = ['nivel']
+        verbose_name = 'Clasificación de Nivel'
+        verbose_name_plural = 'Clasificación de Niveles'
+        
+        
 
     def __str__(self) -> str:
         return self.nivel
@@ -45,6 +53,11 @@ class Niveles(models.Model):
     porObjetivos = models.IntegerField(default=50)
     nivel = models.ForeignKey(Nivel, on_delete=models.CASCADE, default=1)
     formato_de_evaluacion = models.TextField(choices=formatos, default='pnm')
+    
+    class Meta:
+        ordering = ['valor']
+        verbose_name = 'Nivel de Cargo'
+        verbose_name_plural = 'Niveles de Cargos'
 
     def __str__(self):
         return f'Nivel {self.valor} - {self.get_choice_value()}'
@@ -74,6 +87,11 @@ class Direccion(models.Model):
     debajo = models.ForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True)
     
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Dirección'
+        verbose_name_plural = 'Direcciones'
+    
 
     def __str__(self):
         return self.nombre
@@ -85,8 +103,24 @@ class Direccion(models.Model):
 class Departamento(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
     
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Departamento'
+        verbose_name_plural = 'Departamentos'
+        
+    def get_empleados(self):
+        return Empleado.objects.filter(cargo__gerencia__departamento=self, fechaEgreso__isnull=True)
+    
+    def get_amount_objetivos_generales(self):
+        return Objetivos.objects.filter(empleado__cargo__gerencia__departamento=self, periodo=Periodo.objects.get(is_active=True)).count()
+    
+    def get_amount_objetivos_especificos(self):
+        return Actividades.objects.filter(objetivo__empleado__cargo__gerencia__departamento=self, objetivo__periodo=Periodo.objects.get(is_active=True)).count()
+    
     def __str__(self):
         return self.nombre
+    
+    
 
 class Gerencia(models.Model):
     nombreText = models.CharField(max_length=200)    
@@ -96,6 +130,11 @@ class Gerencia(models.Model):
         Departamento, on_delete=models.SET_NULL, null=True)
     debajo = models.ForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True)
+    
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Gerencia'
+        verbose_name_plural = 'Gerencias'
     
 
     def __str__(self):
@@ -137,6 +176,12 @@ class Gerencia(models.Model):
 class Distribucion(models.Model):
     departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE)
     nivel = models.ForeignKey(Niveles, on_delete=models.CASCADE)
+    
+    class Meta:
+        ordering = ['departamento']
+        verbose_name = 'Distribución de Objetivos'
+        verbose_name_plural = 'Distribuciones de Objetivos'
+    
 
     def __str__(self):
         return f'{self.departamento} - {self.nivel}'
@@ -148,6 +193,11 @@ class DistribucionObjetivo(models.Model):
     distribucion = models.ForeignKey(Distribucion, on_delete=models.CASCADE)
     tipo = models.CharField(default='Objetivo de Area', max_length=200)
     peso = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['tipo']
+        verbose_name = 'Distribución de Objetivo por nivel'
+        verbose_name_plural = 'Distribuciones de Objetivos por niveles'
 
     def __str__(self):
         return f'{self.tipo}({self.peso}%)'
@@ -162,12 +212,31 @@ class Cargo(models.Model):
     gerencia = models.ForeignKey(Gerencia, on_delete=models.CASCADE, null=True, blank=True)
     direccion = models.ForeignKey(Direccion, on_delete=models.CASCADE, null=True, blank=True)
     nombre_infocent = models.CharField(max_length=200, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    history = HistoricalRecords()
+    
+    class Meta:
+        ordering = ['nivel', 'nombreText']
+        verbose_name = 'Cargo'
+        verbose_name_plural = 'Cargos'
 
     def __str__(self):
         return self.nombreText
+    
+    def subordinados(self):
+        subordinados = list(Cargo.objects.filter(supervisor=self, is_active=True))
+        for subordinado in subordinados:
+            subordinados.extend(subordinado.subordinados())
+        return subordinados.sort(key=lambda x: x.nivel.valor)
+    
+    def subordinados_directos(self):
+        return Cargo.objects.filter(supervisor=self, is_active=True).order_by('nivel__valor')
 
     def empleadosAsociados(self):
         return self.empleado_set.all()
+
+    def empleados_activos_asociados(self):
+        return self.empleado_set.filter(fechaEgreso__isnull=True)
 
 
 class Empleado(models.Model):
@@ -184,6 +253,12 @@ class Empleado(models.Model):
     usuario = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True, blank=True)
     es_evaluado = models.BooleanField(default=True)
+    history = HistoricalRecords()
+    
+    class Meta:
+        ordering = ['ficha']
+        verbose_name = 'Empleado'
+        verbose_name_plural = 'Empleados'
 
     # save function that deactivates the usuario if the empleado is given a fechaEgreso 
     def save(self, *args, **kwargs):
@@ -210,14 +285,11 @@ class Empleado(models.Model):
     def supervisor(self):
         return Empleado.objects.filter(cargo=self.cargo.supervisor, fechaEgreso__isnull=True).last()
 
-    def subordinados(self):
-        cargos_subordinados = Cargo.objects.filter(supervisor=self.cargo)
-        empleados_subordinados = Empleado.objects.filter(
-            cargo__in=cargos_subordinados).exclude(fechaEgreso__isnull=False)
-        subordinados = list(empleados_subordinados)
-        for empleado in empleados_subordinados:
-            subordinados.extend(empleado.subordinados())
-        return subordinados
+    def subordinados(self):  
+        cargos = self.cargo.subordinados()
+        empleados = Empleado.objects.filter(cargo__in=cargos, fechaEgreso__isnull=True)
+        return empleados       
+        
 
     def cantidadEvaluaciones(self):
         return self.evaluaciondesempeno_set.all().exclude(estado=0).count()
@@ -310,6 +382,11 @@ class Periodo(models.Model):
         'Fecha de Fin', null=True, blank=True)
     evaluacionesHabilitadas = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-año_inicio']
+        verbose_name = 'Período'
+        verbose_name_plural = 'Períodos'
 
     def __str__(self):
         return f'Período {self.año_inicio} - {self.año_fin}'
@@ -353,6 +430,10 @@ class Company_Objectives(models.Model):
     description = models.TextField()
     period = models.ForeignKey(Periodo, on_delete=models.CASCADE)
     
+    class Meta:
+        verbose_name = 'Objetivo de la Empresa'
+        verbose_name_plural = 'Objetivos de la Empresa'
+    
     def __str__(self):
         return f'{self.period} - {self.title}'
  
@@ -362,6 +443,10 @@ class Announcements(models.Model):
     text = models.TextField()
     date = models.DateField(auto_now_add=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
+    
+    class Meta:
+        verbose_name = 'Anuncio'
+        verbose_name_plural = 'Anuncios'
     
     def __str__(self):
         return self.title
@@ -373,6 +458,14 @@ class Objetivos(models.Model):
     tipo = models.ForeignKey(DistribucionObjetivo, on_delete=models.CASCADE, null=True)
     createdBy = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
+    is_aproved = models.BooleanField(default=False)
+    aproved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='aprobado_por', null=True, blank=True)
+    history = HistoricalRecords()
+    
+    class Meta:
+        ordering = ['created']
+        verbose_name = 'Objetivo General'
+        verbose_name_plural = 'Objetivos Generales'
 
     def __str__(self):
         return str(self.empleado.ficha) + '-' + self.texto
@@ -394,12 +487,20 @@ class Objetivos(models.Model):
     def notes(self):
         return self.objectives_notes_set.all()
     
+    def see_history(self):
+        return self.history.all()
+    
 
 class Objectives_notes(models.Model):
     objetivo = models.ForeignKey(Objetivos, on_delete=models.CASCADE)
     note = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = 'Nota de Objetivo'
+        verbose_name_plural = 'Notas de Objetivos'
     
     def __str__(self):
         return f'{self.objetivo} - {self.note}'
@@ -411,7 +512,12 @@ class Actividades(models.Model):
     createdBy = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
+    history = HistoricalRecords()
+    
+    class Meta:
+        ordering = ['created']
+        verbose_name = 'Objetivo Especifico'
+        verbose_name_plural = 'Objetivos Especificos'      
 
     def __str__(self):
         return self.objetivo.texto + '-' + self.texto
@@ -425,6 +531,11 @@ class Competencias(models.Model):
     significado2 = models.TextField(blank=True, null=True)
     significado3 = models.TextField(blank=True, null=True)
     significado4 = models.TextField(blank=True, null=True)
+    
+    class Meta:
+        ordering = ['nivel', 'nombre']
+        verbose_name = 'Competencia'
+        verbose_name_plural = 'Competencias'
 
     def __str__(self):
         return f'{self.nivel} - {self.nombre}'
@@ -548,6 +659,11 @@ class EvaluacionDesempeno(models.Model):
     deteccionTecConductual3 = models.TextField(
         default="", null=True, blank=True)
     comentarios = models.TextField(default="", null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = 'Evaluación de Desempeño'
+        verbose_name_plural = 'Evaluaciones de Desempeño'
 
     def __str__(self):
         return f'Evaluación de {self.empleado} - {self.periodo}'
@@ -569,6 +685,11 @@ class EvaluacionObjetivo(models.Model):
         MinValueValidator(1), MaxValueValidator(4)])
     resultado = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     comentarios = models.TextField(default="", null=True, blank=True)
+    
+    class Meta:
+        ordering = ['objetivo']
+        verbose_name = 'Evaluación de Objetivo'
+        verbose_name_plural = 'Evaluaciones de Objetivos'
 
     def __str__(self):
         return f'{self.evaluacion} - {self.objetivo}'
@@ -585,6 +706,14 @@ class EvaluacionCompetencia(models.Model):
     )
     resultadoCompetencia = models.DecimalField(
         default=0, decimal_places=2, max_digits=5)
+    
+    class Meta:
+        ordering = ['competencia']
+        verbose_name = 'Evaluación de Competencia'
+        verbose_name_plural = 'Evaluaciones de Competencias'
+        
+    def __str__(self):
+        return f'{self.Evaluacion} - {self.competencia}'
 
 
 class ObjetivoActividad(models.Model):
@@ -592,6 +721,11 @@ class ObjetivoActividad(models.Model):
     actividad = models.ForeignKey(Actividades, on_delete=models.CASCADE)
 
     pesoActividad = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['actividad']
+        verbose_name = 'Peso Objetivo Especifico'
+        verbose_name_plural = 'Pesos Objetivos Especificos'
 
     def __str__(self):
         return self.actividad.texto
@@ -605,6 +739,11 @@ class comentarios(models.Model):
         Empleado, on_delete=models.CASCADE, related_name='receptor')
     comentario = models.TextField(default="")
     fecha = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = 'Comentario'
+        verbose_name_plural = 'Comentarios'
 
     def __str__(self):
         return f'{self.de} - {self.comentario}'
@@ -612,6 +751,11 @@ class comentarios(models.Model):
 class Preguntas_Frecuentes(models.Model):
     pregunta = models.TextField()
     respuesta = models.TextField()
+    
+    class Meta:
+        verbose_name = 'Pregunta Frecuente'
+        verbose_name_plural = 'Preguntas Frecuentes'
+        
     def __str__(self):
         return self.pregunta
     
@@ -624,6 +768,11 @@ class Factores_de_evaluacion_PNS(models.Model):
         ('Competencias actidudinales', 'Competencias Actitudinales')        
     ), default='Buenas practicas operativas')
     
+    class Meta:
+        ordering = ['enfoque', 'nombre']
+        verbose_name = 'Factor de Evaluación PNS'
+        verbose_name_plural = 'Factores de Evaluación PNS'
+    
     def __str__(self):
         return f'{self.enfoque} - {self.nombre}'
     
@@ -632,6 +781,11 @@ class Evaluacion_PNS(models.Model):
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     resultado = models.IntegerField(default=0)
     fecha = models.DateField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = 'Evaluación PNS'
+        verbose_name_plural = 'Evaluaciones PNS'
     
     def __str__(self):
         return f'Evaluacion de {self.empleado.nombre} {self.empleado.apellido} - {self.periodo}'
@@ -654,7 +808,10 @@ class Evaluacion_PNS_BPO(models.Model):
     valor = models.IntegerField(default=0, validators=[
         MinValueValidator(1), MaxValueValidator(3)])
     
+    class Meta:
+        ordering = ['factor']
+        verbose_name = 'Evaluación BPO'
+        verbose_name_plural = 'Evaluaciones BPO'
+    
     def __str__(self):
         return f'{self.evaluacion} - {self.factor}'
-
-    

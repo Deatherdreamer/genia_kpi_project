@@ -44,11 +44,11 @@
               <div class="card-body border-start border-5 rounded-2 border-{% if act.estado %}success{% else %}danger{% endif %}">
                 <h6 class="card-title lead">{{ act.texto }}</h6>
                 <h6 class="card-subtitle mb-2 text-body-secondary">Asignado por: {{ act.createdBy.empleado|title }}</h6>
-                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha de creación: {{ act.created|date:"d/m/Y" }}</h6>
+                <h6 class="card-subtitle mb-2 text-body-secondary">Fecha de creación: {{ act.created|date:'d/m/Y' }}</h6>
                 {% if act.estado %}
-                  <h6 class="card-subtitle mb-2 text-body-secondary">Fecha de completado: {{ act.updated|date:"d/m/Y" }}</h6>
+                  <h6 class="card-subtitle mb-2 text-body-secondary">Fecha de completado: {{ act.updated|date:'d/m/Y' }}</h6>
                 {% endif %}
-                
+
                 <p class="card-text">
                   {% if act.estado %}
                     <span class="badge bg-success">Completado</span>
@@ -57,74 +57,107 @@
                   {% endif %}
                 </p>
                 <div class="d-flex">
-                    <form action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}" method="post" class="pe-1">
-                      {% csrf_token %}
-                      <button class="btn btn-outline-{% if act.estado %}danger{% else %}success{% endif %}" type="submit">
-                        {% if act.estado %}
+                  <form action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}" method="post" class="pe-1">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-{% if act.estado %}danger{% else %}success{% endif %}" type="submit">
+                      {% if act.estado %}
                         <i class="bi bi-x-circle"></i>
-                          
-                        {% else %}
+                      {% else %}
                         <i class="bi bi-check-circle"></i>
-                          
-                        {% endif %}
-                      </button>
-                    </form>
-                      <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}" method="post" class="pe-1">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-dark" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>
-                      </form>
-                      <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}" class="btn btn-outline-dark"><i class="bi bi-pencil-square"></i></a>
-                  </div> 
-
+                      {% endif %}
+                    </button>
+                  </form>
+                  <form action="{% url 'discardactivity' empleado.ficha objetivo.id act.id %}" method="post" class="pe-1">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-dark" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>
+                  </form>
+                  <a href="{% url 'editactivities' empleado.ficha objetivo.id act.id %}" class="btn btn-outline-dark"><i class="bi bi-pencil-square"></i></a>
+                </div>
               </div>
             </div>
             {% empty %}
-              <p class="lead text-center">No hay objetivos especificos creados para este objetivo, añada uno.</p>
+            <p class="lead text-center">No hay objetivos especificos creados para este objetivo, añada uno.</p>
           {% endfor %}
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-body border-0 shadow">
-          <h5 class="card-title text-center">Notas <span class="badge bg-secondary">{{ objetivo.notes|length }}</span> </h5>
-            <form action="{% url 'new_note' empleado.ficha objetivo.id %}" method="post" class="mb-2">
-              {% csrf_token %}
-              {% for field in form %}
-                <div class="mb-3">
-                  {{ field.label_tag }}
-                  {{ field }}
-                  {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                  {% endif %}
-                  {% for error in field.errors %}
-                    <p style="color: red">{{ error }}</p>
-                  {% endfor %}
-                </div>
-              {% endfor %}
-                <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">Agregar...</button>
-
-
+           <!-- Bordered Tabs Justified -->
+           <ul class="nav nav-tabs nav-tabs-bordered d-flex" id="borderedTabJustified" role="tablist">
+            <li class="nav-item flex-fill" role="presentation">
+              <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-home" type="button" role="tab" aria-controls="home" aria-selected="true">Notas</button>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+              <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Histórico</button>
+            </li>
+          </ul>
+          <div class="tab-content pt-2" id="borderedTabJustifiedContent">
+            <div class="tab-pane fade show active" id="bordered-justified-home" role="tabpanel" aria-labelledby="home-tab">
               
-              </div>
-            </form>
-
-            {% for note in objetivo.notes %}
-                <div class="card my-1">
-                <div class="card-body border-start border-5 rounded-2 border-primary">
-                    <h6 class="card-title">{{ note.note }}</h6>
-                    <p class="m-0"><small class="card-subtitle text-body-secondary">{{ note.created_by.empleado|title }}</small></p>
-                    <small class="card-subtitle text-body-secondary">{{ note.created_at|date:"d/m/Y" }}</small>
-                    <div class="d-flex">
-                        <form action="{% url 'discard_note' empleado.ficha objetivo.id note.id %}" method="post" class="pe-1">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-dark" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>
-                        </form>
+                <form action="{% url 'new_note' empleado.ficha objetivo.id %}" method="post" class="mb-2">
+                  {% csrf_token %}
+                  {% for field in form %}
+                    <div class="mb-3">
+                      {{ field.label_tag }}
+                      {{ field }}
+                      {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                      {% endif %}
+                      {% for error in field.errors %}
+                        <p style="color: red">{{ error }}</p>
+                      {% endfor %}
                     </div>
+                  {% endfor %}
+                  <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">Agregar...</button>
+                  </div>
+                </form>
+      
+                {% for note in objetivo.notes %}
+                  <div class="card my-1">
+                    <div class="card-body border-start border-5 rounded-2 border-primary">
+                      <h6 class="card-title">{{ note.note }}</h6>
+                      <p class="m-0">
+                        <small class="card-subtitle text-body-secondary">{{ note.created_by.empleado|title }}</small>
+                      </p>
+                      <small class="card-subtitle text-body-secondary">{{ note.created_at|date:'d/m/Y' }}</small>
+                      <div class="d-flex">
+                        <form action="{% url 'discard_note' empleado.ficha objetivo.id note.id %}" method="post" class="pe-1">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-outline-dark" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  {% empty %}
+                  <p class="lead text-center">Sin notas...</p>
+                {% endfor %}
+             
+            </div>
+            <div class="tab-pane fade" id="bordered-justified-profile" role="tabpanel" aria-labelledby="profile-tab">
+              
+                <div class="card-body">
+                  <ol class="list-group list-group-numbered">
+                    {% for history in objetivo.history.all %}
+                      <li class="list-group-item">
+                        {% if history.history_type == '+' %}
+                          <span class="text-bg-success">Añadido</span>
+                        {% elif history.history_type == '-' %}
+                          <span class="">Eliminado</span>
+                        {% elif history.history_type == '~' %}
+                          <span class="text-bg-warning">Editado</span>
+                        {% endif %}
+                        el {{ history.history_date|date:'d/m/Y' }} a las {{ history.history_date|time:'H:i' }} por {{ history.history_user.empleado|title }}
+                        <p><a href="" class="stretched-link">Ver...</a></p>
+                      </li>
+                      {% empty %}
+                      <li class="list-group-item">No hay historial...</li>
+                    {% endfor %}
+                  </ol>
                 </div>
-                </div>
-            {% empty %}
-                <p class="lead text-center">Sin notas...</p>
-            {% endfor %}
+              
+            </div>
+          </div><!-- End Bordered Tabs Justified -->
         </div>
       </div>
     </section>

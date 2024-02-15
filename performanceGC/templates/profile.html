@@ -141,7 +141,7 @@
                             aria-selected="false">Evaluaciones</button>
                     </li>
                     {% endif %}
-                    {% if cantidad != 0 %}
+                    {% if cargo.subordinados_directos.count > 0 %}
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="minion-tab" data-bs-toggle="tab" data-bs-target="#minion-tab-pane"
                             type="button" role="tab" aria-controls="minion-tab-pane"
@@ -662,53 +662,46 @@
                     <div class="tab-pane fade" id="minion-tab-pane" role="tabpanel" aria-labelledby="minion-tab"
                         tabindex="0">
                         <div class="row justify-content-start">
-                            {% for i in subordinados %}
+                            {% for cargo_subordinado in cargo.subordinados_directos  %}
+                            {% for empleado_subordinado in cargo_subordinado.empleados_activos_asociados %}
                             <div class="col-md-6">
                                 <div class="card card-body border-2 rounded-4 p-0 my-2">
-                                    <a class="btn btn-outline-dark " href="{% url 'profile' i.ficha %}">
+                                    <a class="btn btn-outline-dark " href="{% url 'profile' empleado_subordinado.ficha %}">
                                     <div class="row justify-content-start">
                                         
                                         <div class="col-md-4">
-                                            <img src="{% if  i.imagen %} {{ i.imagen.url }} {% else %} /static/default-avatar.png {% endif %}" alt=" Sin imagen "
+                                            <img src="{% if  empleado_subordinado.imagen %} {{ empleado_subordinado.imagen.url }} {% else %} /static/default-avatar.png {% endif %}" alt=" Sin imagen "
                                             class="rounded-circle img-fluid img-thumbnail"
                                             style="width: 92px; height: 92px; object-fit: cover;">
                                         </div>
                                         <div class="col-md-8">
-                                            <h6>{{i}}</h6>
-                                        
+                                            <h6>{{empleado_subordinado|title}}</h6>                                        
                                         </div>
                                     </div>
                                 </a>
                                 </div>
                             </div>
-                            
-                            <!-- <section class="col-6 my-2">
-                                <div class="card cardbody">
-                                    <a class="btn btn-outline-dark " href="{% url 'profile' i.ficha %}">
-                                        <div class="row">
-                                            <div class="col-4">
-                                                {% if i.imagen %}
-                                                <div class=""><img src="{{ i.imagen.url }}" alt=" Sin imagen "
-                                                        class="rounded-circle img-fluid img-thumbnail"
-                                                        style="width: 92px; height: 92px; object-fit: cover;">
-                                                </div>
-                                                {% else %}
-                                                <div class=""><img src="/static/default-avatar.png" alt=" Sin imagen "
-                                                        class="rounded-circle img-fluid img-thumbnail"
-                                                        style="width: 92px; height:92px;object-fit: cover;">
-                                                </div>
-                                                {% endif %}
-                                            </div>
-                                            <div class="col">
-                                                <p class="lead"> {{i|title}}</p>
-                                            </div>
-
+                            {% empty %}
+                            <div class="col-md-6">
+                                <div class="card card-body border-2 rounded-4 p-0 my-2">
+                                    <div class="btn btn-outline-dark ">
+                                    <div class="row justify-content-start">
+                                        
+                                        <div class="col-md-4">
+                                            <img src="/static/default-avatar.png" alt=" Sin imagen "
+                                            class="rounded-circle border-danger border-2 img-fluid img-thumbnail"
+                                            style="width: 92px; height: 92px; object-fit: cover;">
                                         </div>
-
-                                    </a>
+                                        <div class="col-md-8">
+                                            <h6>{{cargo_subordinado.nombreText|title}}</h6>  
+                                            <p class="text-danger"><strong>VACANTE</strong></p>                                     
+                                        </div>
+                                    </div>
                                 </div>
-                            </section> -->
+                                </div>
+                            </div>
 
+                            {% endfor %}
                             {% endfor %}
                         </div>
                     </div>

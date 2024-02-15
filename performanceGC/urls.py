@@ -15,6 +15,7 @@ urlpatterns = [
     path('systemparameters/export/cargos/', views.export_cargos, name='exportcargos'),
     path('systemparameters/export/gerencias/', views.export_gerencias, name='exportgerencias'),
     path('systemparameters/export/empleados/', views.export_empleados, name='exportempleados'),
+    path('systemparameters/export/reportsdepartment/', views.generate_report_per_department, name='exportreportsdepartment'),
     path('systemparameters/import/cargos/', views.import_cargos, name='importcargos'),
     path('systemparameters/import/empleados/', views.import_empleados, name='importempleados'),    
     # path('debugTests/', views.debugTests, name='debugtests'),

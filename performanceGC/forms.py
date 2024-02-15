@@ -207,7 +207,34 @@ class CompetenciasEvaluacionForm(forms.ModelForm):
 class CargoForm(forms.ModelForm):
     class Meta:
         model = Cargo
-        fields = '__all__'
+        fields = ['nombreText','nombre_infocent', 'supervisor', 'nivel', 'gerencia', 'direccion']
+        widgets = {
+            'nombreText': forms.TextInput(attrs={'class': 'form-control'}),
+            'supervisor': forms.Select(attrs={'class': 'form-select'}),            
+            'nivel': forms.Select(attrs={'class': 'form-select'}),
+            'gerencia': forms.Select(attrs={'class': 'form-select'}),
+            'direccion': forms.Select(attrs={'class': 'form-select'}),
+            'nombre_infocent': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+        labels = {
+            'nombreText': 'Nombre del Cargo',
+            'supervisor': 'Cargo Supervisor',
+            'nivel': 'Nivel',
+            'gerencia': 'Gerencia',
+            'direccion': 'Direccion',
+            'nombre_infocent': 'Nombre en Infocent',
+            'is_active': 'Activo',
+        }
+        help_texts = {
+            'nombreText': 'Nombre del cargo para el sistema.',
+            'nombre_infocent': 'Nombre que tiene el cargo en Infocent.',
+            'supervisor': 'Cargo que supervisa este cargo.',
+            'nivel': 'Nivel del cargo.',
+            'gerencia': 'Gerencia a la que pertenece el cargo.',
+            'direccion': 'Direccion a la que pertenece el cargo.',
+            'is_active': 'Si el cargo esta Activo o inactivo.',            
+        }
 
 
 #class form for announcements
