@@ -6,9 +6,13 @@ admin.site.site_title = "Genia Performance 360 Pro"
 admin.site.site_header = "Genia Performance 360 Pro"
 admin.site.index_title = "Panel de Administración Genia Performance 360 Pro"
 
+@admin.register(Empleado)
+class EmpleadoAdmin(SimpleHistoryAdmin):
+    search_fields = ('ficha', 'nombre', 'apellido')
+    list_display = ('ficha', 'nombre', 'apellido')
 
 
-admin.site.register(Empleado, SimpleHistoryAdmin)
+
 admin.site.register(Cargo)
 admin.site.register(Gerencia)
 admin.site.register(Niveles)
@@ -34,9 +38,3 @@ admin.site.register(Evaluacion_PNS_BPO)
 admin.site.register(Announcements)
 admin.site.register(Company_Objectives)
 admin.site.register(Objectives_notes)
-
-
-# admin.site.register(ValoresCompetencias)
-
-
-# Register your models here.

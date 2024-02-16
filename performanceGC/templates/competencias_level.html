@@ -1,39 +1,46 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<main class="container">
-    <h4 class="text-center mt-4">
-        Compentencias de Nivel {{ nivel|title }}
-    </h4>
+  <main class="container">
     <section class="row justify-content-center">
-    <div class="col">
-        <div class="card card-body border-0 shadow">
-            <table class="table table-bordered  ">
-                <thead class="table-dark text-center">
-                    <th>Competencia</th>
-                    <th style="width: 40%;">Descripcion</th>
-                    <th>Valor 1</th>
-                    <th>Valor 2</th>
-                    <th>Valor 3</th>
-                    <th>Valor 4</th>
-                </thead>
-                <tbody class="">
-                    {% for competencia in competencias %}
-                    <tr>
-                        <td><strong>{{ competencia.nombre|title }}</strong></td>
-                        <td>{{ competencia.descripcion }}</td>
-                        <td>{{ competencia.significado1 }}</td>
-                        <td>{{ competencia.significado2 }}</td>
-                        <td>{{ competencia.significado3 }}</td>
-                        <td>{{ competencia.significado4 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
+      <div class="col">
+        <div class="card card-body border-0 shadow mt-4">
+          <h4 class="text-center">Compentencias de mi nivel</h4>
+          <h5 class="text-center">{{ nivel|capfirst }}</h5>
+          <div class="accordion accordion-flush" id="competencesAccordion">
+            {% for competencia in competencias %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading{{ competencia.id }}"><button class="accordion-button collapsed fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ competencia.id }}" aria-expanded="false" aria-controls="flush-collapse{{ competencia.id }}">{{ competencia.nombre|title }}</button></h2>
+                <div id="flush-collapse{{ competencia.id }}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{ competencia.id }}" data-bs-parent="#competencesAccordion">
+                  <div class="accordion-body">
+                    <h5 class="cart-title">Descripción</h5>
+                    <p class="card-text">{{ competencia.descripcion }}</p>
+                    <hr />
+                    <div class="row">
+                      <div class="col-md-6 my-2">
+                        <h6 class="card-title m-0">No hay Dominio</h6>
+                        <p class="card-text">{{ competencia.significado1 }}</p>
+                      </div>
+                      <div class="col-md-6 my-2">
+                        <h6 class="card-title m-0">Dominio Básico</h6>
+                        <p class="card-text">{{ competencia.significado2 }}</p>
+                      </div>
+                      <div class="col-md-6 my-2">
+                        <h6 class="card-title m-0">Dominio Parcial</h6>
+                        <p class="card-text">{{ competencia.significado3 }}</p>
+                      </div>
+                      <div class="col-md-6 my-2">
+                        <h6 class="card-title m-0">Dominio Superior</h6>
+                        <p class="card-text">{{ competencia.significado4 }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
         </div>
-    </div>
-        
+      </div>
     </section>
-</main>
+  </main>
 {% endblock %}

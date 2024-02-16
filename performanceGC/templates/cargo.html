@@ -1,0 +1,138 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block content %}
+  <main class="container">
+    <section class="row justify-content-center">
+      <div class="col-md-6 col-lg-4">
+        <div class="card mt-3 border-0 shadow">
+          <div class="card-body  ">
+            <h4 class="text-center card-title">Cargo</h4>
+            <h5 class="text-center card-title fs-3">{{ cargo.nombreText }}</h5>
+            <h6 class="text-center card-subtitle">{{ cargo.nombre_infocent }}</h6>
+            <hr>
+            <p class="card-text">Nivel: {{ cargo.nivel|title }}</p>
+            <p class="card-text">
+              Estado:{% if cargo.empleados_activos_asociados.count > 0 %}
+                <span class="badge bg-success">Ocupado</span>
+              {% else %}
+                <span class="badge bg-danger">Vacante</span>
+              {% endif %}
+            </p>
+            <p class="card-text">
+              Activo:{% if cargo.is_active %}
+                <span class="badge bg-success">Si</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %}
+            </p>
+            <p class="card-text">
+              Supervisor:{% if cargo.supervisor %}
+                <a href="{% url 'cargodetails' cargo.supervisor.id %}">{{ cargo.supervisor }}</a>
+              {% else %}
+                No tiene
+              {% endif %}
+            </p>
+            <p class="card-text">Colaboradores asociados: {{ cargo.empleados_activos_asociados.count }}</p>
+            <p class="card-text">Gerencia: {{ cargo.gerencia }}</p>
+            <p class="card-text">Departamento: {{ cargo.gerencia.departamento }}</p>
+            <p class="card-text">Dirección: {{ cargo.gerencia.direccion }}</p>
+          </div>
+          {% if user.is_staff %}
+            <div class="card-footer">
+              <a href="{% url 'seeCargos' %}" class="btn btn-primary">Cargos</a>
+              <a href="{% url 'editCargo' cargo.id %}" class="btn btn-warning">Editar</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col">
+        <div class="card card-body border-0 shadow mt-3">
+          <!-- Bordered Tabs Justified -->
+          <ul class="nav nav-underline nav-fill" id="borderedTabJustified" role="tablist">
+            <li class="nav-item flex-fill" role="presentation">
+              <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-home" type="button" role="tab" aria-controls="home" aria-selected="true">Personal Activo</button>
+            </li>
+            <li class="nav-item flex-fill" role="presentation">
+              <button class="nav-link w-100" id="profile-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Colaboradores</button>
+            </li>
+          </ul>
+          <div class="tab-content pt-2" id="borderedTabJustifiedContent">
+            <div class="tab-pane fade show active" id="bordered-justified-home" role="tabpanel" aria-labelledby="home-tab">
+              <table class="table table-hover align-middle my-2">
+                <tbody>
+                  {% for empleado in cargo.empleados_activos_asociados %}
+                    <tr>
+                      <th scope="row">
+                        {% with 'default-avatar.png' as default_avatar_name %}
+                            {% static default_avatar_name as default_avatar_url %}
+
+                            <img src="{{ empleado.imagen|get_file_url|default:default_avatar_url }}" class="rounded-circle img-fluid img-thumbnail" style="width: 60px; height: 60px;" />
+                          {% endwith %}
+                      </th>
+                      <td>{{ empleado.ficha }}</td>
+                      <td>{{ empleado|title }}</td>
+                      <td>
+                        <a href="{% url 'profile' empleado.ficha %}" class="text-decoration-none">Ver perfil</a>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No hay empleados asociados</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="tab-pane fade" id="bordered-justified-profile" role="tabpanel" aria-labelledby="profile-tab">
+              <table class="table table-hover align-middle my-2">
+                <tbody>
+                  {% for cargo_subordinado in cargo.subordinados_directos %}
+                    {% for empleado_subordinado in cargo_subordinado.empleados_activos_asociados %}
+                      <tr>
+                        <th scope="row">
+                          {% with 'default-avatar.png' as default_avatar_name %}
+                            {% static default_avatar_name as default_avatar_url %}
+
+                            <img src="{{ empleado_subordinado.imagen|get_file_url|default:default_avatar_url }}" class="rounded-circle img-fluid img-thumbnail" style="width: 60px; height: 60px;" />
+                          {% endwith %}
+                        </th>
+                        <td>{{ empleado_subordinado.ficha }}</td>
+                        <td>{{ empleado_subordinado|title }}</td>
+                        <td>
+                          <a href="{% url 'cargodetails' empleado_subordinado.cargo.id %}" class="text-decoration-none">{{ empleado_subordinado.cargo|title }}</a>
+                        </td>
+
+                        <td>
+                          <a href="{% url 'profile' empleado_subordinado.ficha %}" class="text-decoration-none">Ver perfil</a>
+                        </td>
+                      </tr>
+                      {% empty %}
+                      <tr>
+                        <th scope="row">
+                          <img src="{% static 'default-avatar.png' %}" class="rounded-circle img-fluid img-thumbnail" style="width: 60px; height: 60px;" />
+                        </th>
+                        <td>VACANTE</td>
+
+                        <td colspan="2">{{ cargo_subordinado }}</td>
+                        <td>
+                          <a href="{% url 'cargodetails' cargo_subordinado.id %}" class="text-decoration-none">Ver Cargo</a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    {% empty %}
+                    <tr>
+                      <td colspan="5">Este cargo no es supervisor de ningún otro cargo</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- End Bordered Tabs Justified -->
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}

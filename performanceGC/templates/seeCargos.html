@@ -18,7 +18,7 @@
 
     <div class="card card-body">
 
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <ul class="nav nav-underline nav-fill" id="myTab" role="tablist">
 
             {% for nivel in niveles %}
 
@@ -46,7 +46,7 @@
             <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{nivel.id}}"
                 role="tabpanel" aria-labelledby="tab-{{nivel.id}}-tab">
 
-                <table class="table table-hover table-striped datatable w-100">
+                <table class="table table-hover table-striped datatable align-middle  w-100">
 
                     <thead class="table-dark">
 
@@ -65,6 +65,8 @@
                             <th scope="col">Estado</th>
 
                             <th scope="col"></th>
+                            <th></th>
+                            <th></th>
 
                         </tr>
 
@@ -89,11 +91,30 @@
 
                             <td>{% if cargo.is_active %} Activo {% else %} Inactivo {% endif %}</td>
 
-                            <td>
-                                <a href="{% url 'editCargo' cargo.id %}" class="btn btn-dark"><i
-                                        class="bi bi-pencil-square"></i></a>
-                            </td>
+                            <td >
+                                    <a href="{% url 'editCargo' cargo.id %}" class="btn btn-sm btn-dark">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
 
+                                                                
+                         
+                                
+
+                            </td>
+                            
+                            <td>
+                                <a href="{% url 'cargodetails' cargo.id %}" class="btn btn-sm btn-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>    
+                            </td>
+                            <td>
+                                <form action="{% url 'deactivatecargo' cargo.id %}" method="post" id="form-{{cargo.id}}">
+                                    {% csrf_token %}
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal" onclick="deactivateModalTexts('Confirmar Desactivación','¿Está seguro que desea desactivar el cargo {{cargo.nombreText|title}}?', document.getElementById('form-{{cargo.id}}'))">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
 
                         {% endfor %}
@@ -112,4 +133,44 @@
         </div>
 
     </div>
+</div>
+
+<!-- deactivateModal -->
+<div class="modal fade" id="deactivateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmButton">Desactivar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+<script>
+    let currentForm = null;
+
+    const deactivateModal = document.getElementById('deactivateModal')
+    const deactivateModalTitle = deactivateModal.querySelector('.modal-title')
+    const deactivateModalBody = deactivateModal.querySelector('.modal-body')
+
+    function deactivateModalTexts(title, body, form) {
+        deactivateModalTitle.textContent = title
+        deactivateModalBody.textContent = body
+        currentForm = form;
+    }
+
+    deactivateModal.querySelector('#confirmButton').addEventListener('click', () => {
+        if (currentForm) {
+            currentForm.submit();
+        }
+    })
+</script>
     {% endblock %}

@@ -297,7 +297,7 @@
   <!-- Button trigger modal -->
 
   {% if messages %}
-  <div class="container mt-3">
+  <div class="container mt-2">
     {% for message in messages %}
     <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
       role="alert">
@@ -339,6 +339,46 @@
     </div>
   </div>
 </div>
+
+<!-- confirmModal -->
+<div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="confirmButton">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('confirmModal')
+  const modalTitle = modal.querySelector('.modal-title')
+  const modalBody = modal.querySelector('.modal-body')
+  const f = document.getElementById('form')
+
+  function modalTexts(title, body) {
+    modalTitle.textContent = title
+    modalBody.textContent = body
+  }
+
+  modal.addEventListener('show.bs.modal', (event) => {
+    const button = event.relatedTarget
+    showModal('Guardar Cambios', '¿Está seguro de guardar los cambios?')
+  })
+
+  modal.querySelector('#confirmButton').addEventListener('click', () => {
+    f.submit()
+  })
+</script>
 
 
 

@@ -5,9 +5,19 @@
 
 {% block content %}
   <div class="container">
-    <form action="{% url 'addCargo' %}" method="POST" class="card border-0 shadow mt-4">
+    <form 
+    action= "{% if form.instance.pk %} {% url 'editCargo' form.instance.pk %} {% else %} {% url 'addCargo' %} {% endif %}"
+    method="POST"
+    id="form"
+    class="card border-0 shadow mt-4">
       <div class="card-header bg-primary text-white">
-        <h3 class="mb-0 text-center card-title">Agregar Cargo</h3>
+        <h3 class="mb-0 text-center card-title">
+          {% if form.instance.pk %}
+            Editar Cargo
+          {% else %}
+          Agregar Cargo
+          {% endif %}
+        </h3>
       </div>
       <div class="card-body">
         {% csrf_token %}
@@ -32,16 +42,28 @@
       <div class="card-footer">
         <div class="row">
           <div class="col-md-6">
-            <button type="submit" class="btn btn-lg btn-primary w-100">Guardar</button>
+            <button type="button" class="btn btn-lg btn-primary w-100"
+            data-bs-toggle="modal"
+            data-bs-target="#confirmModal"
+            {% if form.instance.pk %}
+              onclick="modalTexts('Editar Cargo','¿Está seguro que desea guardar los cambios?')"
+            {% else %}
+              onclick="modalTexts('Agregar Cargo','¿Está seguro que desea agregar el cargo?')"
+            {% endif %}>
+              Guardar
+
           </div>
           <div class="col-md-6">
             <a href="{% url 'seeCargos' %}" class="btn btn-lg btn-danger w-100">Cancelar</a>
           </div>
         </div>
-      </div>
-      
+      </div>      
     </form>
   </div>
+
+
+
+
 
 
   

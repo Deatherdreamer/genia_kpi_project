@@ -687,6 +687,11 @@ def seeCompetences(request):
         'niveles': nivel,
         'competencias': competencias,
     })
+    
+@staff_member_required(login_url='signin')
+def competenceDetails(request, competence_id):
+    competence = get_object_or_404(Competencias, pk=competence_id)
+    return render(request, 'competencia.html', {'competencia': competence})
 
 @staff_member_required(login_url='signin')
 def addCompetence(request):
@@ -729,13 +734,19 @@ def seeCargos(request):
     return render(request, 'seeCargos.html', {
         'niveles': niveles,
     })
+    
+@login_required(login_url='signin')
+def cargoDetails(request, cargo_id):
+    cargo = get_object_or_404(Cargo, pk=cargo_id)
+    return render(request, 'cargo.html', {'cargo': cargo})
 
 @staff_member_required(login_url='signin')
 def editCargo(request, cargo_id):
     cargo = get_object_or_404(Cargo, pk=cargo_id)
     if request.method == 'GET':
-        return render(request, 'editCargo.html', {
-            'form': CargoForm(instance=cargo)
+        return render(request, 'cargo_crud.html', {
+            'form': CargoForm(instance=cargo),
+            'cargo': cargo
         })
     else:
         form = CargoForm(request.POST, instance=cargo)
@@ -743,15 +754,25 @@ def editCargo(request, cargo_id):
             form.save()
             return redirect('seeCargos')
         else:
-            return render(request, 'editCargo.html', {
-                'form': form,
-                'error': 'Ha ocurrido un error, intente de nuevo.'
+            messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
+            return render(request, 'cargo_crud.html', {
+                'form': form(),
+                'cargo': cargo
             })
+            
+@staff_member_required(login_url='signin')
+def deactivate_cargo(request, cargo_id):
+    cargo = get_object_or_404(Cargo, pk=cargo_id)
+    if request.method == 'POST':
+        cargo.is_active = False
+        cargo.save()
+    return redirect('seeCargos')
+
 
 @staff_member_required(login_url='signin')
 def addCargo(request):
     if request.method == 'GET':
-        return render(request, 'addCargo.html', {
+        return render(request, 'cargo_crud.html', {
             'form': CargoForm()
         })
     else:
@@ -760,9 +781,9 @@ def addCargo(request):
             form.save()
             return redirect('seeCargos')
         else:
-            return render(request, 'addCargo.html', {
+            messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
+            return render(request, 'cargo_crud.html', {
                 'form': form,
-                'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
 @staff_member_required(login_url='signin')

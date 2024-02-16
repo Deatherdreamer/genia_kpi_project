@@ -1,0 +1,42 @@
+{% extends 'main.html' %}
+
+{% load static %}
+{% load custom_tags %}
+
+{% block content %}
+    <main class="container">
+        <div class="row justify-center">
+            <div class="col-md-4">
+                <div class="card border-0 shadow mt-4">
+                    <div class="card-body">
+                        <h4 class="text-center card-title">Competencia</h4>
+                        <h5 class="text-center card-title fs-3">{{ competencia.nombre|title }}</h5>
+                        <h6 class="text-center card-subtitle">Aplica para el nivel {{ competencia.nivel|title }}</h6>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'seeCompetences' %}" class="btn btn-primary btn-block">Volver</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card card-body border-0 shadow mt-4">
+                    <h5 class="cart-title">Descripción</h5>
+                    <p class="card-text">{{ competencia.descripcion }}</p>
+                    <hr>
+                    <h5 class="cart-title">1 - No hay Dominio</h5>
+                    <p class="card-text">{{ competencia.significado1 }}</p>
+                    <hr>
+                    <h5 class="cart-title">2 - Dominio Básico</h5>
+                    <p class="card-text">{{ competencia.significado2 }}</p>
+                    <hr>
+                    <h5 class="cart-title">3 - Dominio Parcial</h5>
+                    <p class="card-text">{{ competencia.significado3 }}</p>
+                    <hr>
+                    <h5 class="cart-title">4 - Dominio Superior</h5>
+                    <p class="card-text">{{ competencia.significado4 }}</p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
