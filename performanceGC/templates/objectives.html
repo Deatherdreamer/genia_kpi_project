@@ -1,6 +1,7 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
+
   <main class="container">
     <section class="row justify-content-center">
       <div class="col-md-4 my-4">
@@ -19,6 +20,11 @@
             <div class="card card-body my-4 border-dark rounded-4">
               <div class="chart-container mx-auto " style="position: relative; max-width: 256px; height: auto;">
                 <canvas id="completionChart"></canvas>
+              </div>
+            </div>
+            <div class="card card-body my-4 border-dark rounded-4">
+              <div class="chart-container mx-auto " style="position: relative; max-width: 256px; height: auto;">
+                <canvas id="status_chart"></canvas>
               </div>
             </div>
             <div class="card card-body my-4 border-dark rounded-4">
@@ -196,7 +202,7 @@
         }]
     };
     new Chart(ctx, {
-        type: 'pie',
+        type: 'doughnut',
         data,
         options: {
             indexAxis: 'y',
@@ -211,6 +217,48 @@
                 }
             }
         }
+    });
+
+    const ctx1 = document.getElementById('status_chart');
+    new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: [
+          'Aprobados',
+          'Por Aprobar'
+        ],
+        datasets: [{
+          axis: 'y',
+          label: 'Objetivos',
+          data: [
+            '{{empleado.cantidad_objetivos_por_estado.0}}',
+            '{{empleado.cantidad_objetivos_por_estado.1}}'
+          ],
+          fill: false,
+          backgroundColor: [
+            'rgba(0,123,255,0.8)', // blue
+            'rgba(255,165,0,0.8)', // orange
+          ],
+          borderColor: [
+            'rgb(0,123,255)', // blue
+            'rgb(255,165,0)', // orange
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: {
+          datalabels: { // This code is used to display data values
+            color: 'black',
+            formatter: Math.round,
+            font: {
+              weight: 'bold',
+              size: 24
+            }
+          }
+        }
+      }
     });
 
     {% if empleado.distribucionObjetivosCantidad != None %}

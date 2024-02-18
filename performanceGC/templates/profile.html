@@ -4,6 +4,8 @@
 
 {% block content %}
 
+
+
 <main class="container">
     <section class="row">
         <div class="col-lg-4 col-sm-12 my-2 p-2">
@@ -212,9 +214,9 @@
                         <div class="row justify-content-center my-2">
                             <div class="col-md px-1">
                                 <div class="card card-body border-1 border-secondary rounded-4">
-                                    <h6 class="text-center">Estatus de objetivos</h6>
+                                    <h6 class="text-center">Estado de los objetivos</h6>
                                     <div class="chart-container">
-                                        <canvas id="distributionChart3"></canvas>
+                                        <canvas id="objetives_status"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -830,31 +832,40 @@
         }
     });
     {% endif %}
-    const ctx3 = document.getElementById('distributionChart3');
+    const ctx3 = document.getElementById('objetives_status');
     new Chart(ctx3, {
         type: 'doughnut',
         data: {
             labels: [
+                'Aprobados',
+                'Por Aprobar',
                 'Completados',
                 'Pendientes'
+                
             ],
             datasets: [{
                 axis: 'x',
-                label: 'TIPO',
+                label: 'Estado del Objetivo',
                 data: [
-                    '{{empleado.objetivosPorcentaje.2}}',
-                    '{{empleado.objetivosPorcentaje.5}}'
+                    '{{empleado.cantidad_objetivos_por_estado.0}}',
+                    '{{empleado.cantidad_objetivos_por_estado.1}}',
+                    '{{empleado.cantidad_objetivos_por_estado.2}}',
+                    '{{empleado.cantidad_objetivos_por_estado.3}}'
+                    
                 ],
                 fill: false,
                 backgroundColor: [
+                'rgba(0,123,255,0.8)', // blue
+                'rgba(255,165,0,0.8)', // orange
+                'rgba(34,187,51,0.8)',
 
-                    'rgba(75, 192, 192, 0.8)',
-                    'rgba(187,33,36,0.8)'
-                    
+                'rgba(187,33,36,0.8)',
                 ],
                 borderColor: [
-                    'rgb(75, 192, 192)',
-                    'rgba(187,33,36)'
+                'rgb(0,123,255)', // blue
+                'rgb(255,165,0)', 
+                'rgb(34,187,51)',
+                'rgba(187,33,36)'
                 ],
                 borderWidth: 1
             }]

@@ -227,7 +227,7 @@ class Cargo(models.Model):
         subordinados = list(Cargo.objects.filter(supervisor=self, is_active=True))
         for subordinado in subordinados:
             subordinados.extend(subordinado.subordinados())
-        return subordinados.sort(key=lambda x: x.nivel.valor)
+        return subordinados
     
     def subordinados_directos(self):
         return Cargo.objects.filter(supervisor=self, is_active=True).order_by('nivel__valor')
@@ -284,7 +284,7 @@ class Empleado(models.Model):
 
     def supervisor(self):
         return Empleado.objects.filter(cargo=self.cargo.supervisor, fechaEgreso__isnull=True).last()
-
+    
     def subordinados(self):  
         cargos = self.cargo.subordinados()
         empleados = Empleado.objects.filter(cargo__in=cargos, fechaEgreso__isnull=True)
@@ -310,6 +310,26 @@ class Empleado(models.Model):
     
     def cantidadObjetivosTotales(self):
         return self.objetivos_set.all().count()
+    
+    def cantidad_objetivos_por_estado(self):
+        objetivos = self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True))
+        aprobados = 0
+        no_aprobados = 0
+        completos = 0
+        incompletos = 0
+        for objetivo in objetivos:
+            if objetivo.is_aproved:
+                aprobados += 1
+            else:
+                no_aprobados += 1
+            if objetivo.porcentaje() >= 100:
+                completos += 1
+            else:
+                incompletos += 1
+        return int(aprobados), int(no_aprobados), int(completos), int(incompletos)
+
+        
+
     
     def cantidadActividades(self):
         objetivos = self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True))

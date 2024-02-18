@@ -26,6 +26,12 @@
                   <button type="submit" class="btn btn-lg btn-danger bi bi-trash w-100" onclick="return confirmDelete();">Eliminar</button>
                 </form>
               </div>
+              <div class="col">
+                <form action="{% url 'approveobjective' empleado.ficha objetivo.id %}" method="post" class="">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-lg btn-success bi bi-check-circle w-100" onclick="return confirm('¿Está seguro de aprobar este objetivo?')">Aprobar</button>
+                </form>
+              </div>
 
               <div class="col">
                 <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-secondary bi bi-arrow-return-left w-100">Regresar</a>

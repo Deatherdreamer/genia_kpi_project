@@ -20,7 +20,6 @@ from django.views.generic import ListView
 from django.contrib import messages
 
 
-
 def index(request):
     return render(request, 'index.html')
 
@@ -60,7 +59,12 @@ def masterEmployee(request):
         empleados = Empleado.objects.all().order_by(
             'cargo__nivel__valor').exclude(fechaEgreso__isnull=False)
     else:
-        empleados = request.user.empleado.subordinados()
+        usuario = request.user
+        print(usuario)
+        empleado = usuario.empleado
+        print(empleado)
+        empleados = empleado.subordinados().exclude(fechaEgreso__isnull=False)
+
     return render(request, 'master.html', {
         'empleados': empleados
     })
@@ -303,6 +307,9 @@ def editObjectives(request, e_ficha, o_id):
     if request.user != objetivo.createdBy and not request.user.is_staff and not empleado in request.user.empleado.subordinados():
         messages.error(request, 'ERROR. No tiene permisos para editar el objetivo.')
         return redirect('objectives', e_ficha=empleado.ficha)
+    if objetivo.is_aproved:
+        messages.error(request, 'ERROR. No se puede editar el objetivo porque ya fue aprobado.')
+        return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'GET':
         return render(request, 'editObjetive.html', {
             'objetivo': objetivo,
@@ -319,6 +326,9 @@ def editObjectives(request, e_ficha, o_id):
 def deleteObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    if objetivo.is_aproved:
+        messages.error(request, 'ERROR. No se puede eliminar el objetivo porque ya fue aprobado.')
+        return redirect('objectives', e_ficha=empleado.ficha)
     if request.user != objetivo.createdBy:
         messages.error(request, 'ERROR. No se puede eliminar el objetivo porque no fue creado por usted.')
         return redirect('objectives', e_ficha=empleado.ficha)
@@ -327,6 +337,24 @@ def deleteObjectives(request, e_ficha, o_id):
         return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'POST':
         objetivo.delete()
+    return redirect('objectives', e_ficha=empleado.ficha)
+
+@login_required(login_url='signin')
+def approve_objective(request, e_ficha, o_id):
+    empleado = get_object_or_404(Empleado, ficha=e_ficha)
+    objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    empleado_aprobador = request.user.empleado
+    if objetivo.is_aproved:
+        messages.error(request, 'ERROR. El objetivo ya fue aprobado.')
+        return redirect('objectives', e_ficha=empleado.ficha)
+    if not empleado in empleado_aprobador.subordinados() and not request.user.is_staff:
+        messages.error(request, 'ERROR. No tiene permisos para aprobar el objetivo.')              
+    elif request.method == 'POST':
+        objetivo.is_aproved = True
+        objetivo.aproved_by = request.user
+        objetivo.save()
+    else:
+        messages.error(request, 'ERROR. No se pudo aprobar el objetivo.')
     return redirect('objectives', e_ficha=empleado.ficha)
 
 
