@@ -6,35 +6,95 @@ admin.site.site_title = "Genia Performance 360 Pro"
 admin.site.site_header = "Genia Performance 360 Pro"
 admin.site.index_title = "Panel de Administración Genia Performance 360 Pro"
 
+@admin.register(Nivel)
+class NivelAdmin(SimpleHistoryAdmin):
+    search_fields = ('nivel',)
+    list_display = ('nivel',)
+    
+@admin.register(Niveles)
+class NivelesAdmin(SimpleHistoryAdmin):
+    search_fields = ('valor','nivel')
+    list_display =  ('valor','nivel')
+
+    
+@admin.register(Direccion)
+class DireccionAdmin(SimpleHistoryAdmin):
+    search_fields = ('nombre',)
+    list_display = ('nombre',)
+    
+@admin.register(Departamento)
+class DepartamentoAdmin(SimpleHistoryAdmin):
+    search_fields = ('nombre',)
+    list_display = ('nombre',)
+    
+@admin.register(Gerencia)
+class GerenciaAdmin(SimpleHistoryAdmin):
+    search_fields = ('nombreText', 'direccion', 'departamento' )
+    list_display = ('nombreText', 'direccion', 'departamento' )
+    
+@admin.register(Distribucion)
+class DistribucionAdmin(SimpleHistoryAdmin):
+    search_fields = ('nivel','departamento')
+    list_display = ('nivel','departamento')
+
+@admin.register(DistribucionObjetivo)
+class DistribucionObjetivoAdmin(SimpleHistoryAdmin):
+    search_fields = ('tipo','peso','distribucion')
+    list_display = ('tipo','peso','distribucion')
+
+@admin.register(Cargo)
+class CargoAdmin(SimpleHistoryAdmin):
+    search_fields = ('nombreText','supervisor','gerencia','direccion','nivel',)
+    list_display = ('nombreText','supervisor','gerencia','direccion','nivel',)
+
 @admin.register(Empleado)
 class EmpleadoAdmin(SimpleHistoryAdmin):
-    search_fields = ('ficha', 'nombre', 'apellido')
-    list_display = ('ficha', 'nombre', 'apellido')
+    search_fields = ('ficha', 'nombre', 'apellido', 'cargo')
+    list_display = ('ficha', 'nombre', 'apellido', 'cargo')
+    
+@admin.register(Periodo)
+class PeriodoAdmin(SimpleHistoryAdmin):
+    search_fields = ('año_inicio','año_fin','is_active',)
+    list_display = ('año_inicio','año_fin','is_active',)
+    
+@admin.register(Company_Objectives)
+class Company_ObjectivesAdmin(SimpleHistoryAdmin):
+    search_fields = ('title','description','period', )
+    list_display = ('title','description','period', )
+    
+@admin.register(Announcements)
+class AnnouncementsAdmin(SimpleHistoryAdmin):
+    search_fields = ('title','text','date', )
+    list_display = ('title','text','date', )
+    
+@admin.register(Objetivos)
+class ObjetivosAdmin(SimpleHistoryAdmin):
+    search_fields = ('texto','empleado','tipo','periodo', )
+    list_display = ('texto','empleado','tipo','periodo', )
+    
+@admin.register(Objectives_notes)
+class Objectives_notesAdmin(SimpleHistoryAdmin):
+    search_fields = ('note','objetivo' )
+    list_display = ('note','objetivo' )
+    
+@admin.register(Actividades)
+class ActividadesAdmin(SimpleHistoryAdmin):
+    search_fields = ('texto','objetivo','estado', )
+    list_display = ('texto','objetivo','estado', )
+    
+@admin.register(Competencias)
+class CompetenciasAdmin(SimpleHistoryAdmin):
+    search_fields = ('nombre','descripcion', )
+    list_display = ('nombre','descripcion', )
+    
+@admin.register(comentarios)
+class comentariosAdmin(SimpleHistoryAdmin):
+    search_fields = ('comentario','de','fecha', )
+    list_display = ('comentario','de','fecha', )
+    
+@admin.register(Preguntas_Frecuentes)
+class Preguntas_FrecuentesAdmin(SimpleHistoryAdmin):
+    search_fields = ('pregunta','respuesta', )
+    list_display = ('pregunta','respuesta', )
+    
 
-
-
-admin.site.register(Cargo)
-admin.site.register(Gerencia)
-admin.site.register(Niveles)
-admin.site.register(Direccion)
-admin.site.register(Competencias)
-admin.site.register(Evaluacion)
-admin.site.register(Periodo)
-admin.site.register(Objetivos)
-admin.site.register(Actividades)
-admin.site.register(EvaluacionDesempeno)
-admin.site.register(EvaluacionObjetivo)
-admin.site.register(ObjetivoActividad)
-admin.site.register(EvaluacionCompetencia)
-admin.site.register(Nivel)
-admin.site.register(comentarios)
-admin.site.register(Departamento)
-admin.site.register(Distribucion)
-admin.site.register(DistribucionObjetivo)
-admin.site.register(Preguntas_Frecuentes)
-admin.site.register(Factores_de_evaluacion_PNS)
-admin.site.register(Evaluacion_PNS)
-admin.site.register(Evaluacion_PNS_BPO)
-admin.site.register(Announcements)
-admin.site.register(Company_Objectives)
-admin.site.register(Objectives_notes)

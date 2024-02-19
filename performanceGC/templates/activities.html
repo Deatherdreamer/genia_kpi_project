@@ -11,6 +11,7 @@
             <p class="card-text">Empleado: {{ empleado|title }}</p>
             <p class="card-text">{{ objetivo.periodo }}</p>
             <p class="card-text">Tipo: {{ objetivo.tipo }}</p>
+            <p class="card-text">Aprobación: {% if objetivo.is_aproved %}<span class="badge bg-success">Aprobado</span>{% else %}<span class="badge bg-danger">Pendiente</span>{% endif %}</p>
           </div>
           <div class="card-footer">
             <div class="row">
@@ -26,12 +27,23 @@
                   <button type="submit" class="btn btn-lg btn-danger bi bi-trash w-100" onclick="return confirmDelete();">Eliminar</button>
                 </form>
               </div>
+              {% if empleado in user.empleado.subordinados or user.is_staff %}
+              {% if objetivo.is_aproved %}
+              <div class="col">
+                <form action="{% url 'disapproveobjective' empleado.ficha objetivo.id %}" method="post" class="">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-lg btn-danger bi bi-x-circle w-100" onclick="return confirm('¿Está seguro de desaprobar este objetivo?')">Desaprobar</button>
+                </form>
+              </div>
+              {% else %}
               <div class="col">
                 <form action="{% url 'approveobjective' empleado.ficha objetivo.id %}" method="post" class="">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-lg btn-success bi bi-check-circle w-100" onclick="return confirm('¿Está seguro de aprobar este objetivo?')">Aprobar</button>
                 </form>
               </div>
+              {% endif %}
+              {% endif %}
 
               <div class="col">
                 <a href="{% url 'objectives' empleado.ficha %}" class="btn btn-lg btn-secondary bi bi-arrow-return-left w-100">Regresar</a>
@@ -45,6 +57,10 @@
       <div class="col-md-8">
         <div class="card card-body border-0 shadow">
           <h5 class="card-title text-center">Objetivos Especificos <span class="badge bg-secondary">{{ objetivo.actividades|length }}</span></h5>
+          {% comment %} progress bar {% endcomment %}
+          <div class="progress my-2" style="height: 40px;">
+            <div class="progress-bar progress-bar-striped bg-dark" role="progressbar" style="width: {{ objetivo.porcentaje|floatformat:0 }}%" aria-valuenow="{{ objetivo.porcentaje|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">{{ objetivo.porcentaje|floatformat:2 }}%</div>
+          </div>
           {% for act in objetivo.actividades %}
             <div class="card my-1">
               <div class="card-body border-start border-5 rounded-2 border-{% if act.estado %}success{% else %}danger{% endif %}">
@@ -62,7 +78,7 @@
                     <span class="badge bg-danger">Pendiente</span>
                   {% endif %}
                 </p>
-                <div class="d-flex">
+                <div class="d-flex border-1">
                   <form action="{% url 'completeactivity' empleado.ficha objetivo.id act.id %}" method="post" class="pe-1">
                     {% csrf_token %}
                     <button class="btn btn-outline-{% if act.estado %}danger{% else %}success{% endif %}" type="submit">
@@ -127,7 +143,7 @@
                         <small class="card-subtitle text-body-secondary">{{ note.created_by.empleado|title }}</small>
                       </p>
                       <small class="card-subtitle text-body-secondary">{{ note.created_at|date:'d/m/Y' }}</small>
-                      <div class="d-flex">
+                      <div class="d-flex border-1">
                         <form action="{% url 'discard_note' empleado.ficha objetivo.id note.id %}" method="post" class="pe-1">
                           {% csrf_token %}
                           <button type="submit" class="btn btn-outline-dark" onclick="return confirmDelete();"><i class="bi bi-trash"></i></button>

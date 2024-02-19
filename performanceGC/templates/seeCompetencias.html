@@ -33,7 +33,6 @@
                                     <th scope="col">Competencia</th>
                                     <th scope="col">Descripción</th>
                                     <th scope="col"></th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,11 +40,11 @@
                                 <tr>
                                     <td>{{competencia.nombre|title}}</td>
                                     <td>{{competencia.descripcion}}</td>
-                                    <td>
+                                    <td class="text-end">
                                         <a href="{% url 'competencedetails' competencia.id %}" class="btn btn-dark bi bi-eye">
                                         </a>
-                                    </td>
-                                    <td>
+                                    
+                                    
                                         <a href="{% url 'editCompetence' competencia.id %}" class="btn btn-dark bi bi-pencil-square">
                                         </a>     
                                         

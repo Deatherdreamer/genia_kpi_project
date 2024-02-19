@@ -12,7 +12,7 @@
             <h5 class="text-center card-title fs-3">{{ cargo.nombreText }}</h5>
             <h6 class="text-center card-subtitle">{{ cargo.nombre_infocent }}</h6>
             <hr>
-            <p class="card-text">Nivel: {{ cargo.nivel|title }}</p>
+            <p class="card-text">{{ cargo.nivel|title }}</p>
             <p class="card-text">
               Estado:{% if cargo.empleados_activos_asociados.count > 0 %}
                 <span class="badge bg-success">Ocupado</span>
@@ -29,13 +29,19 @@
             </p>
             <p class="card-text">
               Supervisor:{% if cargo.supervisor %}
-                <a href="{% url 'cargodetails' cargo.supervisor.id %}">{{ cargo.supervisor }}</a>
+                <a class="text-decoration-none" href="{% url 'cargodetails' cargo.supervisor.id %}">{{ cargo.supervisor }}</a>
               {% else %}
                 No tiene
               {% endif %}
             </p>
             <p class="card-text">Colaboradores asociados: {{ cargo.empleados_activos_asociados.count }}</p>
-            <p class="card-text">Gerencia: {{ cargo.gerencia }}</p>
+            <p class="card-text">Gerencia: 
+              {% if cargo.gerencia == None %}
+                No tiene
+              {% else %}                
+              <a href="{% url 'gerenciadetails' cargo.gerencia.id %}" class="text-decoration-none">{{ cargo.gerencia }}</a>
+              {% endif %}
+            </p>
             <p class="card-text">Departamento: {{ cargo.gerencia.departamento }}</p>
             <p class="card-text">Dirección: {{ cargo.gerencia.direccion }}</p>
           </div>
@@ -49,7 +55,6 @@
       </div>
       <div class="col">
         <div class="card card-body border-0 shadow mt-3">
-          <!-- Bordered Tabs Justified -->
           <ul class="nav nav-underline nav-fill" id="borderedTabJustified" role="tablist">
             <li class="nav-item flex-fill" role="presentation">
               <button class="nav-link w-100 active" id="home-tab" data-bs-toggle="tab" data-bs-target="#bordered-justified-home" type="button" role="tab" aria-controls="home" aria-selected="true">Personal Activo</button>

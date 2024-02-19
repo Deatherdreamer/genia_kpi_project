@@ -54,7 +54,9 @@
                   <p class="card-text m-0">{{ obj.tipo }}</p>
                   <p class="card-text">
                     {% if obj.is_aproved %}
-                      <span class="badge bg-success">Aprobado</span>
+                      <span class="badge bg-success">Aprobado</span> 
+                      por {{ obj.aproved_by.empleado|title }}
+
                     {% else %}
                       <span class="badge bg-danger">Por Aprobar</span>
                     {% endif %}

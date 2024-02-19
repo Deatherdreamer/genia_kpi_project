@@ -6,7 +6,7 @@
 {% block content %}
   <div class="container">
     <form 
-    action= "{% if form.instance.pk %} {% url 'editCargo' form.instance.pk %} {% else %} {% url 'addCargo' %} {% endif %}"
+    action= "{% if form.instance.pk %} {% url 'editCargo' empleado.ficha form.instance.pk %} {% else %} {% url 'addCargo' %} {% endif %}"
     method="POST"
     id="form"
     class="card border-0 shadow mt-4">
@@ -24,17 +24,21 @@
         <div class="row">
           {% for field in form %}
             <div class="form-group my-2 col-md-6">
-              <strong class="">{{ field.label_tag }}</strong>
+              <strong class="">
+                {% if field.field.required %}
+                <span class="text-danger">*</span>
+                {% endif %}
+                {{ field.label_tag }}                
+              </strong>
               {% if field.help_text %}
                 <p class="mb-0">
                   <small class="form-text text-muted">{{ field.help_text }}</small>
                 </p>
               {% endif %}
-              {{ field }}
-
               {% for error in field.errors %}
-                <p style="color: red">{{ error }}</p>
+                  <p class="mb-0" style="color: red">{{ error }}</p>
               {% endfor %}
+              {{ field }}
             </div>
           {% endfor %}
         </div>

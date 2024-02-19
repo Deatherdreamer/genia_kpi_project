@@ -20,6 +20,8 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
 
+handler404 = 'performanceGC.views.error_404'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('performanceGC.urls')),

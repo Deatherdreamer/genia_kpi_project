@@ -65,8 +65,6 @@
                             <th scope="col">Estado</th>
 
                             <th scope="col"></th>
-                            <th></th>
-                            <th></th>
 
                         </tr>
 
@@ -91,23 +89,15 @@
 
                             <td>{% if cargo.is_active %} Activo {% else %} Inactivo {% endif %}</td>
 
-                            <td >
-                                    <a href="{% url 'editCargo' cargo.id %}" class="btn btn-sm btn-dark">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-
-                                                                
-                         
-                                
-
-                            </td>
-                            
-                            <td>
+                            <td class="text-end ">   
                                 <a href="{% url 'cargodetails' cargo.id %}" class="btn btn-sm btn-info">
                                     <i class="bi bi-eye"></i>
                                 </a>    
-                            </td>
-                            <td>
+
+                                    <a href="{% url 'editCargo' cargo.id %}" class="btn btn-sm btn-dark">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                               
                                 <form action="{% url 'deactivatecargo' cargo.id %}" method="post" id="form-{{cargo.id}}">
                                     {% csrf_token %}
                                     <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal" onclick="deactivateModalTexts('Confirmar Desactivación','¿Está seguro que desea desactivar el cargo {{cargo.nombreText|title}}?', document.getElementById('form-{{cargo.id}}'))">

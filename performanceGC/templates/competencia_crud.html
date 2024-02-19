@@ -4,10 +4,11 @@
   <main class="container">
     <div class="row justify-content-center mt-4">
       <div class="col-md">
-        <form action="{% if form.instance.id %}
-            {% url 'editactivities' empleado.ficha objetivo.id form.instance.id %}
+        <form action="
+        {% if form.instance.id %}
+            {% url 'editCompetence' form.instance.id %}
           {% else %}
-            {% url 'newactivity' empleado.ficha objetivo.id %}
+            {% url 'addCompetence' %}
           {% endif %}"
           method="POST"
           id="form"
@@ -15,21 +16,18 @@
           <div class="card-header bg-primary text-white">
             <h3 class="mb-0 text-center card-title">
               {% if form.instance.pk %}
-                Editar Objetivo Especifico
+                Editar Competencia
               {% else %}
-                Agregar Objetivo Especifico
+                Agregar Competencia
               {% endif %}
             </h3>
           </div>
           <div class="card-body">
-            <h4 class="card-title">Objetivo General</h4>
-            <p class="card-text mb-0 fw-bolder">{{ objetivo.texto }}</p>
-            <p class="card-text mb-0">Para el colaborador: {{ empleado|title }}</p>
-            <hr />
             {% csrf_token %}
             <div class="row">
               {% for field in form %}
-                <div class="form-group my-2 col-md">
+              {% if field.name == 'descripcion' %}
+                <div class="form-group my-2 col-md-12">
                   <strong class="">
                     {% if field.field.required %}
                       <span class="text-danger">*</span>
@@ -46,6 +44,25 @@
                   {% endfor %}
                   {{ field }}
                 </div>
+                {% else %}
+                <div class="form-group my-2 col-md-6">
+                    <strong class="">
+                      {% if field.field.required %}
+                        <span class="text-danger">*</span>
+                      {% endif %}
+                      {{ field.label_tag }}
+                    </strong>
+                    {% if field.help_text %}
+                      <p class="mb-0">
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                      </p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                      <p class="mb-0" style="color: red">{{ error }}</p>
+                    {% endfor %}
+                    {{ field }}
+                  </div>
+                {% endif %}
               {% endfor %}
             </div>
           </div>
@@ -53,14 +70,14 @@
             <div class="row">
               <div class="col-md-6">
                 {% if form.instance.pk %}
-                  <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Editar objetivo especifico', '¿Está seguro que desea editar el objetivo especifico?')">Guardar</button>
+                  <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Editar competencia', '¿Está seguro que desea editar la competencia?')">Guardar</button>
                 {% else %}
-                  <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Agregar objetivo especifico', '¿Está seguro que desea agregar el objetivo especifico?')">Guardar</button>
+                  <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Agregar competencia', '¿Está seguro que desea agregar la competencia?')">Guardar</button>
                 {% endif %}
               </div>
 
               <div class="col-md-6">
-                <a href="{% url 'activities' empleado.ficha objetivo.id %}" class="btn btn-lg btn-danger w-100">Cancelar</a>
+                <a href="{% url 'seeCompetences' %}" class="btn btn-lg btn-danger w-100">Cancelar</a>
               </div>
             </div>
           </div>

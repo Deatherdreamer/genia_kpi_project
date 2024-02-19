@@ -57,70 +57,74 @@
                 </div>
             </div>
             <div class="card card-body border-0 shadow-lg mt-3">
-                <table class="table table-sm table-borderless">
-                    <tbody>
-                        <tr>
-                            <th scope="row">Estado</th>
-                            {% if empleado.usuario.is_superuser %}
-                            <td><span class="badge bg-warning">Super Administrador</span></td>
-                            {% elif empleado.usuario.is_staff %}
-
-                            <td><span class="badge bg-success">Activo</span><span class="badge bg-warning">Admin</span>
-                            </td>
-                            {% elif empleado.fechaEgreso %}
-                            <td><span class="badge bg-danger">Egresado</span></td>
-                            {% else %}
-                            <td><span class="badge bg-success">Activo</span></td>
+                <div class="table-responsive">
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Estado</th>
+                                {% if empleado.usuario.is_superuser %}
+                                <td><span class="badge text-bg-warning">Super Administrador</span></td>
+                                {% elif empleado.usuario.is_staff %}
+    
+                                <td><span class="badge bg-success">Activo</span><span class="badge text-bg-warning">Admin</span>
+                                </td>
+                                {% elif empleado.fechaEgreso %}
+                                <td><span class="badge bg-danger">Egresado</span></td>
+                                {% else %}
+                                <td><span class="badge bg-success">Activo</span></td>
+                                {% endif %}
+                            </tr>
+    
+                            <tr>
+                                <th scope="row">Ficha</th>
+                                <td>{{empleado.ficha|title}}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Supervisor</th>
+                                {% if empleado.supervisor %}
+                                <td>
+                                    <a class="text-decoration-none" href="{% url 'profile' empleado.supervisor.ficha %}">{{empleado.supervisor|title}}</a>
+                                </td>
+                                {% elif empleado.cargo.supervisor %}
+                                <td>
+                                    <a class="text-decoration-none" href="{% url 'cargodetails' empleado.cargo.supervisor.id %}">{{empleado.cargo.supervisor|title}}</a><span class="badge bg-danger">VACANTE</span>
+                                </td>
+                                {% else %}
+                                <td>
+                                   No tiene
+                                </td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                {% if empleado.cargo.gerencia %}
+                                <th scope="row">Gerencia</th>
+                                <td>
+                                    <a class="text-decoration-none" href="{% url 'gerenciadetails' empleado.cargo.gerencia.id %}">{{empleado.cargo.gerencia|title}}</a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                {% if empleado.cargo.gerencia.direccion %}
+                                <th scope="row">Direccion</th>
+                                <td>
+                                    <a class="text-decoration-none" href="{% url 'direcciondetails' empleado.cargo.gerencia.direccion.id %}">{{empleado.cargo.gerencia.direccion|title}}</a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <th scope="row">Fecha Ingreso</th>
+                                <td>{{empleado.fechaIngreso|date:"SHORT_DATE_FORMAT"}}</td>
+                            </tr>
+                            {% if empleado.fechaEgreso %}
+                            <tr>
+                                <th scope="row">Fecha Egreso</th>
+                                <td>{{empleado.fechaEgreso|date:"SHORT_DATE_FORMAT"}}</td>
+                            </tr>
                             {% endif %}
-                        </tr>
-
-                        <tr>
-                            <th scope="row">Ficha</th>
-                            <td>{{empleado.ficha|title}}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Supervisor</th>
-                            {% if empleado.supervisor %}
-                            <td><a
-                                    href="{% url 'profile' empleado.supervisor.ficha %}">{{empleado.supervisor|title}}</a>
-                            </td>
-                            {% elif empleado.cargo.supervisor %}
-                            <td>
-                                <span class="badge bg-danger">VACANTE</span>{{empleado.cargo.supervisor|title}}
-                            </td>
-                            {% else %}
-                            <td>
-                                N/A
-                            </td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            {% if empleado.cargo.gerencia %}
-                            <th scope="row">Gerencia</th>
-                            <td><a
-                                    href="{% url 'gerenciadetails' empleado.cargo.gerencia.id %}">{{empleado.cargo.gerencia|title}}</a>
-                            </td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            {% if empleado.cargo.gerencia.direccion %}
-                            <th scope="row">Direccion</th>
-                            <td>{{empleado.cargo.gerencia.direccion|title}}</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <th scope="row">Fecha Ingreso</th>
-                            <td>{{empleado.fechaIngreso|date:"SHORT_DATE_FORMAT"}}</td>
-                        </tr>
-                        {% if empleado.fechaEgreso %}
-                        <tr>
-                            <th scope="row">Fecha Egreso</th>
-                            <td>{{empleado.fechaEgreso|date:"SHORT_DATE_FORMAT"}}</td>
-                        </tr>
-                        {% endif %}
-
-                    </tbody>
-                </table>
+    
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-lg my-2 p-2">
@@ -149,7 +153,7 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="minion-tab" data-bs-toggle="tab" data-bs-target="#minion-tab-pane"
                             type="button" role="tab" aria-controls="minion-tab-pane"
-                            aria-selected="false">Colaboradores</button>
+                            aria-selected="false">Colaborador{{cargo.subordinados_directos.count|pluralize:"es"}}</button>
                     </li>
                     {% endif %}
                     <li class="nav-item" role="presentation">
@@ -233,12 +237,12 @@
                     </div>
                     <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
                         tabindex="0">
-                        <div class="row justify-content-center mt-2">
-                            <div class="col-sm-6 text-center">
-                                <a class="btn btn-primary" href="{% url 'objectives' empleado.ficha %}">Ver Objetivos</a>
+                        <div class="row mt-2">
+                            <div class="col text-center">
+                                <a class="btn btn-lg btn-primary bi bi-eye w-100" href="{% url 'objectives' empleado.ficha %}"> Ver Objetivos</a>
                             </div>
-                            <div class="col-sm-6 text-center">
-                                <a class="btn btn-primary" href="{% url 'newobjective' empleado.ficha %}">Añadir Objetivo</a>
+                            <div class="col text-center">
+                                <a class="btn btn-lg btn-primary bi bi-file-earmark-plus w-100" href="{% url 'newobjective' empleado.ficha %}"> Nuevo Objetivo</a>
                             </div>
                         </div>
                         <div class="row my-2">
@@ -246,12 +250,12 @@
                                 <div class="card card-body border-1 border-secondary rounded-4 p-0">
                                     <h6 class="text-center mt-2 mb-0">Porcentaje</h6>
                                     <div class="progress m-3" style="height: 40px;">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark lead fw-bold"
+                                        <div class="progress-bar progress-bar-striped progress-bar bg-dark lead fw-bold"
                                             role="progressbar" aria-label="Example 20px high"
                                             style="width: {{empleado.objetivosPorcentaje.0|floatformat:0}}%; "
                                             aria-valuenow="{{empleado.objetivosPorcentaje.0}}" aria-valuemin="0"
                                             aria-valuemax="100">
-                                            {{empleado.objetivosPorcentaje.0|floatformat}}% Completado
+                                            {{empleado.objetivosPorcentaje.0|floatformat}}%
                                         </div>
                                     </div>
                                 </div>
@@ -718,7 +722,7 @@
                 </div>
             </div>
             {% else %}
-            <div class="card card-body h-100">
+            <div class="card card-body h-100 border-0 shadow">
                 <div class="text-center">
                     <p class="fs-1 ">
                         Lo sentimos, no tiene permisos para visualizar

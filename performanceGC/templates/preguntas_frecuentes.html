@@ -1,26 +1,28 @@
 {% extends 'main.html' %}
-
+{% load static %}
 {% block content %}
-  <h4 class="text-center mt-4">Preguntas Frecuentes</h4>
-  <section class="row justify-content-center">
-    <div class="col-md-9">
-      <div class="card card-body border-0 shadow">
-        <div class="accordion" id="accordionExample">
-          {% for pregunta in preguntas_frecuentes %}
-            <div class="accordion-item">
-              <h3 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">{{pregunta.pregunta}}</button></h3>
-              <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  {{pregunta.respuesta}}
+  <main class="container">
+    <section class="row justify-content-center">
+      <div class="col">
+        <div class="card card-body border-0 shadow mt-4">
+          <h4 class="text-center">Preguntas frecuentes</h4>
+          <div class="accordion accordion-flush" id="competencesAccordion">
+            {% for pregunta in preguntas_frecuentes %}
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-heading{{ pregunta.id }}"><button class="accordion-button collapsed fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ pregunta.id }}" aria-expanded="false" aria-controls="flush-collapse{{ pregunta.id }}">{{ pregunta.pregunta|title }}</button></h2>
+                <div id="flush-collapse{{ pregunta.id }}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{ pregunta.id }}" data-bs-parent="#competencesAccordion">
+                  <div class="accordion-body">
+                    <h5 class="cart-title">Respuesta:</h5>
+                    <p class="card-text">{{ pregunta.respuesta }}</p>
+
+
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {% empty %}
-            <div>No hay preguntas frecuentes en este momento.</div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 {% endblock %}

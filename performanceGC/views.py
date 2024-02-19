@@ -23,6 +23,9 @@ from django.contrib import messages
 def index(request):
     return render(request, 'index.html')
 
+def error_404(request, exception):
+    messages.error(request, 'ERROR 404. Página no encontrada. Redirigiendo al inicio.')
+    return redirect('index')
 # def debugTests(request):
 #     competencias = Competencias.objects.all()
 #     return render(request, 'cosasraras.html',
@@ -59,11 +62,7 @@ def masterEmployee(request):
         empleados = Empleado.objects.all().order_by(
             'cargo__nivel__valor').exclude(fechaEgreso__isnull=False)
     else:
-        usuario = request.user
-        print(usuario)
-        empleado = usuario.empleado
-        print(empleado)
-        empleados = empleado.subordinados().exclude(fechaEgreso__isnull=False)
+        empleados = request.user.empleado.subordinados()
 
     return render(request, 'master.html', {
         'empleados': empleados
@@ -230,7 +229,10 @@ def editPeriodo(request, id):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@login_required
+# Views to interact with objectives.
+
+# view to see the objectives of an employee
+@login_required(login_url='signin')
 def objectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     periodo = Periodo.objects.get(is_active=True)
@@ -241,7 +243,8 @@ def objectives(request, e_ficha):
         'objetivos': objetivos
     })
 
-@login_required
+# view to create an objective
+@login_required(login_url='signin')
 def createObjectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     periodo = Periodo.objects.get(is_active=True)
@@ -267,42 +270,19 @@ def createObjectives(request, e_ficha):
                 messages.success(request, 'Objetivo creado exitosamente.')
                 return redirect('objectives', e_ficha=empleado.ficha)
         else:
+            messages.error(request, 'ERROR. No se pudo crear el objetivo.')
             return render(request, 'crudObjectives.html', {
-                'form': form,
-                'error': 'Ha ocurrido un error, intente de nuevo.',
                 'periodo': periodo,
-                'empleado': empleado,            
+                'empleado': empleado,
+                'form': form
             })
-    
-    
-    # if request.method == 'GET':
-    #     return render(request, 'crudObjectives.html', {
-    #         'periodo': periodo,
-    #         'empleado': empleado,
-    #         'tipos': empleado.distribucionObjetivos()})
-    # else:
-    #     form = ObjectivesForm(request.POST)
-    #     if form.is_valid():
-    #         newObjective = form.save(commit=False)
-    #         newObjective.empleado = empleado
-    #         newObjective.periodo = periodo
-    #         newObjective.save()
-    #         return redirect('objectives', e_ficha=empleado.ficha)
-    #     else:
-    #         return render(request, 'crudObjectives.html', {
-    #             'form': form,
-    #             'periodo': periodo,
-    #             'empleado': empleado,
-    #             'tipos': empleado.distribucionObjetivos(),
-    #             'error': 'Ha ocurrido un error, intente de nuevo.'
-    #         })
             
-        
-
-@login_required
+# view to edit an objective       
+@login_required(login_url='signin')
 def editObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    periodo = Periodo.objects.get(is_active=True)
     
     if request.user != objetivo.createdBy and not request.user.is_staff and not empleado in request.user.empleado.subordinados():
         messages.error(request, 'ERROR. No tiene permisos para editar el objetivo.')
@@ -311,17 +291,20 @@ def editObjectives(request, e_ficha, o_id):
         messages.error(request, 'ERROR. No se puede editar el objetivo porque ya fue aprobado.')
         return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'GET':
-        return render(request, 'editObjetive.html', {
+        return render(request, 'crudObjectives.html', {
             'objetivo': objetivo,
             'empleado': empleado,
-            'form': ObjectivesForm(instance=objetivo)
+            'periodo': periodo,
+            'form': ObjectivesForm(instance=objetivo, empleado=empleado),           
         })
     else:
         form = ObjectivesForm(request.POST, instance=objetivo)
         newObjective = form.save(commit=False)
         newObjective.save()
+        messages.success(request, 'Objetivo modificado exitosamente.')
         return redirect('objectives', e_ficha=empleado.ficha)
 
+# view to delete an objective
 @login_required
 def deleteObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -339,16 +322,17 @@ def deleteObjectives(request, e_ficha, o_id):
         objetivo.delete()
     return redirect('objectives', e_ficha=empleado.ficha)
 
+# view to approve an objective
 @login_required(login_url='signin')
 def approve_objective(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
     empleado_aprobador = request.user.empleado
-    if objetivo.is_aproved:
-        messages.error(request, 'ERROR. El objetivo ya fue aprobado.')
-        return redirect('objectives', e_ficha=empleado.ficha)
+    
     if not empleado in empleado_aprobador.subordinados() and not request.user.is_staff:
-        messages.error(request, 'ERROR. No tiene permisos para aprobar el objetivo.')              
+        messages.error(request, 'ERROR. No tiene permisos para aprobar el objetivo.')    
+    elif objetivo.is_aproved:
+        messages.error(request, 'ERROR. El objetivo ya fue aprobado.')
     elif request.method == 'POST':
         objetivo.is_aproved = True
         objetivo.aproved_by = request.user
@@ -357,18 +341,27 @@ def approve_objective(request, e_ficha, o_id):
         messages.error(request, 'ERROR. No se pudo aprobar el objetivo.')
     return redirect('objectives', e_ficha=empleado.ficha)
 
-
-@login_required
-def activities(request, e_ficha, o_id):
+# view to disapprove an objective
+@login_required(login_url='signin')
+def disapprove_objective(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
-    objetivo = empleado.objetivos_set.get(pk=o_id)
-    return render(request, 'activities.html', {
-        'empleado': empleado,
-        'objetivo': objetivo,
-        'form': ObjectivesNotesForm(),
-    })
+    objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+    empleado_aprobador = request.user.empleado
     
-@login_required
+    if not empleado in empleado_aprobador.subordinados() and not request.user.is_staff:
+        messages.error(request, 'ERROR. No tiene permisos para desaprobar el objetivo.')    
+    elif not objetivo.is_aproved:
+        messages.error(request, 'ERROR. El objetivo no ha sido aprobado.')
+    elif request.method == 'POST':
+        objetivo.is_aproved = False
+        objetivo.aproved_by = None
+        objetivo.save()
+    else:
+        messages.error(request, 'ERROR. No se pudo desaprobar el objetivo.')
+    return redirect('objectives', e_ficha=empleado.ficha)
+
+# view to add a note to an objective
+@login_required(login_url='signin')
 def add_note_to_objective(request, e_ficha, o_id):
     if request.method == 'POST':
         empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -386,6 +379,7 @@ def add_note_to_objective(request, e_ficha, o_id):
         messages.error(request, 'ERROR')
         return redirect('objectives', e_ficha=empleado.ficha)
     
+# view to discard a note from an objective    
 @login_required   
 def discard_note_from_objective(request, e_ficha, o_id, note_id):    
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -398,7 +392,18 @@ def discard_note_from_objective(request, e_ficha, o_id, note_id):
         note.delete()
     return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
 
-
+# view to see the activities of an objective
+@login_required
+def activities(request, e_ficha, o_id):
+    empleado = get_object_or_404(Empleado, ficha=e_ficha)
+    objetivo = empleado.objetivos_set.get(pk=o_id)
+    return render(request, 'activities.html', {
+        'empleado': empleado,
+        'objetivo': objetivo,
+        'form': ObjectivesNotesForm(),
+    })
+    
+# view to update the state of an activity
 @login_required
 def updateActivities(request, e_ficha, o_id, a_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -411,26 +416,39 @@ def updateActivities(request, e_ficha, o_id, a_id):
     else:
         return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
 
+# view to edit an activity
 @login_required
-def editActivities(request, e_ficha, o_id, a_id):
+def editActivities(request, e_ficha, o_id, a_id):    
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = empleado.objetivos_set.get(pk=o_id)
     actividad = get_object_or_404(Actividades, pk=a_id, objetivo=objetivo)
+    if actividad.estado:
+        messages.error(request, 'ERROR. No se puede editar la actividad porque ya fue completada.')
+        return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
     if request.method == 'GET':
         return render(request, 'crudActivities.html', {
             'objetivo': objetivo,
             'empleado': empleado,
             'actividad': actividad,
-            'form': ActivitiesForm(instance=actividad),
-            'modificar': True
-            
+            'form': ActivitiesForm(instance=actividad),            
         })
     else:
         form = ActivitiesForm(request.POST, instance=actividad)
-        newActivity = form.save(commit=False)
-        newActivity.save()
-        return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+        if form.is_valid():
+            actividad = form.save(commit=False)
+            actividad.save()
+            return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+        else:
+            messages.error(request, 'ERROR. No se pudo editar la actividad.')
+            return render(request, 'crudActivities.html', {
+                'objetivo': objetivo,
+                'empleado': empleado,
+                'actividad': actividad,
+                'form': form
+            })
+        
 
+# view to delete an activity
 @login_required
 def deleteActivities(request, e_ficha, o_id, a_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -440,6 +458,7 @@ def deleteActivities(request, e_ficha, o_id, a_id):
         actividad.delete()
     return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
 
+# view to create an activity
 @login_required
 def createActivities(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -452,20 +471,27 @@ def createActivities(request, e_ficha, o_id):
         })
     else:
         form = ActivitiesForm(request.POST)
-        newActivity = form.save(commit=False)
-        newActivity.objetivo = objetivo
-        newActivity.createdBy = request.user
-        newActivity.save()
+        print(form.is_valid())
+        if form.is_valid():
+            actividad = form.save(commit=False)
+            actividad.createdBy = request.user
+            actividad.objetivo = objetivo
+            actividad.save()
+            return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+        else:
+            messages.error(request, 'ERROR. No se pudo crear el objetivo especifico.')
+            return render(request, 'crudActivities.html', {
+                'objetivo': objetivo,
+                'empleado': empleado,
+                'form': form
+            })
 
-        return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+# End of views to interact with objectives.
 
 @login_required
 def dashboard_view(request):
-    evaluacion = get_object_or_404(Evaluacion, id=10)
-    return render(request, 'dashboard.html', {
-        'valor': "ROJO",
-        'evaluacion': evaluacion
-    })
+    return redirect('index')
+
 
 @login_required
 def testDetails(request, e_ficha, eval_id):
@@ -685,9 +711,7 @@ def logoutUser(request):
         messages.error(request, 'ERROR. No se pudo cerrar la sesión.')
         
     return redirect('signin')
-    
-
-
+   
 @login_required
 def changePassword(request):
     if request.method == 'GET':
@@ -724,7 +748,7 @@ def competenceDetails(request, competence_id):
 @staff_member_required(login_url='signin')
 def addCompetence(request):
     if request.method == 'GET':
-        return render(request, 'newCompetence.html', {
+        return render(request, 'competencia_crud.html', {
             'form': CompetenciasForm()
         })
     else:
@@ -733,7 +757,7 @@ def addCompetence(request):
             form.save()
             return redirect('seeCompetences')
         else:
-            return render(request, 'newCompetence.html', {
+            return render(request, 'competencia_crud.html', {
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
@@ -742,7 +766,7 @@ def addCompetence(request):
 def editCompetence(request, competence_id):
     competence = get_object_or_404(Competencias, pk=competence_id)
     if request.method == 'GET':
-        return render(request, 'editCompetence.html', {
+        return render(request, 'competencia_crud.html', {
             'form': CompetenciasForm(instance=competence)
         })
     else:
@@ -751,7 +775,7 @@ def editCompetence(request, competence_id):
             form.save()
             return redirect('seeCompetences')
         else:
-            return render(request, 'editCompetence.html', {
+            return render(request, 'competencia_crud.html', {
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
@@ -821,6 +845,12 @@ def seeGerencias(request):
         'direcciones': direcciones,
     })
 
+@login_required(login_url='signin')
+def gerenciaDetails(request, gerencia_id):
+    gerencia = get_object_or_404(Gerencia, pk=gerencia_id)
+    print(gerencia.subgerencias())
+    return render(request, 'gerencia.html', {'gerencia': gerencia})
+
 @staff_member_required(login_url='signin')
 def editGerencia(request, gerencia_id):
     gerencia = get_object_or_404(Gerencia, pk=gerencia_id)
@@ -856,10 +886,6 @@ def addGerencia(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
-def gerenciaDetails(request, gerencia_id):
-    gerencia = get_object_or_404(Gerencia, pk=gerencia_id)
-    return render(request, 'gerencia.html', {'gerencia': gerencia})
 
 # view to see all direcciones
 @staff_member_required(login_url='signin')
@@ -868,6 +894,11 @@ def seeDirecciones(request):
     return render(request, 'seeDirecciones.html', {
         'direcciones': direcciones,
     })
+    
+@login_required(login_url='signin')
+def direccionDetails(request, direccion_id):
+    direccion = get_object_or_404(Direccion, pk=direccion_id)
+    return render(request, 'direccion.html', {'direccion': direccion})
 
 @staff_member_required(login_url='signin')
 def editDireccion(request, direccion_id):
@@ -1239,19 +1270,55 @@ def announcements_view(request):
 @staff_member_required(login_url='signin')
 def announcements_add(request):
     if request.method == 'GET':
-        return render(request, 'announcements_add.html', {
+        return render(request, 'announcements_crud.html', {
             'form': AnnouncementForm()
         })
     else:
         form = AnnouncementForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Anuncio agregado')
             return redirect('announcements')
         else:
-            return render(request, 'announcements_add.html', {
+            messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
+            return render(request, 'announcements_crud.html', {
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
+            
+@staff_member_required(login_url='signin')
+def announcements_edit(request, announcement_id):
+    announcement = get_object_or_404(Announcements, pk=announcement_id)
+    if request.method == 'GET':
+        return render(request, 'announcements_crud.html', {
+            'form': AnnouncementForm(instance=announcement)
+        })
+    else:
+        form = AnnouncementForm(request.POST, request.FILES, instance=announcement)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Anuncio actualizado')
+            return redirect('announcements')
+        else:
+            messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
+            return render(request, 'announcements_crud.html', {
+                'form': form,
+
+            })
+            
+@staff_member_required(login_url='signin')
+def announcements_delete(request, announcement_id):
+    announcement = get_object_or_404(Announcements, pk=announcement_id)
+    if request.user.is_staff:        
+        if request.method == 'POST':
+            announcement.delete()
+            messages.success(request, 'Anuncio eliminado')
+        else:
+            messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
+        return redirect('announcements')
+    else :
+        messages.error(request, 'No tiene permisos para realizar esta acción.')
+        return redirect('announcements')
     
 @login_required(login_url='signin')
 def company_objectives_view(request):

@@ -10,6 +10,7 @@ from simple_history.models import HistoricalRecords
 
 class Nivel(models.Model):
     nivel = models.TextField()
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['nivel']
@@ -53,6 +54,7 @@ class Niveles(models.Model):
     porObjetivos = models.IntegerField(default=50)
     nivel = models.ForeignKey(Nivel, on_delete=models.CASCADE, default=1)
     formato_de_evaluacion = models.TextField(choices=formatos, default='pnm')
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['valor']
@@ -86,6 +88,7 @@ class Direccion(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
     debajo = models.ForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['id']
@@ -95,13 +98,20 @@ class Direccion(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+    def subdirecciones(self):
+        return self.direccion_set.all()
 
     def gerencias(self):
         return self.gerencia_set.all()
+    
+    def empleados_asociados(self):
+        return Empleado.objects.filter(cargo__gerencia__direccion=self, fechaEgreso__isnull=True).order_by('cargo__nivel__valor')
 
     
 class Departamento(models.Model):
     nombre = models.CharField(max_length=200, unique=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['id']
@@ -131,6 +141,8 @@ class Gerencia(models.Model):
     debajo = models.ForeignKey(
         'self', on_delete=models.CASCADE, null=True, blank=True)
     
+    history = HistoricalRecords()
+    
     class Meta:
         ordering = ['id']
         verbose_name = 'Gerencia'
@@ -139,9 +151,15 @@ class Gerencia(models.Model):
 
     def __str__(self):
         return f'Gerencia de {self.nombreText}'
+    
+    def subgerencias(self):
+        return self.gerencia_set.all()
 
     def cargosAsociados(self):
         return self.cargo_set.all().order_by('nivel__valor')
+    
+    def empleados_asociados(self):
+        return Empleado.objects.filter(cargo__gerencia=self, fechaEgreso__isnull=True).order_by('cargo__nivel__valor')
 
     def cantidadEmpleados(self):
         cargos = self.cargo_set.all()
@@ -176,6 +194,7 @@ class Gerencia(models.Model):
 class Distribucion(models.Model):
     departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE)
     nivel = models.ForeignKey(Niveles, on_delete=models.CASCADE)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['departamento']
@@ -193,6 +212,7 @@ class DistribucionObjetivo(models.Model):
     distribucion = models.ForeignKey(Distribucion, on_delete=models.CASCADE)
     tipo = models.CharField(default='Objetivo de Area', max_length=200)
     peso = models.IntegerField(default=0)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['tipo']
@@ -236,7 +256,7 @@ class Cargo(models.Model):
         return self.empleado_set.all()
 
     def empleados_activos_asociados(self):
-        return self.empleado_set.filter(fechaEgreso__isnull=True)
+        return self.empleado_set.filter(fechaEgreso__isnull=True).order_by('cargo__nivel__valor')
 
 
 class Empleado(models.Model):
@@ -287,7 +307,7 @@ class Empleado(models.Model):
     
     def subordinados(self):  
         cargos = self.cargo.subordinados()
-        empleados = Empleado.objects.filter(cargo__in=cargos, fechaEgreso__isnull=True)
+        empleados = Empleado.objects.filter(cargo__in=cargos, fechaEgreso__isnull=True).order_by('cargo__nivel__valor')
         return empleados       
         
 
@@ -402,6 +422,7 @@ class Periodo(models.Model):
         'Fecha de Fin', null=True, blank=True)
     evaluacionesHabilitadas = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['-año_inicio']
@@ -449,6 +470,7 @@ class Company_Objectives(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     period = models.ForeignKey(Periodo, on_delete=models.CASCADE)
+    history = HistoricalRecords()
     
     class Meta:
         verbose_name = 'Objetivo de la Empresa'
@@ -463,6 +485,7 @@ class Announcements(models.Model):
     text = models.TextField()
     date = models.DateField(auto_now_add=True)
     image = models.ImageField(upload_to='images/', null=True, blank=True)
+    history = HistoricalRecords()
     
     class Meta:
         verbose_name = 'Anuncio'
@@ -516,6 +539,7 @@ class Objectives_notes(models.Model):
     note = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['created_at']
@@ -551,6 +575,7 @@ class Competencias(models.Model):
     significado2 = models.TextField(blank=True, null=True)
     significado3 = models.TextField(blank=True, null=True)
     significado4 = models.TextField(blank=True, null=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['nivel', 'nombre']
@@ -560,99 +585,6 @@ class Competencias(models.Model):
     def __str__(self):
         return f'{self.nivel} - {self.nombre}'
 
-
-# class ValoresCompetencias(models.Model):
-#     competencia = models.ForeignKey(Competencias, on_delete=models.CASCADE)
-#     valor = models.IntegerField(default=1, validators=[
-#         MinValueValidator(1), MaxValueValidator(4)])
-#     significado = models.TextField()
-
-#     def __str__(self):
-#         return f'{self.competencia} - {self.valor}'
-
-
-class Evaluacion(models.Model):
-
-    empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
-    fecha = models.DateField(auto_now_add=True)
-    estado = models.IntegerField(choices=((0, 'Autoevaluacion'),
-                                 (1, 'Evaluacion')), default=0, null=True, blank=True)
-    obj1 = models.TextField(default="")
-    peso1 = models.IntegerField(default=0)
-    valor1 = models.IntegerField(default=0, validators=[
-                                 MinValueValidator(1), MaxValueValidator(4)])
-    resultado1 = models.DecimalField(default=0, max_digits=5, decimal_places=2)
-    observaciones1 = models.TextField(default="")
-
-    obj2 = models.TextField(default="")
-    peso2 = models.IntegerField(default=0)
-    valor2 = models.IntegerField(default=0, validators=[
-                                 MinValueValidator(1), MaxValueValidator(4)])
-    resultado2 = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-    observaciones2 = models.TextField(default="")
-
-    obj3 = models.TextField(default="")
-    peso3 = models.IntegerField(default=0)
-    valor3 = models.IntegerField(default=0, validators=[
-                                 MinValueValidator(1), MaxValueValidator(4)])
-    resultado3 = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-    observaciones3 = models.TextField(default="")
-
-    obj4 = models.TextField(null=True, blank=True)
-    peso4 = models.IntegerField(default=0, null=True, blank=True)
-    valor4 = models.IntegerField(default=0, validators=[
-                                 MinValueValidator(1), MaxValueValidator(4)], null=True, blank=True)
-    resultado4 = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-    observaciones4 = models.TextField(null=True, blank=True)
-
-    totalObj = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-
-    com1 = models.TextField(default="")
-    comv1 = models.IntegerField(default=0, validators=[
-        MinValueValidator(1), MaxValueValidator(4)])
-    comr1 = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-
-    com2 = models.TextField(default="")
-    comv2 = models.IntegerField(default=0, validators=[
-        MinValueValidator(1), MaxValueValidator(4)])
-    comr2 = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-
-    com3 = models.TextField(null=True, blank=True)
-    comv3 = models.IntegerField(default=0, validators=[
-        MinValueValidator(1), MaxValueValidator(4)], null=True, blank=True)
-    comr3 = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-
-    totalCom = models.DecimalField(
-        default=0, max_digits=5, decimal_places=2, null=True, blank=True)
-
-    nCom1 = models.TextField(null=True, blank=True)
-    nCom2 = models.TextField(null=True, blank=True)
-    nCom3 = models.TextField(null=True, blank=True)
-
-    nComR1 = models.TextField(null=True, blank=True)
-    nComR2 = models.TextField(null=True, blank=True)
-    nComR3 = models.TextField(null=True, blank=True)
-
-    comentarios = models.TextField(null=True, blank=True)
-
-    def validar(self):
-        print(int(self.peso1))
-        print(int(self.peso2))
-        print(int(self.peso3))
-        return (self.empleado.cargo.nivel.porObjetivos == int(self.peso1) + int(self.peso2) + int(self.peso3) + int(self.peso4))
-
-    def resultadoTotal(self):
-        return self.totalCom + self.totalObj
-
-    def __str__(self):
-        return "Evaluacion de " + self.empleado.nombre + " " + self.empleado.nombre
 
 
 class EvaluacionDesempeno(models.Model):
@@ -679,6 +611,7 @@ class EvaluacionDesempeno(models.Model):
     deteccionTecConductual3 = models.TextField(
         default="", null=True, blank=True)
     comentarios = models.TextField(default="", null=True, blank=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['-fecha']
@@ -705,6 +638,7 @@ class EvaluacionObjetivo(models.Model):
         MinValueValidator(1), MaxValueValidator(4)])
     resultado = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     comentarios = models.TextField(default="", null=True, blank=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['objetivo']
@@ -726,6 +660,7 @@ class EvaluacionCompetencia(models.Model):
     )
     resultadoCompetencia = models.DecimalField(
         default=0, decimal_places=2, max_digits=5)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['competencia']
@@ -739,8 +674,8 @@ class EvaluacionCompetencia(models.Model):
 class ObjetivoActividad(models.Model):
     objetivo = models.ForeignKey(EvaluacionObjetivo, on_delete=models.CASCADE)
     actividad = models.ForeignKey(Actividades, on_delete=models.CASCADE)
-
     pesoActividad = models.IntegerField(default=0)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['actividad']
@@ -759,6 +694,7 @@ class comentarios(models.Model):
         Empleado, on_delete=models.CASCADE, related_name='receptor')
     comentario = models.TextField(default="")
     fecha = models.DateTimeField(auto_now_add=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['-fecha']
@@ -771,6 +707,7 @@ class comentarios(models.Model):
 class Preguntas_Frecuentes(models.Model):
     pregunta = models.TextField()
     respuesta = models.TextField()
+    history = HistoricalRecords()
     
     class Meta:
         verbose_name = 'Pregunta Frecuente'
@@ -787,6 +724,7 @@ class Factores_de_evaluacion_PNS(models.Model):
         ('Seguridad y salud laboral', 'Seguridad y Salud Laboral'),
         ('Competencias actidudinales', 'Competencias Actitudinales')        
     ), default='Buenas practicas operativas')
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['enfoque', 'nombre']
@@ -801,6 +739,7 @@ class Evaluacion_PNS(models.Model):
     empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)
     resultado = models.IntegerField(default=0)
     fecha = models.DateField(auto_now_add=True)
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['-fecha']
@@ -827,6 +766,7 @@ class Evaluacion_PNS_BPO(models.Model):
     factor = models.ForeignKey(Factores_de_evaluacion_PNS, on_delete=models.CASCADE)
     valor = models.IntegerField(default=0, validators=[
         MinValueValidator(1), MaxValueValidator(3)])
+    history = HistoricalRecords()
     
     class Meta:
         ordering = ['factor']

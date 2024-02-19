@@ -13,7 +13,7 @@
             <table class="table table-hover table-striped table-bordered datatable align-middle w-100">
                 <thead class="table-dark">
                     <tr>
-                        <th scope="col">Competencia</th>
+                        <th scope="col">Nombre de la Dirección</th>
                         <th scope="col"></th>
                     </tr>
                 </thead>
@@ -23,8 +23,11 @@
 
                     <tr>
                         <td>{{direccion.nombre}}</td>
-                        <td>
+                        <td class="text-end">
                             <a href="{% url 'editDireccion' direccion.id %}" class="btn btn-dark bi bi-pencil-square">
+                            </a>
+                            <a href="{% url 'direcciondetails' direccion.id %}" class="btn btn-dark">
+                                <i class="bi bi-search"></i>
                             </a>
                         </td>
                     </tr>

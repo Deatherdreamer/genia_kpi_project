@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_tags %}
 <!DOCTYPE html>
 <html lang="en" >
 
@@ -206,15 +207,20 @@
           <li class="nav-item-g c dropdown ">
             <a class="nav-link dropdown-toggle text-white fs-5" href="" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
-              <img
-                src="{% if  user.empleado.imagen %} {{ user.empleado.imagen.url }} {% else %} /static/default-avatar.png {% endif %}"
-                alt="" class="rounded-circle img-fluid" style="width: 32px; height: 32px; object-fit: cover;">
+              {% with 'default-avatar.png' as default_avatar_name %}
+                    {% static default_avatar_name as default_avatar_url %}
+              <img src="{{ user.empleado.imagen|get_file_url|default:default_avatar_url }}"
+                             alt="Sin imagen"
+                             onerror="this.onerror=null;this.src='{{ default_avatar_url }}';"
+                             class="rounded-circle img-fluid img-thumbnail shadow"
+                             style="width: 32px; height: 32px;" />
+              {% endwith %}
               {{user.empleado.get_short_name}}
             </a>
             <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
               <li class="dropdown-header text-white">
-                <h6>{{ user.empleado}}</h6>
-                <span>{{  user.empleado.cargo }}</span>
+                <h6>{{ user.empleado|title}}</h6>
+                <span>{{  user.empleado.cargo|title }}</span>
               </li>
               <li>
                 <hr class="dropdown-divider">

@@ -50,18 +50,11 @@ class DireccionForm(forms.ModelForm):
         fields = '__all__'
 
 # form for gerencias
-
-
 class GerenciaForm(forms.ModelForm):
     class Meta:
         model = Gerencia
         fields = '__all__'
 
-
-class EvaluacionForm(forms.ModelForm):
-    class Meta:
-        model = Evaluacion
-        fields = '__all__'
         
 class ObjectivesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -78,22 +71,14 @@ class ObjectivesForm(forms.ModelForm):
             'tipo': forms.Select(attrs={'class': 'form-select'}),
         }
         labels = {
-            'texto': 'Objetivo',
+            'texto': 'Descripción del objetivo',
             'tipo': 'Tipo de objetivo',
         }
-
-# class ObjectivesForm(forms.ModelForm):
-#     class Meta:
-#         model = Objetivos
-#         fields = ['texto', 'tipo']
-#         widgets = {
-#             'texto': forms.Textarea(attrs={'class': 'form-control'}),
-#             'tipo': forms.Select(attrs={'class': 'form-select'}),
-#         }
-#         labels = {
-#             'texto': 'Objetivo',
-#             'tipo': 'Tipo de objetivo',
-#         }
+        help_texts = {
+            'texto': 'Texto descriptivo del objetivo a cumplir.',
+            'tipo': 'Seleccione el tipo de objetivo que desea agregar.',
+        }
+       
 
 class DistribucionObjetivoForm(forms.ModelForm):
     class Meta:
@@ -110,7 +95,13 @@ class ActivitiesForm(forms.ModelForm):
         model = Actividades
         fields = ['texto']
         widgets = {
-            'texto': forms.Textarea(attrs={'class': 'form-control', 'rows': '5'}),
+            'texto': forms.Textarea(attrs={'class': 'form-control', 'rows': '4'}),
+        }
+        labels = {
+            'texto': 'Descripción del objetivo específico',
+        }
+        help_texts = {
+            'texto': 'Texto descriptivo del objetivo específico para el objetivo general seleccionado.',
         }
 
 
@@ -129,12 +120,29 @@ class CompetenciasForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'nivel': forms.Select(attrs={'class': 'form-select'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
-            'significado1': forms.Textarea(attrs={'class': 'form-control'}),
-            'significado2': forms.Textarea(attrs={'class': 'form-control'}),
-            'significado3': forms.Textarea(attrs={'class': 'form-control'}),
-            'significado4': forms.Textarea(attrs={'class': 'form-control'}),
-            
+            'descripcion': forms.Textarea(attrs={'class': 'form-control','rows':'4'}),
+            'significado2': forms.Textarea(attrs={'class': 'form-control', 'rows':'4'}),
+            'significado3': forms.Textarea(attrs={'class': 'form-control', 'rows':'4'}),
+            'significado4': forms.Textarea(attrs={'class': 'form-control', 'rows':'4'}),            
+            'significado1': forms.Textarea(attrs={'class': 'form-control', 'rows':'4'}),
+        }
+        labels = {
+            'nombre': 'Nombre de la Competencia',
+            'nivel': 'Nivel de la Competencia',
+            'descripcion': 'Descripción de la Competencia',
+            'significado1': '1 - No hay dominio',
+            'significado2': '2 - Dominio Básico',
+            'significado3': '3 - Dominio Parcial',
+            'significado4': '4 - Dominio Superior',
+        }
+        help_texts = {
+            'nombre': 'Nombre de la competencia.',
+            'nivel': 'Nivel de la competencia.',
+            'descripcion': 'Descripción detallada del significado de la competencia.',
+            'significado1': 'Significado al indicar resultado 1.',
+            'significado2': 'Significado al indicar resultado 2.',
+            'significado3': 'Significado al indicar resultado 3.',
+            'significado4': 'Significado al indicar resultado 4.',
         }
 
 
@@ -251,6 +259,11 @@ class AnnouncementForm(forms.ModelForm):
             'title': 'Encabezado',
             'text': 'Mensaje del anuncio',
             'image': 'Imagen',
+        }
+        help_texts = {
+            'title': 'Titulo del anuncio.',
+            'text': 'Texto del anuncio.',
+            'image': 'Imagen del anuncio.',
         }
         
 class CompanyObjectivesForm(forms.ModelForm):

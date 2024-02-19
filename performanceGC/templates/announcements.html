@@ -34,6 +34,17 @@
               <img src="{{announcement.image.url}}" class="card-img-bottom" alt="{{announcement.title}}" style="max-height: 80%; max-width: 80%; object-fit: cover; object-position: center; margin: auto; display: block; margin-bottom: 1rem; margin-top: 1rem; border-radius: 5px; border: 1px solid #ddd; padding: 5px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);">
             </div>
             {% endif %}
+            {% if user.is_staff %}
+            <div class="card-footer">
+              <a href="{% url 'announcements_edit' announcement.id %}" class="btn btn-dark btn-sm">Editar</a>
+              <form action="{% url 'announcements_delete' announcement.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Esta seguro de Elminar este anuncio?')">Eliminar</button>
+              </form>
+              
+              
+            </div>
+            {% endif %}
           </div>
           {% empty %}
           <p>No announcements yet.</p>
