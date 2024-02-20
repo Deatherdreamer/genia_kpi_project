@@ -212,8 +212,8 @@
               <img src="{{ user.empleado.imagen|get_file_url|default:default_avatar_url }}"
                              alt="Sin imagen"
                              onerror="this.onerror=null;this.src='{{ default_avatar_url }}';"
-                             class="rounded-circle img-fluid img-thumbnail shadow"
-                             style="width: 32px; height: 32px;" />
+                             class="rounded-circle"
+                             style="width: 32px; height: 32px; image-rendering: auto; object-fit: cover;">
               {% endwith %}
               {{user.empleado.get_short_name}}
             </a>
