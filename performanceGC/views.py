@@ -301,6 +301,25 @@ def createObjectives(request, e_ficha):
                 objetivo.createdBy = request.user
                 objetivo.save()
                 messages.success(request, 'Objetivo creado exitosamente.')
+                try:
+                    if objetivo.empleado == request.user.empleado:
+                        send_mail(
+                            'Objetivo a la espera de aprobación - Genia Performance 360 Pro',
+                            'Un colaborador ha creado un nuevo objetivo que requiere su aprobación. Ingrese a la plataforma para revisarlo.',
+                            f'Genia Performance 360 Pro <{settings.EMAIL_HOST_USER}>',
+                            [objetivo.empleado.supervisor().usuario.email],
+                            html_message=render_to_string('emails/objective_to_approve_email_template.html', {'objetivo': objetivo})
+                        )
+                    else:
+                        send_mail(
+                            'Objetivo creado - Genia Performance 360 Pro',
+                            'Has creado un nuevo objetivo en la plataforma. Ingrese a la plataforma para revisarlo.',
+                            f'Genia Performance 360 Pro <{settings.EMAIL_HOST_USER}>',
+                            [objetivo.empleado.usuario.email],
+                            html_message=render_to_string('emails/objective_email_template.html', {'objetivo': objetivo})
+                        )
+                except Exception as e:
+                    print(f"An error occurred while sending the email: {e}")
                 return redirect('objectives', e_ficha=empleado.ficha)
         else:
             messages.error(request, 'ERROR. No se pudo crear el objetivo.')
