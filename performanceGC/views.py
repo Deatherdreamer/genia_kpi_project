@@ -2,7 +2,7 @@
 import os
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UserCreationForm
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -18,6 +18,8 @@ from openpyxl import Workbook
 import pandas as pd    
 from django.views.generic import ListView
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 
 def index(request):
@@ -180,6 +182,19 @@ def reingreso(request, e_ficha):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
+# @login_required
+# def addComentario(request, de_ficha, para_ficha):
+#     de = get_object_or_404(Empleado, ficha=de_ficha)
+#     para = get_object_or_404(Empleado, ficha=para_ficha)
+#     try:
+#         with transaction.atomic():
+#             comentario = comentarios(
+#                 de=de, para=para, comentario=request.POST['comentario'])
+#             comentario.save()
+#             return redirect('profile', e_ficha=para.ficha)
+#     except Exception as e:
+#         return redirect('profile', e_ficha=para.ficha)
+
 @login_required
 def addComentario(request, de_ficha, para_ficha):
     de = get_object_or_404(Empleado, ficha=de_ficha)
@@ -189,9 +204,27 @@ def addComentario(request, de_ficha, para_ficha):
             comentario = comentarios(
                 de=de, para=para, comentario=request.POST['comentario'])
             comentario.save()
-            return redirect('profile', e_ficha=para.ficha)
+            data = {
+                'de': str(comentario.de),
+                'comentario': comentario.comentario,
+                'fecha': comentario.fecha.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            try:
+                html_message = render_to_string('emails/comment_email_template.html', {'comentario': comentario})
+                send_mail(
+                    'Nuevo comentario',
+                    'Has recibido un nuevo comentario de ' + str(comentario.de) + ' en tu perfil.',
+                    settings.EMAIL_HOST_USER,
+                    [para.usuario.email],
+                    fail_silently=False,
+                    html_message=html_message
+                )
+            except Exception as e:
+                print(e)
+            
+            return JsonResponse(data)
     except Exception as e:
-        return redirect('profile', e_ficha=para.ficha)
+        return JsonResponse({'error': str(e)}, status=400)
     
 # view to see the current period
 @staff_member_required(login_url='signin')
@@ -361,6 +394,24 @@ def disapprove_objective(request, e_ficha, o_id):
     return redirect('objectives', e_ficha=empleado.ficha)
 
 # view to add a note to an objective
+# @login_required(login_url='signin')
+# def add_note_to_objective(request, e_ficha, o_id):
+#     if request.method == 'POST':
+#         empleado = get_object_or_404(Empleado, ficha=e_ficha)
+#         objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
+#         form = ObjectivesNotesForm(request.POST)
+#         if form.is_valid():
+#             newNote = form.save(commit=False)
+#             newNote.objetivo = objetivo
+#             newNote.created_by = request.user
+#             newNote.save()
+#             return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+#         else:
+#             return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+#     else:
+#         messages.error(request, 'ERROR')
+#         return redirect('objectives', e_ficha=empleado.ficha)
+
 @login_required(login_url='signin')
 def add_note_to_objective(request, e_ficha, o_id):
     if request.method == 'POST':
@@ -372,12 +423,17 @@ def add_note_to_objective(request, e_ficha, o_id):
             newNote.objetivo = objetivo
             newNote.created_by = request.user
             newNote.save()
-            return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+            data = {
+                'note': newNote.note,
+                'created_by': newNote.created_by.username,
+                'created_at': newNote.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'note_id': newNote.id,  # Add this line
+            }
+            return JsonResponse(data)
         else:
-            return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
+            return JsonResponse({'error': 'Invalid form'}, status=400)
     else:
-        messages.error(request, 'ERROR')
-        return redirect('objectives', e_ficha=empleado.ficha)
+        return JsonResponse({'error': 'Invalid method'}, status=400)
     
 # view to discard a note from an objective    
 @login_required   

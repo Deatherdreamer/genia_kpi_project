@@ -630,7 +630,7 @@
                     <div class="tab-pane fade" id="comments-tab-pane" role="tabpanel" aria-labelledby="comments-tab"
                         tabindex="0">
 
-                        <form action="{% url 'newcommmnent' empleado.ficha user.empleado.ficha %}" method="post">
+                        <form action="{% url 'newcommmnent' empleado.ficha user.empleado.ficha %}" method="post" id="comment-form">
                             {% csrf_token %}
                             <div class="card m-4">
                                 <div class="card-body">
@@ -646,7 +646,7 @@
                                 </div>
                             </div>
                         </form>
-
+                        <div id="comentarios">
                         {% for comentario in empleado.comentariosRecibidos %}
                         <div
                             class="card m-4 {% if user.empleado == comentario.de %} text-bg-primary bg-primary border-light {% endif %}">
@@ -666,6 +666,7 @@
                             </div>
                         </div>
                         {% endfor %}
+                    </div>
                     </div>
                     <div class="tab-pane fade" id="minion-tab-pane" role="tabpanel" aria-labelledby="minion-tab"
                         tabindex="0">
@@ -743,6 +744,32 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
+<script>
+    $(document).ready(function () {
+        $('#comment-form').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: $(this).serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    $('#comentarios').prepend(
+                        `<div class="card m-4 text-bg-primary bg-primary border-light">
+                            <div class="card-body">
+                                <p class="fw-bold lead m-0">${data.de}</p>
+                                <p class="fw-light fst-italic">${data.comentario}</p>
+                            </div>
+                        </div>`
+                    );
+                    $('#comment-form')[0].reset();
+
+
+                }
+            });
+        });
+    });            
+</script>
 <script>
     // Register the plugin to all charts:
     Chart.register(ChartDataLabels);

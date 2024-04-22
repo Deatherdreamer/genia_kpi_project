@@ -29,7 +29,9 @@ DEBUG = False if os.environ.get('PROD_MODE') else True
 ALLOWED_HOSTS = ['*']
 
 #SESSION EXPIRE
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True     # opional, as this will log you out when browser is closed
+SESSION_COOKIE_AGE = 60 * 15               # 15 minutes                 
+SESSION_SAVE_EVERY_REQUEST = True   
 
 
 
@@ -84,29 +86,15 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-LOCAL_DATABASE = True
 
-if LOCAL_DATABASE:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'kpigc',
-            'USER': 'kpigc',
-            'PASSWORD': 'UTXs9WJe*ALkDhIc',
-            'HOST': '192.168.2.79',
-            'PORT': '',
-            'OPTIONS': {
-                'sql_mode': 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'
-            }
-        }
-    }
+}
+
 
     
 #VERSION
@@ -166,3 +154,15 @@ MEDIA_ROOT = "/home/geniaca1/public_html/kpi.geniacare.com/media/"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#EMAIL SETTINGS
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'kpi.geniacare.com'
+EMAIL_HOST_USER = 'system@kpi.geniacare.com' 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = 'jkSN8!00weZA'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False

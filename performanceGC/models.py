@@ -528,7 +528,7 @@ class Objetivos(models.Model):
         return self.actividades_set.all()
     
     def notes(self):
-        return self.objectives_notes_set.all()
+        return self.objectives_notes_set.all().order_by('-created_at')
     
     def see_history(self):
         return self.history.all()
