@@ -214,7 +214,7 @@ def addComentario(request, de_ficha, para_ficha):
                 send_mail(
                     'Nuevo comentario - Genia Performance 360 Pro',
                     'Has recibido un nuevo comentario de ' + str(comentario.de) + ' en tu perfil.',
-                    'Genia Performance 360 Pro',
+                    f'Genia Performance 360 Pro <{settings.EMAIL_HOST_USER}>',
                     [para.usuario.email],
                     fail_silently=False,
                     html_message=html_message
