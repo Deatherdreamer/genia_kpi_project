@@ -103,4 +103,5 @@ urlpatterns = [
     path('systemparameters/export/reportsdepartment/', views.generate_report_per_department, name='exportreportsdepartment'),
     path('systemparameters/import/cargos/', views.import_cargos, name='importcargos'),
     path('systemparameters/import/empleados/', views.import_empleados, name='importempleados'),   
+    path('systemparameters/import/upload_and_update_user_info/', views.upload_and_update_user_info, name='upload_and_update_user_info'),   
 ]

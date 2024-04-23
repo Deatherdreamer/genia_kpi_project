@@ -20,6 +20,8 @@ from django.views.generic import ListView
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
 
 
 def index(request):
@@ -100,6 +102,8 @@ def profileView(request, e_ficha):
         'periodo': periodo
     })
 
+
+
 @staff_member_required(login_url='signin')
 def addEmployee(request):
     if request.method == 'GET':
@@ -111,7 +115,19 @@ def addEmployee(request):
         if form.is_valid():
             with transaction.atomic():
                 empleado = form.save(commit=False)
+
+                # Create a user for the new empleado
+                first_name = empleado.nombre.split(' ')[0].lower()
+                last_name = empleado.apellido.split(' ')[0].lower()
+                username = f'{first_name}.{last_name}'
+                email=f'{username}@geniacare.com'
+                password = make_password('1234')
+                
+                new_user = User.objects.create(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+                empleado.usuario = new_user
                 empleado.save()
+                               
+
                 return redirect('profile', e_ficha=empleado.ficha)
         else:
             return render(request, 'addEmployee.html', {
@@ -282,7 +298,7 @@ def createObjectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     periodo = Periodo.objects.get(is_active=True)
     if not empleado.distribucionObjetivos():
-        messages.error(request, 'ERROR. No se ha definido la distribución de objetivos para el empleado. Por favor, contacte al administrador del sistema.')        
+        messages.error(request, 'No se ha definido la distribución de objetivos para el empleado. Por favor, contacte al administrador del sistema.')        
         
         return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'GET':
@@ -322,7 +338,7 @@ def createObjectives(request, e_ficha):
                     print(f"An error occurred while sending the email: {e}")
                 return redirect('objectives', e_ficha=empleado.ficha)
         else:
-            messages.error(request, 'ERROR. No se pudo crear el objetivo.')
+            messages.error(request, 'No se pudo crear el objetivo.')
             return render(request, 'crudObjectives.html', {
                 'periodo': periodo,
                 'empleado': empleado,
@@ -337,10 +353,10 @@ def editObjectives(request, e_ficha, o_id):
     periodo = Periodo.objects.get(is_active=True)
     
     if request.user != objetivo.createdBy and not request.user.is_staff and not empleado in request.user.empleado.subordinados():
-        messages.error(request, 'ERROR. No tiene permisos para editar el objetivo.')
+        messages.error(request, 'No tiene permisos para editar el objetivo.')
         return redirect('objectives', e_ficha=empleado.ficha)
     if objetivo.is_aproved:
-        messages.error(request, 'ERROR. No se puede editar el objetivo porque ya fue aprobado.')
+        messages.error(request, 'No se puede editar el objetivo porque ya fue aprobado.')
         return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'GET':
         return render(request, 'crudObjectives.html', {
@@ -362,15 +378,16 @@ def deleteObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
     if objetivo.is_aproved:
-        messages.error(request, 'ERROR. No se puede eliminar el objetivo porque ya fue aprobado.')
+        messages.error(request, 'No se puede eliminar el objetivo porque ya fue aprobado.')
         return redirect('objectives', e_ficha=empleado.ficha)
     if request.user != objetivo.createdBy:
-        messages.error(request, 'ERROR. No se puede eliminar el objetivo porque no fue creado por usted.')
+        messages.error(request, 'No se puede eliminar el objetivo porque no fue creado por usted.')
         return redirect('objectives', e_ficha=empleado.ficha)
     if objetivo.porcentaje() > 0:
-        messages.error(request, 'ERROR. No se puede eliminar el objetivo se ha asignado un porcentaje de cumplimiento.')
+        messages.error(request, 'No se puede eliminar el objetivo se ha asignado un porcentaje de cumplimiento.')
         return redirect('objectives', e_ficha=empleado.ficha)
     if request.method == 'POST':
+        messages.success(request, 'Objetivo eliminado exitosamente.')
         objetivo.delete()
     return redirect('objectives', e_ficha=empleado.ficha)
 
@@ -382,15 +399,15 @@ def approve_objective(request, e_ficha, o_id):
     empleado_aprobador = request.user.empleado
     
     if not empleado in empleado_aprobador.subordinados() and not request.user.is_staff:
-        messages.error(request, 'ERROR. No tiene permisos para aprobar el objetivo.')    
+        messages.error(request, 'No tiene permisos para aprobar el objetivo.')    
     elif objetivo.is_aproved:
-        messages.error(request, 'ERROR. El objetivo ya fue aprobado.')
+        messages.error(request, 'El objetivo ya fue aprobado.')
     elif request.method == 'POST':
         objetivo.is_aproved = True
         objetivo.aproved_by = request.user
         objetivo.save()
     else:
-        messages.error(request, 'ERROR. No se pudo aprobar el objetivo.')
+        messages.error(request, 'No se pudo aprobar el objetivo.')
     return redirect('objectives', e_ficha=empleado.ficha)
 
 # view to disapprove an objective
@@ -401,15 +418,15 @@ def disapprove_objective(request, e_ficha, o_id):
     empleado_aprobador = request.user.empleado
     
     if not empleado in empleado_aprobador.subordinados() and not request.user.is_staff:
-        messages.error(request, 'ERROR. No tiene permisos para desaprobar el objetivo.')    
+        messages.error(request, 'No tiene permisos para desaprobar el objetivo.')    
     elif not objetivo.is_aproved:
-        messages.error(request, 'ERROR. El objetivo no ha sido aprobado.')
+        messages.error(request, 'El objetivo no ha sido aprobado.')
     elif request.method == 'POST':
         objetivo.is_aproved = False
         objetivo.aproved_by = None
         objetivo.save()
     else:
-        messages.error(request, 'ERROR. No se pudo desaprobar el objetivo.')
+        messages.error(request, 'No se pudo desaprobar el objetivo.')
     return redirect('objectives', e_ficha=empleado.ficha)
 
 # view to add a note to an objective
@@ -461,7 +478,7 @@ def discard_note_from_objective(request, e_ficha, o_id, note_id):
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
     note = get_object_or_404(Objectives_notes, pk=note_id, objetivo=objetivo)
     if note.created_by != request.user:
-        messages.error(request, 'ERROR. No se puede eliminar la nota porque no fue creada por usted.')
+        messages.error(request, 'No se puede eliminar la nota porque no fue creada por usted.')
         return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
     if request.method == 'POST':
         note.delete()
@@ -498,7 +515,7 @@ def editActivities(request, e_ficha, o_id, a_id):
     objetivo = empleado.objetivos_set.get(pk=o_id)
     actividad = get_object_or_404(Actividades, pk=a_id, objetivo=objetivo)
     if actividad.estado:
-        messages.error(request, 'ERROR. No se puede editar la actividad porque ya fue completada.')
+        messages.error(request, 'No se puede editar la actividad porque ya fue completada.')
         return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
     if request.method == 'GET':
         return render(request, 'crudActivities.html', {
@@ -514,7 +531,7 @@ def editActivities(request, e_ficha, o_id, a_id):
             actividad.save()
             return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
         else:
-            messages.error(request, 'ERROR. No se pudo editar la actividad.')
+            messages.error(request, 'No se pudo editar la actividad.')
             return render(request, 'crudActivities.html', {
                 'objetivo': objetivo,
                 'empleado': empleado,
@@ -554,7 +571,7 @@ def createActivities(request, e_ficha, o_id):
             actividad.save()
             return redirect('activities', e_ficha=empleado.ficha, o_id=objetivo.id)
         else:
-            messages.error(request, 'ERROR. No se pudo crear el objetivo especifico.')
+            messages.error(request, 'No se pudo crear el objetivo especifico.')
             return render(request, 'crudActivities.html', {
                 'objetivo': objetivo,
                 'empleado': empleado,
@@ -783,7 +800,7 @@ def logoutUser(request):
         messages.success(request, 'Sesión cerrada exitosamente.')
         logout(request)
     else:
-        messages.error(request, 'ERROR. No se pudo cerrar la sesión.')
+        messages.error(request, 'No se pudo cerrar la sesión.')
         
     return redirect('signin')
    
@@ -1490,3 +1507,38 @@ def generate_report_per_department(request):
 
     workbook.save(response)
     return response
+
+@staff_member_required(login_url='signin')
+def upload_and_update_user_info(request):
+    if request.method == 'GET':
+        return render(request, 'upload_and_update_user_info.html')
+    else:   
+        empleados_file = request.FILES['empleados_file']
+        empleados = pd.read_excel(empleados_file)
+        for index, row in empleados.iterrows():
+            ficha = row['Ficha']
+            username = row['Usuario']
+            correo = row['Correo']
+            empleado = Empleado.objects.filter(ficha=ficha).first()
+            if empleado:
+                print(f'Procesando empleado {ficha}')
+                first_name = username.split(' ')[0].capitalize()
+                last_name = username.split(' ')[1].capitalize()
+                username = first_name.lower() + '.' + last_name.lower()
+                user, created = User.objects.get_or_create(username=username, defaults={'password': make_password('1234')})
+                if not created:
+                    user.first_name = first_name
+                    user.last_name = last_name
+                    user.email = correo
+                    user.save()
+                empleado.usuario = user
+                empleado.save()
+                print(f'Empleado {ficha} actualizado')
+            else:
+                print(f'Empleado {ficha} no encontrado')
+        return redirect('systemparameters')
+    
+                    
+    
+    
+

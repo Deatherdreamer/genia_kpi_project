@@ -49,7 +49,7 @@ class CargoAdmin(SimpleHistoryAdmin):
 
 @admin.register(Empleado)
 class EmpleadoAdmin(SimpleHistoryAdmin):
-    search_fields = ('ficha', 'nombre', 'apellido', 'cargo')
+    search_fields = ('ficha', 'nombre', 'apellido', 'cargo__nombreText')
     list_display = ('ficha', 'nombre', 'apellido', 'cargo')
     
 @admin.register(Periodo)
