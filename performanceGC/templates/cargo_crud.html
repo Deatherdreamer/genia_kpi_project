@@ -6,7 +6,7 @@
 {% block content %}
   <div class="container">
     <form 
-    action= "{% if form.instance.pk %} {% url 'editCargo' empleado.ficha form.instance.pk %} {% else %} {% url 'addCargo' %} {% endif %}"
+    action= "{% if form.instance.pk %} {% url 'editCargo' form.instance.pk %} {% else %} {% url 'addCargo' %} {% endif %}"
     method="POST"
     id="form"
     class="card border-0 shadow mt-4">
