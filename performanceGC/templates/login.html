@@ -5,78 +5,79 @@
 {% load static %}
 
 
-<main class="container">
-    <div class="row justify-content-center">
-        <section class="col-md-4 mt-5">
-            <form action="/signin/" method="POST" class="card card-body border-0 shadow ">
-
-                <div class="text-center">
-                    <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" class="img-fluid logo" width="75%" alt="GeniaCare Logo Negro">
-                </div>
-
-               
-
-                <h3 class="text-center">Inicio de Sesión</h3>
-                {% if error %}
+<div class="container">
+    <div class="row d-flex justify-content-center align-items-center" style="height: calc(100vh - 200px);">
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card border-0 rounded-1 shadow">
+          <div class="card-header bg-white " style="border-bottom: none;">
+            <div class="z-1 position-absolute start-50 translate-middle rounded-circle bg-white" style="width: 200px; height: 200px; ">
+              <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" class="card-img-top img-fluid " alt="Genia Performance 360 Pro" style="">
+            </div>
+           </div>
+           <div class="mt-5 card-body z-2">
+            <h4 class="mt-4 fw-bold text-center">Iniciar Sesión</h4>
+            <form method="post" id="loginForm">
+              {% csrf_token %}
+              {% if form.errors %}
                 <div class="alert alert-danger" role="alert">
-                    {{ error }}
+                  {{ form.errors }}
                 </div>
-                {% endif %}
+              {% endif %}
 
-
-                {% csrf_token %}
-                <div class="form-group mt-2">
-                    <label for="id_username">Usuario:</label>
-                    <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username"
-                        maxlength="150" required="" id="id_username" placeholder="Escriba su Usuario..."
-                        class="form-control">
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="id_login" class="form-label requiredField">
+                    Usuario
+                  </label>
+                  <input type="text" name="username" placeholder="Usuario" class="text-center form-control" required="" id="id_login">
                 </div>
-                <div class="form-group mt-2">
-                    <label for="id_password">Contraseña:</label>
-                    <div class="input-group">
-                        <input type="password" name="password" autocomplete="current-password" required=""
-                            id="id_password" placeholder="Escriba su Usuario..." class="form-control">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-dark" type="button" id="togglePassword"
-                                title="Mostrar contraseña">
-                                <span class="bi bi-eye"></span>
-                            </button>
-                        </div>
-                    </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <label for="id_password" class="form-label requiredField">
+                      Contraseña
+                    </label>
+                    <button type="button" class="mb-2 p-0 btn btn-link text-decoration-none" id="showPassword">
+                      Mostrar
+                    </button>
+                  </div>
+
+                  <input type="password" name="password" placeholder="Contraseña" autocomplete="current-password" class="text-center form-control" required="" id="id_password">
+                  {% comment %} <div id="id_password_helptext" class="form-text"><a href="/accounts/password/reset/">¿Ha olvidado tu contraseña?</a></div> {% endcomment %}
                 </div>
-
-
-                <a href="mailto:soporte@geniacare.com?Subject=PerformanceGC Reinicio Clave"
-                    class="text-end mt-2">¿Olvidó
-                    su contraseña?</a>
-
-                <button class="btn btn-dark mt-2 mb-2 ">
-                    Entrar
+              </div>
+              <div class="d-grid gap-2">
+                <button id="submitForm" type="submit" class="btn btn-block btn-primary">
+                  <span id="btnText" class="">Iniciar Sesión</span>
+                  <span id="btnSpinner" class="spinner-grow spinner-grow-sm text-light" style="display: none;"></span>
                 </button>
-
+              </div>
             </form>
-
-        </section>
+          </div>
+        </div>
+      </div>
     </div>
-</main>
+  </div>
+
 <!-- Toggle password script -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        $('#togglePassword').click(function () {
-            var passwordField = $('#id_password');
-            var passwordFieldType = passwordField.attr('type');
-            if (passwordFieldType == 'password') {
-                passwordField.attr('type', 'text');
-                $(this).html('<span class="bi bi-eye-slash"></span>');
-                $(this).attr('title', 'Ocultar contraseña');
-            } else {
-                passwordField.attr('type', 'password');
-                $(this).html('<span class="bi bi-eye"></span>');
-                $(this).attr('title', 'Mostrar contraseña');
-            }
-        });
+    // Toggle password visibility
+    document.getElementById('showPassword').addEventListener('click', function() {
+      var passwordField = document.getElementById('id_password');
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+      } else {
+        passwordField.type = 'password';
+      }
     });
-</script>
+  
+    // While the form is being submitted, disable the submit button, hide the text and show the spinner
+    document.getElementById('loginForm').addEventListener('submit', function() {
+      document.getElementById('btnText').style.display = 'none';
+      document.getElementById('btnSpinner').style.display = 'inline-block';
+      document.getElementById('submitForm').disabled = true;
+    });
+  </script>
 
 {% endblock %}
