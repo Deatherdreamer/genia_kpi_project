@@ -10,8 +10,8 @@ urlpatterns = [
     # path('debugTests/', views.debugTests, name='debugtests'),
     
     # USER AUTHENTICATION
-    path('signin/', views.loginUser, name='signin'),
-    path('signout/', views.logoutUser, name='signout'),
+    # path('signin/', views.loginUser, name='signin'),
+    # path('signout/', views.logoutUser, name='signout'),
     path('newUser/', views.createUser, name='newUser'),
     path('users/', views.users, name='users'),
     

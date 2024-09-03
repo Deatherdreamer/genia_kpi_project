@@ -46,6 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'allauth',
+    'allauth.account',
     'simple_history',
 ]
 
@@ -58,7 +62,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware'
+    'simple_history.middleware.HistoryRequestMiddleware',
+    # Add the account middleware:
+    "allauth.account.middleware.AccountMiddleware",
     
 ]
 
@@ -67,7 +73,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,6 +106,9 @@ DATABASES = {
 #VERSION
 VERSION = '1.1.0'
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -120,6 +129,24 @@ AUTH_PASSWORD_VALIDATORS = [
     
 ]
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_ADAPTER = 'performanceGC.adapter.MyAccountAdapter'
+LOGIN_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = "/"
+
+
+USERSESSIONS_TRACK_ACTIVITY = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -141,11 +168,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
 MEDIA_URL = '/media/'
-LOGIN_URL = '/signin'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/signin'
 STATIC_ROOT = "/home/geniaca1/public_html/kpi.geniacare.com/static/"
 MEDIA_ROOT = "/home/geniaca1/public_html/kpi.geniacare.com/media/"
 

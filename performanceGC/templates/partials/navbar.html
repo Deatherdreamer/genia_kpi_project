@@ -1,157 +1,214 @@
 {% load static %}
 {% load custom_tags %}
-<nav class="navbar navbar-expand-lg bg-black border-bottom border-bottom-dark py-1 sticky-md-top" >
-  <div class="container">
-    <a class="navbar-brand  py-0" href="{% url 'index' %}">
-      <img src="{% static 'logo.png' %}" alt="GeniaCare" height="40" class="logo">
-    </a>
+<nav class="navbar navbar-expand-lg bg-dark border-bottom border-bottom-dark py-0 sticky-md-top" data-bs-theme="dark">
+  <div class="container-fluid mx-4">
+    <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'logo.png' %}" alt="GeniaCare" height="36" class="logo" /></a>
     {% if user.is_authenticated %}
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <!-- <form action="{% url 'search' %}" method="get" class="d-flex me-auto" role="search" data-bs-theme="light">
-        <input class="form-control me-2" name="q" type="search" placeholder="Buscar..." aria-label="Search">
-        <button class="btn btn-o utline-light bi bi-search" type="submit"></button>
-      </form> -->
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        <li class="nav-item-gc">
-          <a class="nav-link text-white fs-5 bi bi-house-door" aria-current="page" href="{% url 'index' %}"> Inicio</a>
-        </li>
-        <li class="nav-item-gc">
-          <a class="nav-link text-white fs-5 bi bi-megaphone" aria-current="page" href="{% url 'announcements' %}"> Anuncios</a>
-        </li>
-        
-        {% if user.is_staff %}
-        <!-- Offcanvas trigger button -->
-        <li class="nav-item-gc">
-          <button class="nav-link text-white fs-5 bi bi-tools" data-bs-toggle="offcanvas" href="#offcanvasTools" role="button"
-            aria-controls="offcanvasTools"> Herramientas</button>
-        </li>
-        {% endif %}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 gap-2 align-items-center">
+          <li class="nav-item-gc">
+            <a class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %} fs-6" aria-current="page" href="{% url 'index' %}">
+              <i class="bi bi-house-door"></i>
+              Inicio
+            </a>
+          </li>
+          <li class="nav-item-gc">
+            <a class="nav-link fs-6 bi bi-megaphone {% if request.resolver_match.url_name == 'announcements' %}active{% endif %}" aria-current="page" href="{% url 'announcements' %}">Anuncios</a>
+          </li>
 
-        <li class="nav-item-g c dropdown ">
-          <a class="nav-link dropdown-toggle text-white fs-5" href="" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            {% with 'default-avatar.png' as default_avatar_name %}
-                  {% static default_avatar_name as default_avatar_url %}
-            <img src="{{ user.empleado.imagen|get_file_url|default:default_avatar_url }}"
-                           alt="Sin imagen"
-                           onerror="this.onerror=null;this.src='{{ default_avatar_url }}';"
-                           class="rounded-circle"
-                           style="width: 32px; height: 32px; image-rendering: auto; object-fit: cover;">
-            {% endwith %}
-            {{user.empleado.get_short_name}}
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" data-bs-theme="dark">
-            <li class="dropdown-header text-white">
-              <h6>{{ user.empleado|title}}</h6>
-              <span>{{  user.empleado.cargo|title }}</span>
+          {% if user.is_staff %}
+            <!-- Offcanvas trigger button -->
+            <li class="nav-item-gc">
+              <button class="nav-link fs-6 bi bi-tools" data-bs-toggle="offcanvas" href="#offcanvasTools" role="button" aria-controls="offcanvasTools" aria-expanded="false">Herramientas</button>
             </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <a class="dropdown-item text-white" href="{% url 'profile' user.empleado.ficha %}">
-                <i class="bi bi-person-circle"> Mi Perfil</i>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-white" href="{% url 'objectives' user.empleado.ficha %}">
-                <i class="bi bi-percent"> Mis Objetivos</i>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-white bi bi-graph-up-arrow" href="{% url 'competences' %}">
-                Competencias
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-white bi bi-people" href="/search"> Colaboradores</a>
-            </li>
-            
-            <li>
-              <a class="dropdown-item text-white"
-                href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal"
-                target="_blank">
-                <i class="bi bi-telephone"> Directorio Telefonico </i>
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-white bi bi-stack" href="{% url 'companyobjectives' %}">
-                Objetivos de la Empresa
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item text-white bi bi-question-circle" href="{% url 'faq' %}">
-                Preguntas Frecuentes
-              </a>
-            </li>
-            
+          {% endif %}
 
-            <li>
-              <a class="dropdown-item text-white bi bi-key" href="{% url 'changePassword' %}">
-                Cambiar Contraseña
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <button type="button" class=" dropdown-item text-white bi bi-box-arrow-left" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                Cerrar Sesion
-              </button>
-              
-
-            </li>
-
-          </ul>
-        </li>
-
-       
-      </ul>
-    </div>
+          <li class="nav-item-gc">
+            <button class="nav-link fs-6" data-bs-toggle="offcanvas" href="#offcanvasUser" role="button" aria-controls="offcanvasUser" aria-expanded="false">
+              {% with default_avatar_name='default-avatar.png' %}
+                {% static default_avatar_name as default_avatar_url %}
+                <img src="{{ user.empleado.imagen|get_file_url|default:default_avatar_url }}" alt="Sin imagen" onerror="this.onerror=null;this.src='{{ default_avatar_url }}';" class="rounded-circle" style="width: 32px; height: 32px; image-rendering: auto; object-fit: cover;" />
+              {% endwith %}
+              {{ user.empleado.get_short_name }}
+            </button>
+          </li>
+        </ul>
+      </div>
     {% else %}
-    <div class="d-flex flex-grow-1 justify-content-center align-items-center">
-      <span class="navbar-text text-center fs-4 text-white w-100">¡Somos genios venezolanos, genios como TÚ!</span>
-    </div>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item-gc">
-        <a class="nav-link text-white fs-5 bi bi-box-arrow-in-right " aria-current="page" href="{% url 'signin' %}">
-          Entrar</a>
-
-      </li>
-    </ul>
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item-gc">
+          <a class="nav-link fs-6 {% if request.resolver_match.url_name == 'account_login' %}active{% endif %}" aria-current="page" href="{% url 'account_login' %}">Iniciar Sesión</a>
+        </li>
+      </ul>
     {% endif %}
   </div>
 </nav>
 
+{% if user.is_authenticated %}
+  <!-- Offcanvas user navigation -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasUser" aria-labelledby="offcanvasUserLabel" data-bs-theme="dark">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasUserLabel">Menú de Usuario</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="d-flex justify-content-center">
+        {% with default_avatar_name='default-avatar.png' %}
+          {% static default_avatar_name as default_avatar_url %}
+          <div class="text-center">
+            <img src="{{ user.empleado.imagen|get_file_url|default:default_avatar_url }}" alt="Sin imagen" onerror="this.onerror=null;this.src='{{ default_avatar_url }}';" class="rounded-circle img-fluid img-thumbnail shadow border-2 border-primary" style="width: 128px; height: 128px; object-fit: cover;" />
+          </div>
+        {% endwith %}
+      </div>
+      <h5 class="text-center mt-3">{{ user.empleado }}</h5>
+      <p class="text-center text-muted">{{ user.empleado.cargo }}</p>
+      <hr />
+      <ul class="nav nav-pills flex-column mb-auto">
+        <span class="nav-item">
+          <h6 class="text-muted">
+            <i class="bi bi-person-circle"></i>
+            Opciones de Usuario
+          </h6>
+        </span>
+        <li class="nav-item">
+          <a href="{% url 'profile' user.empleado.ficha %}" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'profile' %}fst-italic active{% endif %}">
+            <i class="bi bi-person"></i>
+            Mi Perfil
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'objectives' user.empleado.ficha %}" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'objectives' %}fst-italic active{% endif %}">
+            <i class="bi bi-clipboard"></i>
+            Mis Objetivos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/search" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'search' %}fst-italic active{% endif %}">
+            <i class="bi bi-people"></i>
+            Mis Colaboradores
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'account_change_password' %}" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'account_change_password' %}fst-italic active{% endif %}">
+            <i class="bi bi-key"></i>
+            Cambiar Contraseña
+          </a>
+        </li>
+        <hr />
+        <span class="nav-item">
+          <h6 class="text-muted">
+            <i class="bi bi-question-circle"></i>
+            Ayuda e Información
+          </h6>
+        </span>
 
-<!-- Offcanvas component -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasTools" aria-labelledby="offcanvasToolsLabel">
+        <li class="nav-item">
+          <a href="{% url 'competences' %}" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'competences' %}fst-italic active{% endif %}">
+            <i class="bi bi-card-list"></i>
+            Competencias
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'companyobjectives' %}" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'companyobjectives' %}fst-italic active{% endif %}">
+            <i class="bi bi-award"></i>
+            Objetivos de la Empresa
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'faq' %}" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'faq' %}fst-italic active{% endif %}">
+            <i class="bi bi-question-circle"></i>
+            Preguntas Frecuentes
+          </a>
+        </li>
+        <hr />
+        <span class="nav-item">
+          <h6 class="text-muted">
+            <i class="bi bi-box-arrow-right"></i>
+            Opciones de Sesión
+          </h6>
+        </span>
+
+        <li class="nav-item">
+          <form id="logoutForm" action="{% url 'account_logout' %}" method="post">
+            {% csrf_token %}
+            <button class="nav-link link-body-emphasis fs-6" id="logoutButton" type="button">
+              <i class="bi bi-box-arrow-right"></i>
+              Cerrar Sesión
+            </button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endif %}
+
+<!-- Offcanvas tools -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasTools" aria-labelledby="offcanvasToolsLabel" data-bs-theme="dark">
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="offcanvasToolsLabel">Herramientas</h5>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
-    <ul class="list-group">
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-calendar-week" href="/periodos"> Periodos</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-people" href="/search"> Maestro</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-person-add" href="{% url 'newemployee' %}"> Nuevo Empleado</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-card-list" href="{% url 'seeCompetences' %}"> Competencias</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-bag" href="{% url 'seeCargos' %}"> Cargos</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-building" href="{% url 'seeGerencias' %}"> Gerencias</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-diagram-3" href="{% url 'seeDirecciones' %}"> Direcciones</a></li>
-      <li class="list-group-item">
-        <hr class="dropdown-divider">
+    <ul class="nav nav-pills flex-column mb-auto">
+      <span class="nav-item"><h6 class="text-muted">Administración</h6></span>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-calendar-week" href="/periodos">Periodos</a>
       </li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-gear" href="{% url 'systemparameters' %}"> Parametros del Sistema</a></li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-people" href="/search">Maestro</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-person-add" href="{% url 'newemployee' %}">Nuevo Empleado</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-card-list" href="{% url 'seeCompetences' %}">Competencias</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-bag" href="{% url 'seeCargos' %}">Cargos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-building" href="{% url 'seeGerencias' %}">Gerencias</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-diagram-3" href="{% url 'seeDirecciones' %}">Direcciones</a>
+      </li>
+      <hr />
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-gear" href="{% url 'systemparameters' %}">Parametros del Sistema</a>
+      </li>
       {% if user.is_superuser %}
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-gear" href="/admin"> Panel de Administrador</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-person-plus" href="{% url 'newUser' %}"> Nuevo Usuario</a></li>
-      <li class="list-group-item"><a class="dropdown-item text-dark bi bi-person-lines-fill" href="{% url 'users' %}"> Lista de Usuarios</a></li>
+        <li class="nav-item">
+          <a class="nav-link link-body-emphasis bi bi-gear" href="/admin">Panel de Administrador</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-body-emphasis bi bi-person-plus" href="{% url 'newUser' %}">Nuevo Usuario</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-body-emphasis bi bi-person-lines-fill" href="{% url 'users' %}">Lista de Usuarios</a>
+        </li>
       {% endif %}
     </ul>
   </div>
 </div>
+
+{% if user.is_authenticated %}
+  <script>
+    document.getElementById('logoutButton').addEventListener('click', function () {
+      Swal.fire({
+        title: 'Cerrar Sesión',
+        text: '¿Estás seguro de que deseas cerrar la sesión?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#002f87',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, cerrar sesión',
+        cancelButtonText: 'No, cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('logoutForm').submit()
+        }
+      })
+    })
+  </script>
+{% endif %}

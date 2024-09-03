@@ -1,167 +1,59 @@
 {% extends 'main.html' %}
 {% load static %}
-
+{% block title %}
+  Inicio
+{% endblock %}
 
 {% block content %}
-
-<main class="container">
-
-    <section class="row">
-        <h3 class="my-2 text-center">Genia Performance 360 Pro</h3>
-        <h4 class=" text-center">Sistema de Evaluación de Desempeño</h4>
-    </section>
-
-    <section class="row my-2">
-        <div class="col-md-9 ">
-            <div class="card card-body border-0 shadow h-100">
-                <div class="card-title fw-bold fs-3 text-center">
-                    ¡Querido genio!
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%"
-                            class="img-fluid">
-                    </div>
-                    <div class="col">
-                        <p class="lead fs-5 ">
-                            Bienvenido a nuestro portal de evaluación del desempeño en donde en conjunto a tu líder
-                            revisaremos los
-                            resultados de los objetivos propuestos para tu cargo.
-                        </p>
-                        <p class="lead fs-5">
-                            Con nuestra plataforma, podrás realizar fácilmente y de forma automatizada tu
-                            autoevaluación y
-                            evaluación; y en caso de que tengas genios bajo tu cargo podrás ver los reportes de
-                            resultados.
-
-                        </p>
-                        <p class="lead fs-5 ">
-                            Esperamos que esta experiencia sea de tu agrado y sirva como una herramienta que permita
-                            desarrollar tu carrera en Genia Care y elevar tu potencial.
-                        </p>
-                    </div>
-                </div>
-                
-
-            </div>
-
+  <section class="row p-4 g-4 ">
+    <div class="col-md-9 order-md-1">
+      <div class="card card-body border-0 rounded-1 shadow h-100">
+        <h3 class="text-center">Genia Performance 360 Pro</h3>
+        <h4 class="text-center">Sistema de Evaluación de Desempeño</h4>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" class="img-fluid" />
+          </div>
+          <div class="col-md-6">
+            <p class="lead fw-bold fs-5">¡Querido Genio!</p>
+            <p class="lead fs-5">Bienvenido a nuestro portal de evaluación del desempeño en donde en conjunto a tu líder revisaremos los resultados de los objetivos propuestos para tu cargo.</p>
+            <p class="lead fs-5">Con nuestra plataforma, podrás realizar fácilmente y de forma automatizada tu autoevaluación y evaluación; y en caso de que tengas genios bajo tu cargo podrás ver los reportes de resultados.</p>
+            <p class="lead fs-5">Esperamos que esta experiencia sea de tu agrado y sirva como una herramienta que permita desarrollar tu carrera en Genia Care y elevar tu potencial.</p>
+          </div>
         </div>
-        <div class="col-md-3">
-            <div class="row">
-                {% if user.is_authenticated %}
-                <div class="card card-body border-0 shadow">
-                    <h5 class="card-title">Ver Perfil</h5>
-                    <p class="card-text">Haga clic en el boton para visualizar su perfil</p>
-                    <a href="{% url 'signin' %}" class="btn btn-dark btn-block stretched-link">Perfil</a>
-                </div>
-                {% else %}
-                <div class="card card-body border-0 shadow">
-                    <h5 class="card-title">Iniciar Sesion</h5>
-                    <p class="card-text">Haga clic en el boton para iniciar sesion</p>
-                    <a href="{% url 'signin' %}" class="btn btn-dark btn-block stretched-link">Entrar</a>
-                </div>
-                {% endif %}
-            </div>
-            <div class="row my-2">
-                <div class="card card-body border-0 shadow">
-                    <h5 class="card-title">Guia Telefónica</h5>
-                    <p class="card-text">Haga clic aqui para ir a la Guia Telefónica de Genia Care</p>
-                    <a href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal"
-                        class="btn btn-dark btn-block stretched-link">Ir</a>
-                </div>
-
-            </div>
-            <div class="row my-2">
-                <div class="card card-body border-0 shadow">
-                    <h5 class="card-title">¿Necesita ayuda?</h5>
-                    <p class="card-text">
-                        En caso de tener alguna duda sobre el uso del sistema puedes contactar a:
-                        <a href="">geniacare.contigo@geniacare.com</a>
-                        <a href=""> soporte@geniacare.com</a>
-                    </p>
-                </div>
-            </div>
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- <div class="row">
-        <h1 class="text-center mt-2 mb-2">PORTAL GENIA CARE</h1>
+      </div>
     </div>
+    <div class="col-md-3 order-md-2">
+      <div class="row g-3">
+        {% if user.is_authenticated %}
+          <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+            <h5 class="card-title">Ver Perfil</h5>
+            <p class="card-text">Haga clic en el botón para visualizar su perfil</p>
+            <a href="{% url 'profile' user.empleado.ficha %}" class="btn btn-primary btn-block stretched-link">Ver</a>
+          </div>
+        {% else %}
+          <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+            <h5 class="card-title">Iniciar Sesión</h5>
+            <p class="card-text">Haga clic en el botón para iniciar sesión</p>
+            <a href="{% url 'account_login' %}" class="btn btn-primary btn-block stretched-link">Entrar</a>
+          </div>
+        {% endif %}
 
-    <div class="row">
-        <div class="col-sm-8">
-
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h2 class=" fst-italic text-center card-title">
-                        ¡Querido genio!
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <p class="lead fs-4 ">
-                        Bienvenido a nuestro portal de evaluación del desempeño en donde en conjunto a tu líder
-                        revisaremos los
-                        resultados de los objetivos propuestos para tu cargo.
-                    </p>
-                    <p class="lead fs-4">
-                        Con nuestra plataforma, podrás realizar fácilmente y de forma automatizada tu autoevaluación y
-                        evaluación; y en caso de que tengas genios bajo tu cargo podrás ver los reportes de resultados.
-
-                    </p>
-                    <p class="lead fs-4 ">
-                        Esperamos que esta experiencia sea de tu agrado y sirva como una herramienta que permita
-                        desarrollar tu carrera en Genia Care y elevar tu potencial.
-                    </p>
-                </div>
-            </div>
-
-
-
+        <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+          <h5 class="card-title">Guía Telefónica</h5>
+          <p class="card-text">Haga clic aquí para ir a la Guía Telefónica de Genia Care</p>
+          <a href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal" class="btn btn-primary btn-block stretched-link">Ir</a>
         </div>
-        <div class="col-sm-4">
-            {% if user.is_authenticated %}
-            <div class="card card-body mt-4">
-                <h5 class="card-title">Ver Perfil</h5>
-                <p class="card-text">Haga clic en el boton para visualizar su perfil</p>
-                <a href="{% url 'signin' %}" class="btn btn-dark btn-block">Perfil</a>
-            </div>
-            {% else %}
-            <div class="card card-body mt-4">
-                <h5 class="card-title">Iniciar Sesion</h5>
-                <p class="card-text">Haga clic en el boton para iniciar sesion</p>
-                <a href="{% url 'signin' %}" class="btn btn-dark btn-block">Entrar</a>
-            </div>
-            {% endif %}
 
-            <div class="card card-body mt-4">
-                <h5 class="card-title">Guia Telefónica</h5>
-                <p class="card-text">Haga clic aqui para ir a la Guia Telefónica de Genia Care</p>
-                <a href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal"
-                    class="btn btn-dark btn-block">Ir</a>
-
-            </div>
-            <div class="card card-body mt-4">
-                <h5 class="card-title">¿Necesita ayuda?</h5>
-                <p class="card-text">
-                    En caso de tener alguna duda sobre el uso del sistema puedes contactar a:
-                    <a href="">geniacare.contigo@geniacare.com</a>
-                    <a href=""> soporte@geniacare.com</a>
-                </p>
-
-
-
-            </div>
-
+        <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+          <h5 class="card-title">¿Necesita ayuda?</h5>
+          <p class="card-text">
+            En caso de tener alguna duda sobre el uso del sistema puedes contactar a:
+            <a href="">geniacare.contigo@geniacare.com</a>
+            <a href="">soporte@geniacare.com</a>
+          </p>
         </div>
-    </div> -->
-
-
-</main>
-
-
+      </div>
+    </div>
+  </section>
 {% endblock %}

@@ -110,9 +110,7 @@
                             <div class="ps-1">
                               <form action="{% url 'discardobjective' empleado.ficha obj.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-danger text-center bi bi-trash w-100" onclick="return confirm('¿Está seguro que desea eliminar este objetivo?')">
-                                    
-                                </button>
+                                <button type="button" class="btn btn-danger text-center bi bi-trash w-100" onclick="confirmDelete(this.form)"></button>
                             </form>
                             </div>
                         </div>
@@ -317,3 +315,27 @@
 
 
 {% endblock %}
+
+{% block scripts %}
+  <script>
+    function confirmDelete(form) {
+      swal.fire({
+        title: '¿Estás seguro?',
+        text: '¿Deseas eliminar este objetivo?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#002f87',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    }
+  </script>
+{% endblock %}
+
+   
+          

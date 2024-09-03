@@ -1,0 +1,14 @@
+<div class="position-fixed bottom-0 start-0 m-4" data-bs-theme="dark" data-bs-toggle="tooltip" data-bs-placement="top" title="Menu de Ayuda">
+    <div class="dropdown">
+      <button class="btn btn-primary rounded-circle fs-4" type="button" id="helpButton" data-bs-toggle="dropdown" aria-expanded="false" style="width: 50px; height: 50px;">
+        <i class="bi bi-question-lg"></i>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="helpButton">
+        <li><h6 class="dropdown-header">Menu de Ayuda</h6></li>
+        <p class="dropdown-item mb-0">¿Necesitas ayuda?,<br> puedes revisar las preguntas frecuentes <br> o escribirnos un correo.</p>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'faq' %}">Preguntas Frecuentes</a></li>
+        <li><a class="dropdown-item" href="mailto:soporte@geniacare.com">Envia un correo a <br>soporte@geniacare.com</a></li>
+      </ul>
+    </div>
+  </div>

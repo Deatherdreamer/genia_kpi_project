@@ -57,7 +57,7 @@ def createUser(request):
 @staff_member_required
 def users(request):
     users = User.objects.all().order_by('-is_superuser', '-is_staff',
-                                        'empleado__cargo__nivel__valor')
+                                        'empleado__cargo__nivel__valor').exclude(empleado__isnull=True)
     return render(request, 'users.html', {'users': users})
 
 @login_required
@@ -94,17 +94,19 @@ def profileView(request, e_ficha):
     cargo = empleado.cargo   
     evaluaciones = EvaluacionDesempeno.objects.filter(empleado=empleado)
     periodo = Periodo.objects.get(is_active=True)
+    objetivos = empleado.objetivos_set.filter(periodo=periodo)   
 
     return render(request, 'profile.html', {
         'empleado': empleado,
         'cargo': cargo,
         'evaluaciones': evaluaciones,
-        'periodo': periodo
+        'periodo': periodo,
+        'objetivos': objetivos,
     })
 
 
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def addEmployee(request):
     if request.method == 'GET':
         return render(request, 'addEmployee.html', {
@@ -135,7 +137,7 @@ def addEmployee(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def editEmployee(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     form = EmpleadoForm(instance=empleado)
@@ -160,7 +162,7 @@ def editEmployee(request, e_ficha):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def deleteEmployee(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     if request.method == 'GET':
@@ -179,7 +181,7 @@ def deleteEmployee(request, e_ficha):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def reingreso(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     if request.method == 'GET':
@@ -243,14 +245,14 @@ def addComentario(request, de_ficha, para_ficha):
         return JsonResponse({'error': str(e)}, status=400)
     
 # view to see the current period
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def periodos(request):
     periodos = Periodo.objects.all()
     return render(request, 'periodo.html', {
         'periodos': periodos
     })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def editPeriodo(request, id):
     periodo = get_object_or_404(Periodo, pk=id)
 
@@ -281,7 +283,7 @@ def editPeriodo(request, id):
 # Views to interact with objectives.
 
 # view to see the objectives of an employee
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def objectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     periodo = Periodo.objects.get(is_active=True)
@@ -293,7 +295,7 @@ def objectives(request, e_ficha):
     })
 
 # view to create an objective
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def createObjectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     periodo = Periodo.objects.get(is_active=True)
@@ -346,7 +348,7 @@ def createObjectives(request, e_ficha):
             })
             
 # view to edit an objective       
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def editObjectives(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
@@ -392,7 +394,7 @@ def deleteObjectives(request, e_ficha, o_id):
     return redirect('objectives', e_ficha=empleado.ficha)
 
 # view to approve an objective
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def approve_objective(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
@@ -411,7 +413,7 @@ def approve_objective(request, e_ficha, o_id):
     return redirect('objectives', e_ficha=empleado.ficha)
 
 # view to disapprove an objective
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def disapprove_objective(request, e_ficha, o_id):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     objetivo = get_object_or_404(Objetivos, pk=o_id, empleado=empleado)
@@ -430,7 +432,7 @@ def disapprove_objective(request, e_ficha, o_id):
     return redirect('objectives', e_ficha=empleado.ficha)
 
 # view to add a note to an objective
-# @login_required(login_url='signin')
+# @login_required(login_url='account_login')
 # def add_note_to_objective(request, e_ficha, o_id):
 #     if request.method == 'POST':
 #         empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -448,7 +450,7 @@ def disapprove_objective(request, e_ficha, o_id):
 #         messages.error(request, 'ERROR')
 #         return redirect('objectives', e_ficha=empleado.ficha)
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def add_note_to_objective(request, e_ficha, o_id):
     if request.method == 'POST':
         empleado = get_object_or_404(Empleado, ficha=e_ficha)
@@ -822,7 +824,7 @@ def changePassword(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def seeCompetences(request):
     # cargar registros de nivel
     nivel = Nivel.objects.all()
@@ -832,12 +834,12 @@ def seeCompetences(request):
         'competencias': competencias,
     })
     
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def competenceDetails(request, competence_id):
     competence = get_object_or_404(Competencias, pk=competence_id)
     return render(request, 'competencia.html', {'competencia': competence})
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def addCompetence(request):
     if request.method == 'GET':
         return render(request, 'competencia_crud.html', {
@@ -854,7 +856,7 @@ def addCompetence(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def editCompetence(request, competence_id):
     competence = get_object_or_404(Competencias, pk=competence_id)
     if request.method == 'GET':
@@ -872,19 +874,19 @@ def editCompetence(request, competence_id):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def seeCargos(request):
     niveles = Niveles.objects.all().order_by('valor')
     return render(request, 'seeCargos.html', {
         'niveles': niveles,
     })
     
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def cargoDetails(request, cargo_id):
     cargo = get_object_or_404(Cargo, pk=cargo_id)
     return render(request, 'cargo.html', {'cargo': cargo})
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def editCargo(request, cargo_id):
     cargo = get_object_or_404(Cargo, pk=cargo_id)
     if request.method == 'GET':
@@ -904,7 +906,7 @@ def editCargo(request, cargo_id):
                 'cargo': cargo
             })
             
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def deactivate_cargo(request, cargo_id):
     cargo = get_object_or_404(Cargo, pk=cargo_id)
     if request.method == 'POST':
@@ -913,7 +915,7 @@ def deactivate_cargo(request, cargo_id):
     return redirect('seeCargos')
 
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def addCargo(request):
     if request.method == 'GET':
         return render(request, 'cargo_crud.html', {
@@ -930,24 +932,24 @@ def addCargo(request):
                 'form': form,
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def seeGerencias(request):
     direcciones = Direccion.objects.all()
     return render(request, 'seeGerencias.html', {
         'direcciones': direcciones,
     })
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def gerenciaDetails(request, gerencia_id):
     gerencia = get_object_or_404(Gerencia, pk=gerencia_id)
     print(gerencia.subgerencias())
     return render(request, 'gerencia.html', {'gerencia': gerencia})
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def editGerencia(request, gerencia_id):
     gerencia = get_object_or_404(Gerencia, pk=gerencia_id)
     if request.method == 'GET':
-        return render(request, 'editGerencia.html', {
+        return render(request, 'gerencias_crud.html', {
             'form': GerenciaForm(instance=gerencia)
         })
     else:
@@ -956,15 +958,15 @@ def editGerencia(request, gerencia_id):
             form.save()
             return redirect('seeGerencias')
         else:
-            return render(request, 'editGerencia.html', {
+            return render(request, 'gerencias_crud.html', {
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def addGerencia(request):
     if request.method == 'GET':
-        return render(request, 'addGerencia.html', {
+        return render(request, 'gerencias_crud.html', {
             'form': GerenciaForm()
         })
     else:
@@ -973,30 +975,30 @@ def addGerencia(request):
             form.save()
             return redirect('seeGerencias')
         else:
-            return render(request, 'addGerencia.html', {
+            return render(request, 'gerencias_crud.html', {
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
 
 # view to see all direcciones
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def seeDirecciones(request):
     direcciones = Direccion.objects.all()
     return render(request, 'seeDirecciones.html', {
         'direcciones': direcciones,
     })
     
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def direccionDetails(request, direccion_id):
     direccion = get_object_or_404(Direccion, pk=direccion_id)
     return render(request, 'direccion.html', {'direccion': direccion})
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def editDireccion(request, direccion_id):
     direccion = get_object_or_404(Direccion, pk=direccion_id)
     if request.method == 'GET':
-        return render(request, 'editDireccion.html', {
+        return render(request, 'direccion_crud.html', {
             'form': DireccionForm(instance=direccion)
         })
     else:
@@ -1005,15 +1007,15 @@ def editDireccion(request, direccion_id):
             form.save()
             return redirect('seeDirecciones')
         else:
-            return render(request, 'editDireccion.html', {
+            return render(request, 'direccion_crud.html', {
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def addDireccion(request):
     if request.method == 'GET':
-        return render(request, 'addDireccion.html', {
+        return render(request, 'direccion_crud.html', {
             'form': DireccionForm()
         })
     else:
@@ -1022,12 +1024,12 @@ def addDireccion(request):
             form.save()
             return redirect('seeDirecciones')
         else:
-            return render(request, 'addDireccion.html', {
+            return render(request, 'direccion_crud.html', {
                 'form': form,
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def download_pdf(request, eval_id):
     logoPath = os.path.join(settings.BASE_DIR, 'static', 'GCLOGO.png')
     print(logoPath)
@@ -1052,32 +1054,32 @@ def download_pdf(request, eval_id):
         return HttpResponse('Error al generar el PDF')
     return response
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameters(request):
     return render(request, 'system_parameters.html')
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameters_niveles(request):
     niveles = Niveles.objects.all().order_by('valor')
     return render(request, 'system_parameters_niveles.html', {
         'niveles': niveles
     })
     
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameters_niveles_detail(request,nivel):
     nivel = get_object_or_404(Niveles, valor=nivel)
     return render(request, 'system_parameters_niveles_detail.html', {
         'nivel': nivel
     })
   
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameter_percentaje_distribution(request):
     departamentos = Departamento.objects.all()
     return render(request, 'system_parameter_percentaje_distribution.html', {
         'departamentos': departamentos
     })
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameter_percentaje_distribution_department(request, department):
     departamento = get_object_or_404(Departamento, nombre=department)
     niveles = Niveles.objects.all().order_by('valor')
@@ -1086,7 +1088,7 @@ def system_parameter_percentaje_distribution_department(request, department):
         'departamento': departamento
     })
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameter_percentaje_distribution_department_nivel(request, department, nivel):
     departamento = get_object_or_404(Departamento, nombre=department)
     nivel = get_object_or_404(Niveles, valor=nivel)
@@ -1104,7 +1106,7 @@ def system_parameter_percentaje_distribution_department_nivel(request, departmen
         'suma': suma,
     })
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameter_percentaje_distribution_department_nivel_distribution(request, department, nivel, distribucion):
     departamento = get_object_or_404(Departamento, nombre=department)
     nivel = get_object_or_404(Niveles, valor=nivel)
@@ -1138,7 +1140,7 @@ def system_parameter_percentaje_distribution_department_nivel_distribution(reque
         'form': form
     })
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def system_parameter_percentaje_distribution_department_nivel_distribution_edit(request, department, nivel, distribucion, dist_obj):
     departamento = get_object_or_404(Departamento, nombre=department)
     nivel = get_object_or_404(Niveles, valor=nivel)
@@ -1166,7 +1168,7 @@ def system_parameter_percentaje_distribution_department_nivel_distribution_edit(
     })
     
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def export_cargos(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="cargos.xlsx"'
@@ -1190,7 +1192,7 @@ def export_cargos(request):
 
     return response
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def export_gerencias(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="gerencias.xlsx"'
@@ -1208,7 +1210,7 @@ def export_gerencias(request):
 
     return response
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def export_empleados(request):
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="empleados.xlsx"'
@@ -1235,7 +1237,7 @@ def export_empleados(request):
 
     return response
 
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def import_cargos(request):
     if request.method == 'GET':
         return render(request, 'import_cargos.html')
@@ -1276,7 +1278,7 @@ def import_cargos(request):
                 
         return redirect('systemparameters')
     
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def import_empleados(request):
     if request.method == 'GET':
         return render(request, 'import_empleados.html')
@@ -1337,7 +1339,7 @@ def import_empleados(request):
                 
         return redirect('systemparameters')
     
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def competencias_by_my_level(request):
     empleado = request.user.empleado
     nivel = empleado.nivel()
@@ -1352,14 +1354,14 @@ class Preguntas_Frecuentes_List(ListView):
     template_name = 'preguntas_frecuentes.html'
     context_object_name = 'preguntas_frecuentes'
     
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def announcements_view(request):
     announcements = Announcements.objects.all().order_by('-date')
     return render(request, 'announcements.html', {
         'announcements': announcements
     })
     
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def announcements_add(request):
     if request.method == 'GET':
         return render(request, 'announcements_crud.html', {
@@ -1378,7 +1380,7 @@ def announcements_add(request):
                 'error': 'Ha ocurrido un error, intente de nuevo.'
             })
             
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def announcements_edit(request, announcement_id):
     announcement = get_object_or_404(Announcements, pk=announcement_id)
     if request.method == 'GET':
@@ -1398,7 +1400,7 @@ def announcements_edit(request, announcement_id):
 
             })
             
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def announcements_delete(request, announcement_id):
     announcement = get_object_or_404(Announcements, pk=announcement_id)
     if request.user.is_staff:        
@@ -1412,7 +1414,7 @@ def announcements_delete(request, announcement_id):
         messages.error(request, 'No tiene permisos para realizar esta acción.')
         return redirect('announcements')
     
-@login_required(login_url='signin')
+@login_required(login_url='account_login')
 def company_objectives_view(request):
     periodo = Periodo.objects.get(is_active=True)
     company_objectives = Company_Objectives.objects.filter(period=periodo)
@@ -1421,7 +1423,7 @@ def company_objectives_view(request):
         'company_objectives': company_objectives
     })
     
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def company_objectives_add(request):
     period = Periodo.objects.get(is_active=True)
     if request.method == 'GET':
@@ -1444,7 +1446,7 @@ def company_objectives_add(request):
                 'periodo': period
             })
             
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def company_objectives_edit(request, obj_id):
     company_objective = get_object_or_404(Company_Objectives, pk=obj_id)
     if request.method == 'GET':
@@ -1465,7 +1467,7 @@ def company_objectives_edit(request, obj_id):
                 'company_objective': company_objective
             })
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def company_objectives_delete(request, obj_id):
     company_objective = get_object_or_404(Company_Objectives, pk=obj_id)
     if request.method == 'POST':
@@ -1473,7 +1475,7 @@ def company_objectives_delete(request, obj_id):
         messages.success(request, 'Objetivo eliminado')
     return redirect('companyobjectives')
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def generate_report_per_department(request):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename=reporte_departamentos.xlsx'
@@ -1508,7 +1510,7 @@ def generate_report_per_department(request):
     workbook.save(response)
     return response
 
-@staff_member_required(login_url='signin')
+@staff_member_required(login_url='account_login')
 def upload_and_update_user_info(request):
     if request.method == 'GET':
         return render(request, 'upload_and_update_user_info.html')

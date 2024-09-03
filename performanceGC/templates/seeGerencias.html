@@ -2,61 +2,68 @@
 {% load static %}
 {% load custom_tags %}
 {% load widget_tweaks %}
-{% block content %}
 
-<div class="container mt-2">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="text-center">Gerencias</h1>
-        </div>
-    </div>
-    <div class="card card-body">
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+{% block title %}Listado de Gerencias{% endblock %}
+
+{% block content %}
+<section class="row justify-content-center my-4">
+    <div class="col-12 col-md-10">
+      <div class="card card-body border-0 rounded-1 shadow">
+        <h2 class="text-center">Listado de Gerencias</h2>
+        <a href="{% url 'addGerencia' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Nueva Gerencia</a>
+        <ul class="nav nav-underline nav-fill" id="myTab" role="tablist">
             {% for direccion in direcciones %}
-            <li class="nav-item" role="presentation">
-                <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{direccion.id}}-tab"
-                    data-bs-toggle="tab" data-bs-target="#tab-{{direccion.id}}" type="button" role="tab"
-                    aria-controls="tab-{{direccion.id}}"
-                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                    {{direccion}}
+                <li class="nav-item" role="presentation">
+                <button class="nav-link {% if forloop.first %}active{% endif %}"
+                    id="tab-{{ direccion.id }}-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tab-{{ direccion.id }}"
+                    type="button"
+                    role="tab"
+                    aria-controls="tab-{{ direccion.id }}"
+                    aria-selected="{% if forloop.first %}
+                    true
+                    {% else %}
+                    false
+                    {% endif %}">
+                    {{ direccion }}
                 </button>
-            </li>
+                </li>
             {% endfor %}
         </ul>
-
         <div class="tab-content" id="myTabContent">
             {% for direccion in direcciones %}
-            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{direccion.id}}"
-                role="tabpanel" aria-labelledby="tab-{{direccion.id}}-tab">
-                <table class="table table-hover table-striped datatable align-middle w-100">
-                    <thead>
-                        <tr>
-                            <th scope="col">Nombre de la Gerencia</th>
-                            <th scope="col">Direccion</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for gerencia in direccion.gerencias %}
-                        <tr>
-                            <td>{{gerencia.nombreText}}</td>
-                            <td>{{gerencia.direccion}}</td>
-                            <td class="text-end">
-                                <a href="{% url 'editGerencia' gerencia.id %}" class="btn btn-dark">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <a href="{% url 'gerenciadetails' gerencia.id %}" class="btn btn-dark">
-                                    <i class="bi bi-search"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <a href="{% url 'addGerencia' %}" class="btn btn-primary">Nueva
-                    Gerencia</a>
-
-            </div>
+                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ direccion.id }}" role="tabpanel" aria-labelledby="tab-{{ direccion.id }}-tab">
+                    <table class="table table-hover table-striped datatable align-middle w-100">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre de la Gerencia</th>
+                                <th scope="col">Direccion</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gerencia in direccion.gerencias %}
+                                <tr>
+                                    <td>{{ gerencia.nombreText }}</td>
+                                    <td>{{ gerencia.direccion }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'editGerencia' gerencia.id %}" class="btn btn-dark">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="{% url 'gerenciadetails' gerencia.id %}" class="btn btn-dark">
+                                            <i class="bi bi-search"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% endfor %}
         </div>
-        {% endblock %}
+    </div>
+</section>
+{% endblock %}

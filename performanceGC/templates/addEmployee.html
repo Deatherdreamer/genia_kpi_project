@@ -1,75 +1,68 @@
 {% extends 'main.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% load custom_tags %}
 
 {% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        {% if modificar %}
-          <h1 class="text-center">Editar Empleado</h1>
-        {% else %}
-          <h1 class="text-center">Nuevo Empleado</h1>
-        {% endif %}
+  <section class="row justify-content-center my-4">
+    <div class="col-12 col-md-8 col-lg-6">
+      <div class="card card-body border-0 rounded-1 shadow">
+        <h2 class="text-center">
+          {% if form.instance.pk %}
+            <i class="bi bi-pencil-square"></i> Editar Colaborador
+          {% else %}
+            <i class="bi bi-person-plus"></i> Agregar Colaborador
+          {% endif %}
+        </h2>
+        <form class="form" method="POST" enctype="multipart/form-data" id="form">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <hr class="mx-auto" />
+          <div class="mt-2">
+            <button type="button" class="btn btn-primary" id="submitBtn">
+              <span id="btnSpinner" class="spinner-grow spinner-grow-sm text-light" style="display: none;"></span>
+              <span id="btnText" class="">
+                {% if form.instance.pk %}
+                  <i class="bi bi-pencil-square"></i> Editar
+                {% else %}
+                  <i class="bi bi-person-plus"></i> Agregar
+                {% endif %}
+              </span>
+            </button>
+            <a href="{% url 'search' %}" class="btn btn-dark" id="cancelBtn">
+              <i class="bi bi-x-circle"></i> Cancelar</a>
+          </div>
+        </form>
       </div>
     </div>
-    <div class="card card-body">
-      <form class="form" action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+  </section>
+{% endblock %}
 
-        {% if form.errors %}
-          <div class="alert alert-danger">
-            <strong>Error!</strong> Por favor corrija los siguientes errores.<br />
-            <ul>
-              {% for field in form %}
-                {% if field.errors %}
-                  <li>{{ field.errors|striptags }}</li>
-                {% endif %}
-              {% endfor %}
-            </ul>
-          </div>
-        {% endif %}
+{% block scripts %}
+  <script>
+    document.getElementById('submitBtn').addEventListener('click', function () {
+      swal
+        .fire({
+          title: '¿Estás seguro?',
+          text: '¿Deseas guardar los cambios?',
+          icon: 'warning',
+          confirmButtonColor: '#002f87',
+          cancelButtonColor: '#d33',
+          showCancelButton: true,
+          confirmButtonText: 'Sí',
+          cancelButtonText: 'No'
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            document.getElementById('btnText').textContent = 'Guardando...'
+            document.getElementById('btnSpinner').style.display = 'inline-block'
+            document.getElementById('submitBtn').disabled = true
+            document.getElementById('cancelBtn').disabled = true
 
-        {% for field in form %}
-          <div class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {% if field.field.widget.input_type == 'file' %}
-              <div class="custom-file">
-                {{ field }}
-                <label class="custom-file-label" for="{{ field.id_for_label }}">Seleccionar Archivo</label>
-              </div>
-            {% elif field.field.widget.input_type == 'select' %}
-              <select class="form-control form-select" name="{{ field.name }}" id="{{ field.id_for_label }}" required>
-                {% for choice in field.field.choices %}
-                  <option value="{{ choice.0 }}" {% if choice.0 == field.value %}selected{% endif %}>{{ choice.1 }}</option>
-                {% endfor %}
-              </select>
+            document.getElementById('form').submit()
 
-            {% else %}
-              {{ field }}
-            {% endif %}
-          </div>
-        {% endfor %}
-
-        <div class="form-group mt-2">
-          {% if modificar %}
-            <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Actualizar</button>
-            <a href="{% url 'profile' empleado.ficha %}" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
-          {% else %}
-            <button type="submit" class="btn btn-primary"><i class="bi bi-person-add"></i> Agregar</button>
-            <a href="{% url 'search' %}" class="btn btn-secondary"><i class="bi bi-x-circle"></i> Cancelar</a>
-          {% endif %}
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-  <script>  
-    
-    function openNewWindow() {
-      window.open("{% url 'addCargo' %}", '_blank', 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=800,height=600')
-    }
+          }
+        })
+    })
   </script>
 {% endblock %}

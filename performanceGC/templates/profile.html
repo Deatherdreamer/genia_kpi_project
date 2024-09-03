@@ -1,11 +1,11 @@
 {% extends 'main.html' %}
 {% load static %}
 {% load custom_tags %}
+{% block title %}
+    Perfil
+{% endblock %}
 
 {% block content %}
-
-
-
     <section class="row">
         <div class="col-lg-4 col-sm-12 my-2 p-2">
             <div class="card  border-0 shadow">
@@ -49,7 +49,7 @@
                         {{empleado.nombre|title}} {{empleado.apellido|title}}
                     </h5>
                     <h6 class="text-center fw-lighter">
-                        <a href="{% url 'cargodetails' empleado.cargo.id %}" class="text-decoration-none">
+                        <a href="{% url 'cargodetails' empleado.cargo.id %}" class="link-gc">
                             {{empleado.cargo|title}}
                         </a>
                     </h6>
@@ -82,11 +82,11 @@
                                 <th scope="row">Supervisor</th>
                                 {% if empleado.supervisor %}
                                 <td>
-                                    <a class="text-decoration-none" href="{% url 'profile' empleado.supervisor.ficha %}">{{empleado.supervisor|title}}</a>
+                                    <a class="link-gc" href="{% url 'profile' empleado.supervisor.ficha %}">{{empleado.supervisor|title}}</a>
                                 </td>
                                 {% elif empleado.cargo.supervisor %}
                                 <td>
-                                    <a class="text-decoration-none" href="{% url 'cargodetails' empleado.cargo.supervisor.id %}">{{empleado.cargo.supervisor|title}}</a><span class="badge bg-danger">VACANTE</span>
+                                    <a class="link-gc" href="{% url 'cargodetails' empleado.cargo.supervisor.id %}">{{empleado.cargo.supervisor|title}}</a><span class="badge bg-danger">VACANTE</span>
                                 </td>
                                 {% else %}
                                 <td>
@@ -98,7 +98,7 @@
                                 {% if empleado.cargo.gerencia %}
                                 <th scope="row">Gerencia</th>
                                 <td>
-                                    <a class="text-decoration-none" href="{% url 'gerenciadetails' empleado.cargo.gerencia.id %}">{{empleado.cargo.gerencia|title}}</a>
+                                    <a class="link-gc" href="{% url 'gerenciadetails' empleado.cargo.gerencia.id %}">{{empleado.cargo.gerencia|title}}</a>
                                 </td>
                                 {% endif %}
                             </tr>
@@ -106,7 +106,7 @@
                                 {% if empleado.cargo.gerencia.direccion %}
                                 <th scope="row">Direccion</th>
                                 <td>
-                                    <a class="text-decoration-none" href="{% url 'direcciondetails' empleado.cargo.gerencia.direccion.id %}">{{empleado.cargo.gerencia.direccion|title}}</a>
+                                    <a class="link-gc" href="{% url 'direcciondetails' empleado.cargo.gerencia.direccion.id %}">{{empleado.cargo.gerencia.direccion|title}}</a>
                                 </td>
                                 {% endif %}
                             </tr>
@@ -164,7 +164,80 @@
                 <div class="tab-content h-100" id="myTabContent">
                     <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
                         tabindex="0">
-                        <div class="row justify-content-center mt-2">
+                        <div class="row g-2">
+                            <div class="col-md-8">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <table class="table table-borderless bg-body-tertiary">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">Tiempo en GeniaCare</th>
+                                                <td>{{empleado.fechaIngreso|timesince}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Colaboradores</th>
+                                                <td>{{empleado.subordinados.count}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Promedio de desempeño</th>
+                                                <td>{{empleado.promedioResultadoFinal}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Evaluaciones realizadas</th>
+                                                <td>{{empleado.cantidadEvaluaciones}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Objetivos generales</th>
+                                                <td>{{empleado.cantidadObjetivosTotales}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Objetivos especificos</th>
+                                                <td>{{empleado.cantidadActividades}}</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Porcentaje del Nivel</h6>
+                                    <div id="distributionChart">
+
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Distribución de objetivos</h6>
+                                    <div id="distributionChart2">
+
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Estado de Objetivos</h6>
+                                    <div id="objetives_status">
+
+                                    </div>
+                                        
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Progreso de Objetivos</h6>
+                                    <div id="objetives_progress">
+
+                                    </div>
+                                        
+                                </div>
+                            </div>
+
+
+                        </div>
+                        {% comment %} <div class="row justify-content-center mt-2">
                             <div class="col-md p-1">
                                 <div class="card card-body border-1 border-secondary rounded-4">
                                     <table class="table table-sm table-borderless">
@@ -232,22 +305,29 @@
                                 </div>
                             </div>
                             
-                        </div> 
+                        </div>  {% endcomment %}
                     </div>
                     <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab"
                         tabindex="0">
-                        <div class="row mt-2">
-                            <div class="col text-center">
-                                <a class="btn btn-lg btn-primary bi bi-eye w-100" href="{% url 'objectives' empleado.ficha %}"> Ver Objetivos</a>
+                        <div class="row g-2">
+                            <div class="col-sm-4">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Periodo en Curso</h6>
+                                    <p class="text-center fs-4">{{periodo}}</p>
+                                </div>
                             </div>
-                            <div class="col text-center">
-                                <a class="btn btn-lg btn-primary bi bi-file-earmark-plus w-100" href="{% url 'newobjective' empleado.ficha %}"> Nuevo Objetivo</a>
+                            <div class="col-sm-8">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Opciones</h6>
+                                    <div class="d-grid gap-2 p-2">
+                                        <a class="btn btn-primary bi bi-eye" href="{% url 'objectives' empleado.ficha %}"> Ver mas detalles</a>
+                                        <a class="btn btn-primary bi bi-file-earmark-plus" href="{% url 'newobjective' empleado.ficha %}"> Añadir Nuevo Objetivo</a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row my-2">
-                            <div class="col-md p-1">
-                                <div class="card card-body border-1 border-secondary rounded-4 p-0">
-                                    <h6 class="text-center mt-2 mb-0">Porcentaje</h6>
+                            <div class="col-sm-12">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Progreso en el Periodo</h6>
                                     <div class="progress m-3" style="height: 40px;">
                                         <div class="progress-bar progress-bar-striped progress-bar bg-dark lead fw-bold"
                                             role="progressbar" aria-label="Example 20px high"
@@ -259,60 +339,47 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row justify-content-between">
-                            <div class="col-md px-1">
-                                <div class="card card-body border-1 border-secondary rounded-4 my-1 h-100">
-                                    <h6 class="text-center">Distribucion de Objetivos</h6>
-                                    <table class="table table-borderless ">
-                                        <tbody>
-                                            {% if empleado.distribucionObjetivosCantidad != None %}
-                                            {% for tipo in empleado.distribucionObjetivosCantidad %}
-                                            <tr>
-                                                <th scope="row">{{tipo.tipo}}</th>
-                                                <td>{{tipo.peso}}%</td>
-                                                <td>{{tipo.cantidad}}</td>
-                                            </tr>
-                                            {% endfor %}
-                                            {% endif %}
-
-                                        </tbody>
-                                    </table>
-
+                            <div class="col-sm-8">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Objetivos</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <th scope="col">Tipo</th>
+                                                <th scope="col">Descripcion</th>
+                                            </thead>
+                                            <tbody>
+                                                {% for objetivo in objetivos %}
+                                                <tr>
+                                                    <td>{{objetivo.tipo}}</td>
+                                                    <td>{{objetivo.texto}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>                                        
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md px-1">
-                                <div class="card card-body border-1 border-secondary rounded-4 my-1 h-100">
-                                    <h6 class="text-center">Cantidad de Objetivos</h6>
-                                    <table class="table table-borderless ">
-                                        <thead>
-                                            <th scope="col"></th>
-                                            <th scope="col">Cantidad</th>
-                                            <th scope="col">Completados</th>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">Generales</th>
-                                                <td>{{empleado.objetivosPorcentaje.1}}</td>
-                                                <td>{{empleado.objetivosPorcentaje.2}}</td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">Especificos</th>
-                                                <td>{{empleado.objetivosPorcentaje.3}}</td>
-                                                <td>{{empleado.objetivosPorcentaje.4}}</td>
-
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
+                            </div> 
+                            <div class="col-sm-4">
+                                <div class="p-0 card card-body border-tertiary bg-body-tertiary h-100">
+                                    <h6 class="mt-1 text-center">Cantidad de Objetivos</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Generales</th>
+                                                    <td>{{empleado.objetivosPorcentaje.1}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Especificos</th>
+                                                    <td>{{empleado.objetivosPorcentaje.3}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
+                            </div>                             
                         </div>
-
-
-
-
-
                     </div>
                     <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab"
                         tabindex="0">
@@ -768,7 +835,7 @@
         });
     });            
 </script>
-<script>
+{% comment %} <script>
     // Register the plugin to all charts:
     Chart.register(ChartDataLabels);
 
@@ -812,6 +879,7 @@
         }
     });
     {% if empleado.distribucionObjetivosCantidad != None %}
+    /*
     const ctx2 = document.getElementById('distributionChart2');
     new Chart(ctx2, {
         type: 'doughnut',
@@ -859,7 +927,7 @@
                 }
             }
         }
-    });
+    });*/
     {% endif %}
     const ctx3 = document.getElementById('objetives_status');
     new Chart(ctx3, {
@@ -964,6 +1032,162 @@
     });
     {% endif %}
 
-</script>
+</script> {% endcomment %}
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+    //distributionChart ApexCharts
+    var options = {
+      series: [{{empleado.cargo.nivel.porObjetivos}}, {{empleado.cargo.nivel.porCompetencias}}],
+      labels: ['Objetivos', 'Competencias'],
+      colors: ['#002f87', '#ff8300'],
+      chart: {
+        type: 'pie',
+        width: '100%',
+        },
+    labels: ['Objetivos', 'Competencias'],
+    legend: {
+      position: 'top'
+    },
+    };
+    
+    //distributionChart2 ApexCharts
+    {% if empleado.distribucionObjetivosCantidad != None %}
+    var options2 = {
+      series: [
+        {% for tipo in empleado.distribucionObjetivosCantidad %}
+        {{tipo.peso}},
+        {% endfor %}
+      ],
+      labels: [
+        {% for tipo in empleado.distribucionObjetivosCantidad %}
+        '{{tipo.tipo}}',
+        {% endfor %}
+      ],
+      chart: {
+        type: 'pie',
+        width: '100%',
+      },
+      labels: [
+        {% for tipo in empleado.distribucionObjetivosCantidad %}
+        '{{tipo.tipo}}',
+        {% endfor %}
+      ],
+      legend: {
+        position: 'top'
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val, opts) {
+            return [opts.w.config.series[opts.seriesIndex]+'%'];
+        },
+      }
+    };
+    {% else %}
+    var options2 = {
+      series: [100],
+      labels: ['Sin distribución'],
+        chart: {
+            type: 'pie',
+            width: '100%',
+        },
+        labels: ['Sin distribución'],
+        legend: {
+            position: 'top'
+        },
+    };
+    {% endif %}
+
+    //Objetivos aprobados vs no aprobados
+    var options3 = {
+      series: [
+        {{empleado.cantidad_objetivos_por_estado.0}},
+        {{empleado.cantidad_objetivos_por_estado.1}},
+      ],
+      labels: ['Aprobados', 'Por Aprobar'],
+      //Success color and danger color
+      colors: ['#00b123', '#ff0000'],
+      chart: {
+        type: 'pie',
+        width: '100%',
+      },
+      labels: ['Aprobados', 'Por Aprobar'],
+      legend: {
+        position: 'top'
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val, opts) {
+            return [opts.w.config.series[opts.seriesIndex]];
+        },
+      },
+      noData: {
+        text: 'No hay datos para mostrar',
+        align: 'center',
+        verticalAlign: 'middle',
+        offsetX: 0,
+        offsetY: 0,
+        style: {
+          color: undefined,
+          fontSize: '14px',
+          fontFamily: undefined
+        }
+      }
+    };
+
+    //Progreso de objetivos
+    var options4 = {
+      series: [
+        {{empleado.cantidad_objetivos_por_estado.2}},
+        {{empleado.cantidad_objetivos_por_estado.3}},
+      ],
+      labels: ['Completados', 'Pendientes'],
+      colors: ['#00b123', '#ff0000'],
+      chart: {
+        type: 'pie',
+        width: '100%',
+      },
+      labels: ['Completados', 'Pendientes'],
+      legend: {
+        position: 'top'
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val, opts) {
+            return [opts.w.config.series[opts.seriesIndex]];
+        },
+      },
+      noData: {
+        text: 'No hay datos para mostrar',
+        align: 'center',
+        verticalAlign: 'middle',
+        offsetX: 0,
+        offsetY: 0,
+        style: {
+          color: undefined,
+          fontSize: '14px',
+          fontFamily: undefined
+        }
+      }
+    };
+
+
+
+
+
+      
+    var chart = new ApexCharts(document.querySelector("#distributionChart"), options);
+    var chart2 = new ApexCharts(document.querySelector("#distributionChart2"), options2);
+    var chart3 = new ApexCharts(document.querySelector("#objetives_status"), options3);
+    var chart4 = new ApexCharts(document.querySelector("#objetives_progress"), options4);
+      
+    document.addEventListener('DOMContentLoaded', function() {
+        chart.render();
+        chart2.render();
+        chart3.render();
+        chart4.render();
+    });
+</script>
 {% endblock %}

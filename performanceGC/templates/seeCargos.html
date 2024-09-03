@@ -2,165 +2,141 @@
 {% load static %}
 {% load custom_tags %}
 
+{% block title %}Listado de Cargos{% endblock %}
+
+
 {% block content %}
-
-<div class="container mt-2">
-
-    <div class="row">
-
-        <div class="col-12">
-
-            <h1 class="text-center">Cargos</h1>
-
-        </div>
-
-    </div>
-
-    <div class="card card-body">
-
+  <section class="row justify-content-center my-4">
+    <div class="col-12 col-md-10">
+      <div class="card card-body border-0 rounded-1 shadow">
+        <h2 class="text-center">Listado de Cargos</h2>
+        <a href="{% url 'addCargo' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Nuevo Cargo</a>
+       
         <ul class="nav nav-underline nav-fill" id="myTab" role="tablist">
-
-            {% for nivel in niveles %}
-
+          {% for nivel in niveles %}
             <li class="nav-item" role="presentation">
+              <button class="nav-link {% if forloop.first %}active{% endif %}"
+                id="tab-{{ nivel.id }}-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-{{ nivel.id }}"
+                type="button"
+                role="tab"
+                aria-controls="tab-{{ nivel.id }}"
+                aria-selected="{% if forloop.first %}
+                  
+                  
+                  true
 
-                <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{nivel.id}}-tab"
-                    data-bs-toggle="tab" data-bs-target="#tab-{{nivel.id}}" type="button" role="tab"
-                    aria-controls="tab-{{nivel.id}}"
-                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
 
-                   {{nivel.get_choice_value}}
+                {% else %}
+                  
+                  
+                  false
 
-                </button>
 
+                {% endif %}">
+                {{ nivel.get_choice_value }}
+              </button>
             </li>
-
-            {% endfor %}
-
+          {% endfor %}
         </ul>
 
         <div class="tab-content" id="myTabContent">
+          {% for nivel in niveles %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ nivel.id }}" role="tabpanel" aria-labelledby="tab-{{ nivel.id }}-tab">
+              <table class="table table-hover table-striped datatable align-middle w-100">
+                <thead>
+                  <tr>
+                    <th scope="col">Nombre del cargo</th>
 
-            {% for nivel in niveles %}
+                    <th scope="col">Cargo supervisor</th>
 
-            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{nivel.id}}"
-                role="tabpanel" aria-labelledby="tab-{{nivel.id}}-tab">
+                    <th scope="col">Gerencia</th>
 
-                <table class="table table-hover table-striped datatable align-middle  w-100">
+                    <th scope="col">Departamento</th>
 
-                    <thead>
+                    <th scope="col">Dirección</th>
 
-                        <tr>
+                    <th scope="col">Estado</th>
 
-                            <th scope="col">Nombre del cargo</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
 
-                            <th scope="col">Cargo supervisor</th>
+                <tbody>
+                  {% for cargo in nivel.cargos %}
+                    <tr>
+                      <td>{{ cargo.nombreText|title }}</td>
+                      <td>
+                        {% if cargo.supervisor %}
+                          {{ cargo.supervisor|title }}
+                        {% else %}
+                          No tiene
+                        {% endif %}
+                      </td>
 
-                            <th scope="col">Gerencia</th>
+                      <td>{{ cargo.gerencia|title }}</td>
 
-                            <th scope="col">Departamento</th>
-                            
-                            <th scope="col">Dirección</th>
+                      <td>{{ cargo.gerencia.departamento|title }}</td>
 
-                            <th scope="col">Estado</th>
+                      <td>{{ cargo.gerencia.direccion|title }}</td>
 
-                            <th scope="col"></th>
+                      <td>
+                        {% if cargo.is_active %}
+                          Activo
+                        {% else %}
+                          Inactivo
+                        {% endif %}
+                      </td>
 
-                        </tr>
+                      <td>
+                        <a href="{% url 'cargodetails' cargo.id %}" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></a>
+                      </td>
+                      <td>
+                        <a href="{% url 'editCargo' cargo.id %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                      </td>
+                        <td>
+                        <form action="{% url 'deactivatecargo' cargo.id %}" method="post" id="form-{{ cargo.id }}">
+                          {% csrf_token %}
+                          <button type="button" class="btn btn-sm btn-danger" onclick="deactivateModalTexts('Confirmar Desactivación','¿Está seguro que desea desactivar el cargo {{ cargo.nombreText|title }}?', document.getElementById('form-{{ cargo.id }}'))"><i class="bi bi-trash"></i></button>
+                        </form>
 
-                    </thead>
-
-                    <tbody>
-
-                        {% for cargo in nivel.cargos %}
-
-                        <tr>
-
-                            <td>{{cargo.nombreText|title}}</td>
-
-                            
-                            <td> {% if cargo.supervisor %} {{cargo.supervisor|title}} {% else %} No tiene {% endif %}</td>                                                     
-
-                            <td>{{cargo.gerencia|title}}</td>
-
-                            <td>{{cargo.gerencia.departamento|title}}</td>
-
-                            <td>{{cargo.gerencia.direccion|title}}</td>
-
-                            <td>{% if cargo.is_active %} Activo {% else %} Inactivo {% endif %}</td>
-
-                            <td class="text-end ">   
-                                <a href="{% url 'cargodetails' cargo.id %}" class="btn btn-sm btn-info">
-                                    <i class="bi bi-eye"></i>
-                                </a>    
-
-                                    <a href="{% url 'editCargo' cargo.id %}" class="btn btn-sm btn-dark">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                               
-                                <form action="{% url 'deactivatecargo' cargo.id %}" method="post" id="form-{{cargo.id}}">
-                                    {% csrf_token %}
-                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal" onclick="deactivateModalTexts('Confirmar Desactivación','¿Está seguro que desea desactivar el cargo {{cargo.nombreText|title}}?', document.getElementById('form-{{cargo.id}}'))">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-                
-
-                <a href="{% url 'addCargo' %}" class="btn btn-primary">Nuevo Cargo</a>
-
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-</div>
-
-<!-- deactivateModal -->
-<div class="modal fade" id="deactivateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger" id="confirmButton">Desactivar</button>
+          {% endfor %}
         </div>
       </div>
     </div>
-  </div>
-  
-<script>
-    let currentForm = null;
+  </section>
+{% endblock %}
 
-    const deactivateModal = document.getElementById('deactivateModal')
-    const deactivateModalTitle = deactivateModal.querySelector('.modal-title')
-    const deactivateModalBody = deactivateModal.querySelector('.modal-body')
-
-    function deactivateModalTexts(title, body, form) {
-        deactivateModalTitle.textContent = title
-        deactivateModalBody.textContent = body
-        currentForm = form;
+{% block scripts %}
+  <script>
+    function deactivateModalTexts(title, text, form) {
+      form = document.getElementById(form.id)    
+      swal.fire({
+          title: title,
+          text: text,
+          icon: 'warning',
+          confirmButtonColor: '#002f87',
+          cancelButtonColor: '#d33',
+          showCancelButton: true,
+          confirmButtonText: 'Sí',
+          cancelButtonText: 'No'
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            form.submit()
+          }
+        })
     }
-
-    deactivateModal.querySelector('#confirmButton').addEventListener('click', () => {
-        if (currentForm) {
-            currentForm.submit();
-        }
-    })
-</script>
-    {% endblock %}
+  </script>
+{% endblock %}

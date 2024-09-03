@@ -1,16 +1,19 @@
 {% extends 'main.html' %}
 {% load static %}
-{% load  widget_tweaks %}
+{% load custom_tags %}
+
+{% block title %}Listado de Direcciones{% endblock %}
+
+
 {% block content %}
-<div class="container mt-2">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="text-center">Direcciones</h1>
-        </div>
-    </div>
-    <div class="card ">
-        <div class="card-body">
-            <table class="table table-hover table-striped table-bordered datatable align-middle w-100">
+  <section class="row justify-content-center my-4">
+    <div class="col-12 col-md-10">
+      <div class="card card-body border-0 rounded-1 shadow">
+        <h2 class="text-center">Listado de Direcciones</h2>
+        <a href="{% url 'addDireccion' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            Nueva Dirección</a>
+            <table class="table table-hover table-striped datatable align-middle w-100">
                 <thead>
                     <tr>
                         <th scope="col">Nombre de la Dirección</th>
@@ -18,13 +21,12 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     {% for direccion in direcciones %}
-
                     <tr>
                         <td>{{direccion.nombre}}</td>
                         <td class="text-end">
-                            <a href="{% url 'editDireccion' direccion.id %}" class="btn btn-dark bi bi-pencil-square">
+                            <a href="{% url 'editDireccion' direccion.id %}" class="btn btn-dark">
+                                <i class="bi bi-pencil-square"></i>
                             </a>
                             <a href="{% url 'direcciondetails' direccion.id %}" class="btn btn-dark">
                                 <i class="bi bi-search"></i>
@@ -33,14 +35,8 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-
             </table>
-
         </div>
-        <div class="card-footer">
-            <a href="{% url 'addDireccion' %}" class="btn btn-primary">Nueva Dirección</a>
-        </div>
-
     </div>
-
-    {% endblock %}
+</section>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+{% load static %}
+{% load allauth i18n %}
+
+{% block title %}
+    {% trans "Sign Up Closed" %}
+{% endblock %}
+
+{% block content %}
+  <section class="container">
+    <div class="row d-flex justify-content-center align-items-center" style="height: calc(100vh - 56px);">
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="card border-0 rounded-1 shadow">
+          <div class="card-header bg-white" style="border-bottom: none;">
+            <div class="z-1 position-absolute start-50 translate-middle rounded-circle bg-white" style="width: 200px; height: 200px; ">
+              <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" class="card-img-top img-fluid p-3" alt="Genia Performance 360 Pro" style="" />
+            </div>
+          </div>
+          <div class="mt-5 card-body z-2">
+            <h4 class="mt-4 fw-bold text-center">{% trans "Sign Up Closed" %}</h4>
+            <p class="text-center">No permite el registro por parte de nuevos usuarios.</p>
+            <p class="text-center">Por favor, contacte al administrador del sistema.</p>
+            <p class="text-center">Seras redirigido al inicio en <span class="fw-bold" id="countdown">10</span> segundos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    var timeleft = 10;
+    var downloadTimer = setInterval(function(){
+      document.getElementById("countdown").textContent = timeleft;
+      timeleft -= 1;
+      if(timeleft <= 0){
+        clearInterval(downloadTimer);
+        window.location.href = "{% url 'index' %}";
+      }
+    }, 1000);
+  </script>
+{% endblock %}

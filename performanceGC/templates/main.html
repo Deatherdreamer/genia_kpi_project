@@ -7,168 +7,70 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Genia Performance 360 Pro</title>
+  <title>
+    {% block title %}
+    {% endblock %}
+    | Genia Performance 360 Pro
+
+  </title>
 
   <!-- Favicons -->
   <link rel="shortcut icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+
   <link href="{% static 'favicon.png' %}" rel="apple-touch-icon" />
 
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-
   <!-- Vendor CSS Files -->
-  <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.css' %}" />
   <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.min.css' %}" />
   <link rel="stylesheet" href="{% static 'vendor/select2/css/select2.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendor/sweetalert2/css/sweetalert2.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendor/apexcharts/apexcharts.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/dataTables.dataTables.min.css' %}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-
+  
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <!-- Vendor JS Files -->
   <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'vendor/select2/js/select2.full.min.js' %}"></script>
   <script src="{% static 'vendor/datatables/js/dataTables.min.js' %}"></script>
+  <script src="{% static 'vendor/sweetalert2/js/sweetalert2.all.min.js' %}"></script>
+  <script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
 
-  <style>
-    .ribbon-corner-info {
-      position: absolute;
-      top: 0;
-      left: auto;
-      right: 0;
-      width: 0;
-      height: 0;
-      border-top: 32px solid #007bff;
-      border-left: 32px solid transparent;
-    }
+<style>
+  body {
+    background-image: url("{% static 'bg.png' %}"), linear-gradient(to right, rgba(0, 47, 135, 0.3) 0%, rgba(255, 131, 0,0.3) 100%);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    height: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
 
-    .ribbon-corner-success {
-      position: absolute;
-      top: 0;
-      left: auto;
-      right: 0;
-      width: 0;
-      height: 0;
-      border-top: 32px solid #28a745;
-      border-left: 32px solid transparent;
-    }
-
-    .ribbon-corner-gray {
-      position: absolute;
-      top: 0;
-      left: auto;
-      right: 0;
-      width: 0;
-      height: 0;
-      border-top: 32px solid #6c757d;
-      border-left: 32px solid transparent;
-    }
-
-    .logo:hover {
-      transform: scale(1.1);
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .logo:not(:hover) {
-      transform: scale(1);
-      transition: transform 0.2s linear;
-    }
-
-    .nav-item-gc:hover .nav-link {
-      transform: scale(1.1);
-
-      transition: background-color 0.3s ease, transform 0.2s ease-in-out;
-    }
-
-    .nav-item-gc:not(:hover) .nav-link {
-      transform: scale(1);
-
-
-      transition: background-color 0.3s ease, transform 0.2s ease-in-out;
-    }
-
-    /* width and height of the scrollbar */
-    ::-webkit-scrollbar {
-      width: 10px;
-      height: 10px;
-    }
-
-    /* background color of the scrollbar */
-    ::-webkit-scrollbar-track {
-      background-color: #f1f1f1;
-      border-radius: 5px;
-    }
-
-    /* color of the scrollbar thumb */
-    ::-webkit-scrollbar-thumb {
-      background-color: #888;
-      border-radius: 5px;
-    }
-
-    /* color of the scrollbar thumb on hover */
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: #555;
-      border-radius: 5px;
-    }
-
-    /* width and color of the scrollbar for non-webkit-based browsers */
-    body {
-      scrollbar-width: thin;
-      scrollbar-color: #888 #f1f1f1;
-      background-image: url('{% static 'MOLECULAS.png' %}');
-      background-position: center center;      
-      background-size: cover;
-      background-attachment: fixed;
-      height: 100vh;
-    }
-
-    .obj-details:hover{
-      background-color: #fafafa;
-      transform: scale(1.1);
-      transition: transform 0.2s ease-in-out;
-
-
-    }
-
-  </style>
-  </style>
+}
+</style>
 </head>
 
-<body class="bg-image" style="background-color: #f1f1f1; ">
+<body>
   <!-- BARRA DE NAVEGACION -->
 {% include 'partials/navbar.html' %}
   <!-- FIN DE BARRA DE NAVEGACION -->
   <!-- Button trigger modal -->
 {% include 'partials/alerts.html' %} 
+<main class="container">
 
   {% block content %}
 
   {% endblock %}
 
   
-</div>
+</main>
 
+{% include 'partials/floating-action-bubble.html' %}
 
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-fullscreen-md-down">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Cerrar Sesion</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ¿Estas seguro que deseas cerrar sesion?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <form action="{% url 'signout' %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-primary">Cerrar Sesion</button>
-        </form>
-
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- confirmModal -->
 <div class="modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
@@ -249,10 +151,8 @@
 
 
   <script>
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl)
-    })
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
   </script>
 
 <script>
@@ -260,6 +160,49 @@
         $('[data-toggle="tooltip"]').tooltip()
       })
 </script>
+{% comment %} 
+ Script that warms session close after 14 minutes and 30 seconds of inactivity (no new requests to the server from session) 
+<script>
+  var idleTime = 0;
+  $(document).ready(function () {
+    //Increment the idle time counter every minute.
+    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+  });
+
+  function timerIncrement() {
+    idleTime = idleTime + 1;
+    if (idleTime > 4) { // 5 minutes
+      Swal.fire({
+        title: 'Sesión inactiva',
+        text: 'Tu sesión se cerrará dentro de 10 minutos por inactividad',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#002f87',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Continuar sesión',
+        cancelButtonText: 'Cerrar sesión',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          idleTime = 0;
+        } else {
+          window.location.href = "{% url 'account_logout' %}";
+        }
+      });
+    }
+    else if (idleTime > 14) { // 15 minutes
+      window.location.href = "{% url 'account_logout' %}";
+    }
+  }
+</script> {% endcomment %}
+
+
+
+{% block scripts %}
+
+{% endblock  %}
+
+
+
 
 </body>
 

@@ -6,10 +6,17 @@ from .models import *
 
 class EmpleadoForm(forms.ModelForm):
     fechaIngreso = forms.DateField(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'))
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'),
+        required=True,
+        label='Fecha de Ingreso',
+        help_text='Fecha de ingreso del empleado.',        
+        )
+
     fechaNacimiento = forms.DateField(
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'),
-        required=False
+        required=False,
+        label='Fecha de Nacimiento',
+        help_text='Fecha de nacimiento del empleado.',
     )
     
     
@@ -22,9 +29,30 @@ class EmpleadoForm(forms.ModelForm):
             'cedula': forms.TextInput(attrs={'class': 'form-control'}),
             'ficha': forms.TextInput(attrs={'class': 'form-control'}),
             'cargo': forms.Select(attrs={'class': 'form-select'}),
-            'ceco': forms.TextInput(attrs={'class': 'form-control'}),
-            
+            'ceco': forms.TextInput(attrs={'class': 'form-control'}),    
+            'imagen': forms.FileInput(attrs={'class': 'form-control'}),      
         }
+        labels = {
+            'nombre': 'Nombres',
+            'apellido': 'Apellidos',
+            'cedula': 'Cedula',
+            'ficha': 'Ficha',
+            'cargo': 'Cargo',
+            'ceco': 'CECO',
+            'imagen': 'Fotografía de Perfil',
+        }
+        help_texts = {
+            'nombre': 'Nombres del empleado.',
+            'apellido': 'Apellidos del empleado.',
+            'cedula': 'Cedula del empleado.',
+            'ficha': 'Ficha del empleado.',
+            'cargo': 'Cargo del empleado.',
+            'ceco': 'CECO del empleado.',
+            'imagen': 'Fotografía del empleado.',
+        }
+        
+        
+        
     def __init__(self, *args, **kwargs):
         super(EmpleadoForm, self).__init__(*args, **kwargs)
         self.fields['cargo'].queryset = Cargo.objects.order_by('nivel__valor')
@@ -45,15 +73,74 @@ class PeriodoForm(forms.ModelForm):
 
 # form for direcciones
 class DireccionForm(forms.ModelForm):
+    '''
+    nombre = models.CharField(max_length=200, unique=True)
+    debajo = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True)
+    '''
     class Meta:
         model = Direccion
-        fields = '__all__'
+        fields = ['nombre', 'debajo']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'debajo': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'nombre': 'Nombre de la Dirección',
+            'debajo': 'Dirección Superior',
+        }
+        help_texts = {
+            'nombre': 'Nombre de la dirección. Solo coloque el nombre, no incluya la palabra "Dirección".',
+            'debajo': 'Dirección superior a la que pertenece la dirección.',
+        }
+        
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+        if Direccion.objects.filter(nombre=nombre).exists():
+            raise forms.ValidationError('Ya existe una dirección con este nombre.')
+        return nombre
+    
 
 # form for gerencias
 class GerenciaForm(forms.ModelForm):
+    '''
+    nombreText = models.CharField(max_length=200)    
+    direccion = models.ForeignKey(
+        Direccion, on_delete=models.SET_NULL, null=True)
+    departamento = models.ForeignKey(
+        Departamento, on_delete=models.SET_NULL, null=True)
+    debajo = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True)
+        '''
     class Meta:
         model = Gerencia
-        fields = '__all__'
+        fields = ['nombreText', 'direccion', 'departamento', 'debajo']
+        widgets = {
+            'nombreText': forms.TextInput(attrs={'class': 'form-control'}),
+            'direccion': forms.Select(attrs={'class': 'form-select'}),
+            'departamento': forms.Select(attrs={'class': 'form-select'}),
+            'debajo': forms.Select(attrs={'class': 'form-select'}),
+        }
+        labels = {
+            'nombreText': 'Nombre de la Gerencia',
+            'direccion': 'Dirección a la que pertenece',
+            'departamento': 'Departamento',
+            'debajo': 'Gerencia Superior',
+        }
+        help_texts = {
+            'nombreText': 'Nombre de la gerencia. Solo coloque el nombre, no incluya la palabra "Gerencia".',
+            'direccion': 'Dirección a la que pertenece la gerencia.',
+            'departamento': 'Departamento al que pertenece la gerencia.',
+            'debajo': 'Gerencia superior a la que pertenece la gerencia.',
+        }
+    
+    def clean_nombreText(self):
+        nombreText = self.cleaned_data['nombreText']
+        if Gerencia.objects.filter(nombreText=nombreText).exists():
+            raise forms.ValidationError('Ya existe una gerencia con este nombre.')
+        return nombreText
+    
+            
 
         
 class ObjectivesForm(forms.ModelForm):
@@ -65,7 +152,7 @@ class ObjectivesForm(forms.ModelForm):
 
     class Meta:
         model = Objetivos
-        fields = ['texto', 'tipo']
+        fields = ['tipo','texto']
         widgets = {
             'texto': forms.Textarea(attrs={'class': 'form-control'}),
             'tipo': forms.Select(attrs={'class': 'form-select'}),
@@ -243,6 +330,13 @@ class CargoForm(forms.ModelForm):
             'direccion': 'Direccion a la que pertenece el cargo.',
             'is_active': 'Si el cargo esta Activo o inactivo.',            
         }
+    
+    def clean_nombreText(self):
+        nombreText = self.cleaned_data['nombreText']
+        if Cargo.objects.filter(nombreText=nombreText).exists():
+            raise forms.ValidationError('Ya existe un cargo con este nombre.')
+        return nombreText
+    
 
 
 #class form for announcements
