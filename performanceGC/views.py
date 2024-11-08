@@ -287,7 +287,8 @@ def editPeriodo(request, id):
 def objectives(request, e_ficha):
     empleado = get_object_or_404(Empleado, ficha=e_ficha)
     periodo = Periodo.objects.get(is_active=True)
-    objetivos = empleado.objetivos_set.filter(periodo=periodo)   
+    #Order objetivos so the ones that are of tipo "De area" are last    
+    objetivos = empleado.objetivos_set.filter(periodo=periodo).order_by('-tipo__id')
     return render(request, 'objectives.html', {
         'empleado': empleado,
         'periodo': periodo,
