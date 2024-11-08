@@ -94,7 +94,7 @@ def profileView(request, e_ficha):
     cargo = empleado.cargo   
     evaluaciones = EvaluacionDesempeno.objects.filter(empleado=empleado)
     periodo = Periodo.objects.get(is_active=True)
-    objetivos = empleado.objetivos_set.filter(periodo=periodo)   
+    objetivos = empleado.objetivos_set.filter(periodo=periodo).order_by('-tipo__id')
 
     return render(request, 'profile.html', {
         'empleado': empleado,
