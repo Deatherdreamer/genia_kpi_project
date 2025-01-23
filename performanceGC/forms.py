@@ -70,6 +70,17 @@ class PeriodoForm(forms.ModelForm):
             'fechaInicioEvaluaciones': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fechaFinEvaluaciones': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
+        labels = {
+            'año_inicio': 'Año Inicio del Periodo',
+            'año_fin': 'Año de Cierre del Periodo',
+            'fechaInicioEvaluaciones': 'Fecha de Inicio del Proceso de Evaluacion',
+            'fechaFinEvaluaciones': 'Fecha de Cierre del Proceso de Evaluacion',
+            'evaluacionesHabilitadas': 'Activar/Desactivar Proceso de Evaluacion',
+            'is_active': 'Activar/Desactivar Periodo (Solo puede haber un periodo activo al mismo tiempo.)'
+        }
+            
+            
+        
 
 # form for direcciones
 class DireccionForm(forms.ModelForm):

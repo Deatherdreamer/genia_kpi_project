@@ -97,4 +97,8 @@ class Preguntas_FrecuentesAdmin(SimpleHistoryAdmin):
     search_fields = ('pregunta','respuesta', )
     list_display = ('pregunta','respuesta', )
     
+@admin.register(EvaluacionDesempeno)
+class EvaluacionDesempenoAdmin(SimpleHistoryAdmin):
+    search_fields = ('empleado', 'periodo')
+    
 

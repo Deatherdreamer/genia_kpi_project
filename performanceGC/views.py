@@ -247,9 +247,11 @@ def addComentario(request, de_ficha, para_ficha):
 # view to see the current period
 @staff_member_required(login_url='account_login')
 def periodos(request):
-    periodos = Periodo.objects.all()
+    periodo_actual = Periodo.objects.filter(is_active=True).first()
+    periodos = Periodo.objects.filter(is_active=False)
     return render(request, 'periodo.html', {
-        'periodos': periodos
+        'periodos': periodos,
+        'periodo_actual':periodo_actual
     })
 
 @staff_member_required(login_url='account_login')
