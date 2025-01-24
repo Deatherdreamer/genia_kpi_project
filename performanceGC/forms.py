@@ -107,7 +107,10 @@ class DireccionForm(forms.ModelForm):
         
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
-        if Direccion.objects.filter(nombre=nombre).exists():
+        qs = Direccion.objects.filter(nombre=nombre)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
             raise forms.ValidationError('Ya existe una dirección con este nombre.')
         return nombre
     
@@ -147,9 +150,13 @@ class GerenciaForm(forms.ModelForm):
     
     def clean_nombreText(self):
         nombreText = self.cleaned_data['nombreText']
-        if Gerencia.objects.filter(nombreText=nombreText).exists():
+        qs = Gerencia.objects.filter(nombreText=nombreText)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
             raise forms.ValidationError('Ya existe una gerencia con este nombre.')
         return nombreText
+
     
             
 
@@ -246,9 +253,9 @@ class CompetenciasForm(forms.ModelForm):
 
 class ObjetivosEvaluacionForm(forms.ModelForm):
     objetivo = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3', 'name': 'objetivo'}))
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5', 'name': 'objetivo'}))
     comentarios = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '3', 'name': 'comentarios'}),
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5', 'name': 'comentarios'}),
         required=False)
 
     peso = forms.DecimalField(
@@ -276,7 +283,7 @@ class ObjetivosEvaluacionForm(forms.ModelForm):
 
 class ActividadesObjetivosEvaluacionForm(forms.ModelForm):
     actividad = forms.CharField(
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '1', 'name': 'actividad'}))
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '5', 'name': 'actividad'}))
 
     class Meta:
         model = ObjetivoActividad
@@ -344,8 +351,14 @@ class CargoForm(forms.ModelForm):
     
     def clean_nombreText(self):
         nombreText = self.cleaned_data['nombreText']
-        if Cargo.objects.filter(nombreText=nombreText).exists():
-            raise forms.ValidationError('Ya existe un cargo con este nombre.')
+        if self.instance.pk:
+            # Editing an existing Cargo
+            if Cargo.objects.filter(nombreText=nombreText).exclude(pk=self.instance.pk).exists():
+                raise forms.ValidationError('Ya existe un cargo con este nombre.')
+        else:
+            # Creating a new Cargo
+            if Cargo.objects.filter(nombreText=nombreText).exists():
+                raise forms.ValidationError('Ya existe un cargo con este nombre.')
         return nombreText
     
 

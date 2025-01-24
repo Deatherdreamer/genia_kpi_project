@@ -618,7 +618,7 @@ def testDetails(request, e_ficha, eval_id):
 
 @login_required
 def evaluar_desempeno(request, e_ficha):
-    periodo = Periodo.objects.last()
+    periodo = Periodo.objects.filter(is_active=True).first()
     empleado = Empleado.objects.get(ficha=e_ficha)
     objetivos = Objetivos.objects.filter(periodo=periodo, empleado=empleado)
     if request.method == 'GET':
@@ -627,10 +627,8 @@ def evaluar_desempeno(request, e_ficha):
         forms = []
         for objetivo in objetivos:
             actividades = objetivo.actividades_set.all()
-            formsAct = [ActividadesObjetivosEvaluacionForm(
-                initial={'actividad': actividad.texto}) for actividad in actividades]
-            forms.append([ObjetivosEvaluacionForm(
-                initial={'objetivo': objetivo.texto}), formsAct])
+            formsAct = [ActividadesObjetivosEvaluacionForm(initial={'actividad': actividad.texto}) for actividad in actividades]
+            forms.append([ObjetivosEvaluacionForm(initial={'objetivo': objetivo.texto}), formsAct, objetivo])
 
         return render(request, 'doTest.html', {
             'forms': forms,
@@ -905,7 +903,7 @@ def editCargo(request, cargo_id):
         else:
             messages.error(request, 'Ha ocurrido un error, intente de nuevo.')
             return render(request, 'cargo_crud.html', {
-                'form': form(),
+                'form': form,
                 'cargo': cargo
             })
             

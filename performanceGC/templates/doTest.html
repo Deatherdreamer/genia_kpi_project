@@ -4,18 +4,20 @@
 {% load custom_tags %}
 {% load static %}
 
+{% block title %}
+Evaluación de Desempeño
+{% endblock %}
+
 {% block content %}
 
 
-<main class="container">
-  <div class="row">
-    <h1 style="text-align: center">Evaluación de Desempeño</h1>
-    <h2 style="text-align: center">NIVEL {{empleado.cargo.nivel.nivel}}</h2>
-
+<main class="container my-2">
+  <div class="row ">
     <form action="{% url 'newselftest' empleado.ficha %}" method="POST"
-      class="card card-body shadow-lg p-3 mb-5 bg-white rounded" onsubmit="return validarSumaObjetivos()">
+      class="card card-body shadow p-3 bg-light rounded-0 border-0" onsubmit="return validarSumaObjetivos()">
       {% csrf_token %}
-
+      <h3 style="text-align: center">Evaluación de Desempeño</h3>
+    <h4 style="text-align: center">NIVEL {{empleado.cargo.nivel.nivel}}</h4>
       <div class="row">
         <div class="col-8">
           <div class="row">
@@ -50,34 +52,37 @@
 
         </div>
         <div class="col">
-          <h5 class="text-center mt-2 mb-0 ">Supervisor</h5>
-          <h4 class="text-center font-weight-bold">
+          <h6 class="text-center mt-2 mb-0 ">Supervisor</h6>
+          <h6 class="text-center font-weight-bold">
             {{empleado.supervisor}}
-          </h4>
-          <h5 class="text-center lead font-italic">
+          </h6>
+          <h6 class="text-center lead font-italic">
             {{empleado.supervisor.cargo}}
-          </h5>
+          </h6>
 
         </div>
 
       </div>
       <br>
-      <br>
-      <h3 class="text-center font-weight-bold">Objetivos</h3>
+      <h4 class="text-center font-weight-bold">Objetivos</h4>
       <table class="table table-striped table-borderless shadow p-3 mb-2 bg-white rounded">
         <thead class="table-dark">
           <tr>
-            <th class="col-3 fs-5">Objetivo</th>
-            <th class="col-1 fs-5"></th>
-            <th class="col-1 fs-5 text-nowrap">Peso (%)</th>
-            <th class="col-1 fs-5 text-nowrap">Valor (1-4)</th>
-            <th class="col-1 fs-5">Resultado</th>
-            <th class="col-4 fs-5">Observaciones</th>
+            <th class="col-1">Tipo</th>
+            <th class="col-3">Objetivo General</th>
+            <th class="col-1"></th>
+            <th class="col-1 text-nowrap">Peso (%)</th>
+            <th class="col-1 text-nowrap">Valor (1-4)</th>
+            <th class="col-1">Resultado</th>
+            <th class="col-3">Observaciones</th>
           </tr>
         </thead>
         <tbody>
           {% for form in forms %}
           <tr>
+            <td>
+              {{ form.2.tipo }}
+            </td>
 
             {% with alpha='peso'|addstr:forloop.counter beta='calcularResultadoObj('|addstr:forloop.counter|addstr:')' gamma='valor'|addstr:forloop.counter delta='resultado'|addstr:forloop.counter %}
             <th colspan="2" scope="row">{% render_field form.0.objetivo class="form-control" readonly=true %}</th>
@@ -90,8 +95,8 @@
             <td>{{form.0.comentarios}}</td>
           </tr>
           <tr>
-            <th class="align-middle text-center fs-5">Actividades</th>
-            <td colspan="5">
+            <th class="align-middle text-center">Objetivos Específicos</th>
+            <td colspan="6">
               <table class="table table-sm">
                 <tbody>
                   {% for form2 in form.1 %}
@@ -101,14 +106,12 @@
                     <th class="align-middle">
                       %:
                     </th>
-                    <td>
+                    <td class="align-middle">
                       {% render_field form2.pesoActividad class='form-control' %}
                     </td>
                     <td></td>
                   </tr>
-
                   {% endfor %}
-
                 </tbody>
               </table>
             </td>
@@ -124,7 +127,7 @@
                 value="{{empleado.cargo.nivel.porObjetivos}}%" readonly>
 
             </td>
-            <td colspan="2" class="table-dark text-end align-middle fs-6 fw-bold">
+            <td colspan="3" class="table-dark text-end align-middle fs-6 fw-bold">
               Resultado Objetivos:
             </td>
             <td>
