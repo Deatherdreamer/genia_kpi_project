@@ -34,7 +34,7 @@ urlpatterns = [
     path('profile/<int:e_ficha>/newselftest/', views.evaluar_desempeno, name='newselftest'),
     path('profile/<int:e_ficha>/test_pns/', views.evaluar_pns, name='evaluarpns'),
     path('profile/<int:e_ficha>/edit_test_<int:eval_id>/', views.editEvaluacion, name='edittest'), 
-    path('profile/<int:e_ficha>/test_<int:eval_id>/discard', views.discardEvaluacion, name='discardtest'),
+    path('profile/<int:e_ficha>/test_<int:eval_id>/discard/', views.discardEvaluacion, name='discardtest'),
     path('search/', views.masterEmployee, name='search'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('newEmployee/', views.addEmployee, name='newemployee'),
@@ -60,8 +60,8 @@ urlpatterns = [
    
     # URLS GERENCIAS
     path('gerencias/', views.seeGerencias, name='seeGerencias'),
-    path('gerencias/gerencia_<int:gerencia_id>', views.gerenciaDetails, name = 'gerenciadetails'),
-    path('gerencias/new', views.addGerencia, name='addGerencia'),
+    path('gerencias/gerencia_<int:gerencia_id>/', views.gerenciaDetails, name = 'gerenciadetails'),
+    path('gerencias/new/', views.addGerencia, name='addGerencia'),
     path('gerencias/gerencia_<int:gerencia_id>/modify/', views.editGerencia, name='editGerencia'),
     
     # URLS CARGOS
@@ -72,7 +72,7 @@ urlpatterns = [
     path('cargos/cargo_<int:cargo_id>/deactivate/', views.deactivate_cargo, name='deactivatecargo'),  
 
     path('printTest/<int:eval_id>/', views.download_pdf, name='printTest'),
-    path('profile/<int:para_ficha>/newcommmnent_<int:de_ficha>', views.addComentario, name='newcommmnent'),
+    path('profile/<int:para_ficha>/newcommmnent_<int:de_ficha>/', views.addComentario, name='newcommmnent'),
     path('faq/', views.Preguntas_Frecuentes_List.as_view(), name='faq'),
     
     # URLS PARA OBJETIVOS DE LA EMPRESA

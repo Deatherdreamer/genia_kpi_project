@@ -84,7 +84,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="/search" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'search' %}fst-italic active{% endif %}">
+          <a href="{% url 'search' %}" class="nav-link link-body-emphasis fs-6 {% if request.resolver_match.url_name == 'search' %}fst-italic active{% endif %}">
             <i class="bi bi-people"></i>
             Mis Colaboradores
           </a>
@@ -153,10 +153,10 @@
     <ul class="nav nav-pills flex-column mb-auto">
       <span class="nav-item"><h6 class="text-muted">Administración</h6></span>
       <li class="nav-item">
-        <a class="nav-link link-body-emphasis bi bi-calendar-week" href="/periodos">Periodos</a>
+        <a class="nav-link link-body-emphasis bi bi-calendar-week" href="{% url 'newemployee' %}">Periodos</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link link-body-emphasis bi bi-people" href="/search">Maestro</a>
+        <a class="nav-link link-body-emphasis bi bi-people" href="{% url 'search' %}">Maestro</a>
       </li>
       <li class="nav-item">
         <a class="nav-link link-body-emphasis bi bi-person-add" href="{% url 'newemployee' %}">Nuevo Empleado</a>
