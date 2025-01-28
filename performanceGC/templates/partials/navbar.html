@@ -177,16 +177,18 @@
       <li class="nav-item">
         <a class="nav-link link-body-emphasis bi bi-gear" href="{% url 'systemparameters' %}">Parametros del Sistema</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-person-lines-fill" href="{% url 'users' %}">Lista de Usuarios</a>
+      </li>
       {% if user.is_superuser %}
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis bi bi-person-plus" href="{% url 'newUser' %}">Nuevo Usuario</a>
+      </li>
         <li class="nav-item">
           <a class="nav-link link-body-emphasis bi bi-gear" href="/admin">Panel de Administrador</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link link-body-emphasis bi bi-person-plus" href="{% url 'newUser' %}">Nuevo Usuario</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link link-body-emphasis bi bi-person-lines-fill" href="{% url 'users' %}">Lista de Usuarios</a>
-        </li>
+       
+        
       {% endif %}
     </ul>
   </div>
