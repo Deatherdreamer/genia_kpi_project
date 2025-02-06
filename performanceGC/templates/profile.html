@@ -736,13 +736,35 @@
                     </div>
                     <div class="tab-pane fade" id="minion-tab-pane" role="tabpanel" aria-labelledby="minion-tab"
                         tabindex="0">
-                        <div class="row justify-content-start">
+                        <div class="alert alert-warning fst-italic" role="alert">                            
+                            ¡Los Colaboradores con el circulo amarillo superior tienen objetivos por aprobar!
+                            ¡Los Colaboradores con el circulo rojo superior no tienen objetivos asignados!
+                        </div>
+                        <div class="row justify-content-start g-2">
                             {% for cargo_subordinado in cargo.subordinados_directos  %}
                             {% for empleado_subordinado in cargo_subordinado.empleados_activos_asociados %}
                             <div class="col-md-6">
-                                <div class="card card-body border-2 rounded-4 p-0 my-2">
-                                    <a class="btn btn-outline-dark " href="{% url 'profile' empleado_subordinado.ficha %}">
-                                    <div class="row justify-content-start">
+                                <div class="card card-body border-2 rounded-4 p-0 h-100">
+                                    
+                                    <a class="btn btn-outline-dark h-100 " href="{% url 'profile' empleado_subordinado.ficha %}" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                    title={% if not empleado_subordinado.tiene_objetivos %}"El empleado no tiene objetivos asignados"{% elif empleado_subordinado.tiene_objetivos_por_aprobar %}"El empleado tiene objetivos que requieren aprobación"{% endif %}>
+                                        {% if not empleado_subordinado.tiene_objetivos %}
+                                        <span class="position-absolute top-0 start-100 translate-middle bg-danger border border-light rounded-circle">
+                                            <small>
+                                                <i class="bi bi-x-circle"></i>
+                                            </small>
+                                            <span class="visually-hidden">El empleado no tiene objetivos asignados</span>
+                                          </span>
+                                        
+                                        {% elif empleado_subordinado.tiene_objetivos_por_aprobar %}
+                                        <span class="position-absolute top-0 start-100 translate-middle bg-warning border border-light rounded-circle">
+                                            <small>
+                                                <i class="bi bi-exclamation-triangle"></i>
+                                            </small>
+                                            <span class="visually-hidden">El empleado tiene objetivos que requieren aprobación</span>
+                                          </span>
+                                        {% endif %}
+                                    <div class="row justify-content-start g-0">
                                         
                                         <div class="col-md-4">
                                             {% with 'default-avatar.png' as default_avatar_name %}
@@ -755,7 +777,8 @@
                                             {% endwith %}
                                         </div>
                                         <div class="col-md-8">
-                                            <h6>{{empleado_subordinado|title}}</h6>                                        
+                                            <h6>{{empleado_subordinado|title}}</h6>   
+                                            <small>{{cargo_subordinado.nombreText|title}}</small>                                     
                                         </div>
                                     </div>
                                 </a>
@@ -763,8 +786,8 @@
                             </div>
                             {% empty %}
                             <div class="col-md-6">
-                                <div class="card card-body border-2 rounded-4 p-0 my-2">
-                                    <a class="btn btn-outline-dark " href="{% url 'cargodetails' cargo_subordinado.id %}">
+                                <div class="card card-body border-2 rounded-4 p-0 h-100">
+                                    <a class="btn btn-outline-dark h-100 " href="{% url 'cargodetails' cargo_subordinado.id %}">
                                     <div class="row justify-content-start">
                                         
                                         <div class="col-md-4">

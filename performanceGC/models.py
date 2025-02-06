@@ -313,6 +313,8 @@ class Empleado(models.Model):
 
     def cantidadEvaluaciones(self):
         return self.evaluaciondesempeno_set.all().exclude(estado=0).count()
+    
+    
 
     def promedioResultadoFinal(self):
         evaluaciones = self.evaluaciondesempeno_set.exclude(estado=0)
@@ -327,6 +329,12 @@ class Empleado(models.Model):
 
     def cantidadObjetivos(self):
         return self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True)).count()
+    
+    def tiene_objetivos(self):
+        return self.objetivos_set.filter(periodo=Periodo.objects.get(is_active=True)).exists()
+    
+    def tiene_objetivos_por_aprobar(self):
+        return self.objetivos_set.filter(is_aproved=False, periodo=Periodo.objects.get(is_active=True)).exists()
     
     def cantidadObjetivosTotales(self):
         return self.objetivos_set.all().count()

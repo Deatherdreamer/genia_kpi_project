@@ -33,13 +33,13 @@
                         <tr>
                           <th scope="row">Estado</th>
                           <td>
-                            {% if periodo.estado == 'En Proceso' %}
+                            {% if periodo_actual.estado == 'En Proceso' %}
                               <span class="badge bg-success">{{ periodo_actual.estado }}</span>
-                            {% elif periodo.estado == 'No ha comenzado' %}
+                            {% elif periodo_actual.estado == 'No ha comenzado' %}
                               <span class="badge bg-secondary">{{ periodo_actual.estado }}</span>
-                            {% elif periodo.estado == 'Prorroga' %}
+                            {% elif periodo_actual.estado == 'Prorroga' %}
                               <span class="badge bg-warning text-dark">{{ periodo_actual.estado }}</span>
-                            {% elif periodo.estado == 'Finalizado' %}
+                            {% elif periodo_actual.estado == 'Finalizado' %}
                               <span class="badge bg-primary">{{ periodo_actual.estado }}</span>
                             {% else %}
                               <span class="badge bg-danger">{{ periodo_actual.estado }}</span>

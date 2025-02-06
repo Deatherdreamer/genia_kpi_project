@@ -122,6 +122,7 @@
                     <th scope="col">Ficha</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Cargo</th>
+                    <th scope="col">Objetivos</th>
                     <th scope="col">Estado</th>
                     <th scope="col">Resultado</th>
                     <th scope="col">Por Objetivos</th>
@@ -143,6 +144,26 @@
                       <td>{{ empleado.ficha }}</td>
                       <td>{{ empleado.nombre|title }} {{ empleado.apellido|title }}</td>
                       <td>{{ empleado.cargo|title }}</td>
+                      <td>{{ empleado.cantidadObjetivos }}
+                      {% if empleado.tiene_objetivos %}
+                        {% if empleado.tiene_objetivos_por_aprobar %}
+                          <span class="p-2 badge rounded-pill text-bg-warning fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado tiene objetivos que requieren aprobación">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <div class="d-none">{{ empleado.tiene_objetivos_por_aprobar }}</div>
+                          </span>
+                        {% else %}
+                          <span class="p-2 badge rounded-pill text-bg-success fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado tiene todos sus objetivos aprobados">
+                            <i class="bi bi-check-circle"></i>
+                            <div class="d-none">{{ empleado.tiene_objetivos_por_aprobar }}</div>
+                          </span>
+                        {% endif %}
+                      {% else %}
+                        <span class="p-2 badge rounded-pill text-bg-danger fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado no tiene objetivos">
+                          <i class="bi bi-x-circle"></i>
+                          <div class="d-none">Sin Objetivos</div>
+                        </span>
+                      {% endif %}
+                    </td>
                       <td>{{ empleado.evaluacion.get_estado_display|default:'No Realizado' }}</td>
                       <td>{{ empleado.evaluacion.resultadoFinal|default:'N/A' }}</td>
                       <td>{{ empleado.evaluacion.resultadoObjetivos|default:'N/A' }}</td>
