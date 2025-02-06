@@ -42,8 +42,11 @@ urlpatterns = [
     path('deleteEmployee/<int:e_ficha>/', views.deleteEmployee, name='deleteemployee'),
     path('restoreEmployee/<int:e_ficha>/', views.reingreso, name='restoreEmployee'),
     path('changePassword/', views.changePassword, name='changePassword'),
+    
+    # URLS PARA PERIODOS    
     path('periodos/', views.periodos, name='periodos'),
-    path('periodos/<int:id>/', views.editPeriodo, name='editperiodo'),
+    path('periodos/<int:id>/', views.periodo_details, name='periodo_details'),
+    path('periodos/<int:id>/edit/', views.editPeriodo, name='editperiodo'),
     
     # URLS COMPETENCIAS    
     path('competences/', views.seeCompetences, name='seeCompetences'),

@@ -1,0 +1,168 @@
+{% extends 'main.html' %}
+{% load widget_tweaks %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}
+  Periodos
+{% endblock %}
+
+{% block content %}
+  <main class="container">
+    <section class="row my-2 g-2">
+      <div class="col-6">
+        <div class="card border-0 rounded-0 shadow">
+          <div class="card-body">
+            <h4 class="text-center">Periodo Actual</h4>
+            <h5 class="text-center">{{ periodo }}</h5>
+            <table class="table table-hover">
+              <tbody>
+                <tr>
+                  <th scope="row">Proceso de Evaluación</th>
+                  <td>
+                    <table class="table table-sm">
+                      <tbody>
+                        <tr>
+                          <th scope="row">Fecha Inicio</th>
+                          <td>{{ periodo.fechaInicioEvaluaciones }}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Fecha Fin</th>
+                          <td>{{ periodo.fechaFinEvaluaciones }}</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Estado</th>
+                          <td>
+                            {% if periodo.estado == 'En Proceso' %}
+                              <span class="badge bg-success">{{ periodo.estado }}</span>
+                            {% elif periodo.estado == 'No ha comenzado' %}
+                              <span class="badge bg-secondary">{{ periodo.estado }}</span>
+                            {% elif periodo.estado == 'Prorroga' %}
+                              <span class="badge bg-warning text-dark">{{ periodo.estado }}</span>
+                            {% elif periodo.estado == 'Finalizado' %}
+                              <span class="badge bg-primary">{{ periodo.estado }}</span>
+                            {% else %}
+                              <span class="badge bg-danger">{{ periodo.estado }}</span>
+                            {% endif %}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <th scope="row">Objetivos Propuestos</th>
+                  <td>{{ periodo.objetivosPeriodo }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Evaluaciones Realizadas</th>
+                  <td>{{ periodo.evaluacionesPeriodo }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Promedio de Resultados</th>
+                  <td>{{ periodo.promedioEvaluaciones }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="d-flex justify-content-start gap-2">
+              <a href="{% url 'periodos' %}" class="btn btn-dark">Regresar</a>
+              <a href="{% url 'editperiodo' periodo.id %}" class="btn btn-primary">Editar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="card border-0 rounded-0 shadow">
+          <div class="card-body">
+            <h4 class="text-center">leyenda</h4>
+            <ul>
+              <li>
+                <span class="fw-bold">No Realizado:</span> El empleado no ha realizado la evaluación.
+              </li>
+              <li>
+                <span class="fw-bold">Borrador:</span> El empleado ha guardado la evaluación pero no la ha enviado.
+              </li>
+              <li>
+                <span class="fw-bold">Autoevaluación:</span> El empleado ha enviado la evaluación pero no ha sido aprobada por el jefe.
+              </li>
+              <li>
+                <span class="fw-bold">Evaluación:</span> El jefe ha aprobado la evaluación del empleado.
+              </li>
+
+              <li>
+                <span class="badge bg-success">Verde</span>
+                Ha participado en el proceso de evaluación.
+              </li>
+              <li>
+                <span class="badge bg-danger">Rojo</span>
+                No ha participado en el proceso de evaluación.
+              </li>
+              <li>
+                <span class="badge bg-dark"><i class="bi bi-person"></i></span>
+                Ver perfil del empleado.
+              </li>
+              <li>
+                <span class="badge bg-dark"><i class="bi bi-search"></i></span>
+                Ver detalles de la evaluación.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card border-0 rounded-0 shadow">
+          <div class="card-body">
+            <h4 class="text-center">Estado del proceso de evaluación del periodo</h4>
+
+            <div class="table-responsive">
+              <table class="table table-sm table-hover datatable">
+                <thead>
+                  <tr>
+                    <th scope="col">Ficha</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Cargo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Resultado</th>
+                    <th scope="col">Por Objetivos</th>
+                    <th scope="col">Por Competencias</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for empleado in empleados %}
+                    <tr class="{% if empleado.evaluacion %}
+                        
+                        table-success
+
+                      {% else %}
+                        
+                        table-danger
+
+                      {% endif %}">
+                      <td>{{ empleado.ficha }}</td>
+                      <td>{{ empleado.nombre|title }} {{ empleado.apellido|title }}</td>
+                      <td>{{ empleado.cargo|title }}</td>
+                      <td>{{ empleado.evaluacion.get_estado_display|default:'No Realizado' }}</td>
+                      <td>{{ empleado.evaluacion.resultadoFinal|default:'N/A' }}</td>
+                      <td>{{ empleado.evaluacion.resultadoObjetivos|default:'N/A' }}</td>
+                      <td>{{ empleado.evaluacion.resultadoCompetencias|default:'N/A' }}</td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <a href="{% url 'profile' empleado.ficha %}" class="btn btn-dark"><i class="bi bi-person"></i></a>
+                          {% if empleado.evaluacion %}
+                            <a href="{% url 'testdetails' empleado.ficha empleado.evaluacion.id %}" class="btn btn-dark"><i class="bi bi-search"></i></a>
+                          {% endif %}
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock %}

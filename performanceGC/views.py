@@ -253,6 +253,28 @@ def periodos(request):
         'periodos': periodos,
         'periodo_actual':periodo_actual
     })
+    
+@staff_member_required(login_url='account_login')
+def periodo_details(request, id):
+    periodo = Periodo.objects.get(pk=id)
+    #Obtener a todos los empleados, e indicar si ya hicieron o no la evaluación en el periodo y mostrar el resultado
+    empleados = Empleado.objects.filter(fechaEgreso__isnull=True).order_by('cargo__nivel__valor')
+    for empleado in empleados:
+        evaluacion = EvaluacionDesempeno.objects.filter(empleado=empleado, periodo=periodo).last()
+        if evaluacion:
+            empleado.evaluacion = evaluacion
+            empleado.resultadoObj = evaluacion.resultadoObjetivos
+            empleado.resultadoComp = evaluacion.resultadoCompetencias
+        else:
+            empleado.evaluacion = None
+            empleado.resultadoObj = None
+            empleado.resultadoComp = None    
+            
+    return render(request, 'periodo_details.html', {
+        'periodo':periodo,
+        'empleados':empleados
+    })
+   
 
 @staff_member_required(login_url='account_login')
 def editPeriodo(request, id):
