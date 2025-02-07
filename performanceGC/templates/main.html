@@ -1,7 +1,7 @@
 {% load static %}
 {% load custom_tags %}
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="es" data-overlayscrollbars-initialize>
 
 <head>
   <meta charset="UTF-8" />
@@ -26,6 +26,7 @@
   <link rel="stylesheet" href="{% static 'vendor/sweetalert2/css/sweetalert2.min.css' %}" />
   <link rel="stylesheet" href="{% static 'vendor/apexcharts/apexcharts.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'vendor/datatables/css/dataTables.dataTables.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendor/overlayScrollbars/css/OverlayScrollbars.min.css' %}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
   
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -36,6 +37,7 @@
   <script src="{% static 'vendor/datatables/js/dataTables.min.js' %}"></script>
   <script src="{% static 'vendor/sweetalert2/js/sweetalert2.all.min.js' %}"></script>
   <script src="{% static 'vendor/apexcharts/apexcharts.min.js' %}"></script>
+  <script src="{% static 'vendor/overlayScrollbars/js/OverlayScrollbars.min.js' %}"></script>
 
 <style>
   body {
@@ -54,13 +56,10 @@
 </style>
 </head>
 
-<body>
-  <!-- BARRA DE NAVEGACION -->
+<body data-overlayscrollbars-initialize>
 {% include 'partials/navbar.html' %}
-  <!-- FIN DE BARRA DE NAVEGACION -->
-  <!-- Button trigger modal -->
 {% include 'partials/alerts.html' %} 
-<main class="container">
+<main class="container py-4">
 
   {% block content %}
 
@@ -68,8 +67,9 @@
 
   
 </main>
+{% if user.is_authenticated %}
+  {% include 'partials/floating-action-bubble.html' %}
 
-{% include 'partials/floating-action-bubble.html' %}
 
 
 <!-- confirmModal -->
@@ -111,12 +111,38 @@
     f.submit()
   })
 </script>
-
+{% endif %}
 
 
 
 
   <script>
+    const osInstance = OverlayScrollbars(document.body, {
+      className: 'os-theme-dark',
+      sizeAutoCapable: true,
+      clipAlways: true,
+      normalizeRTL: true,
+      paddingAbsolute: true,
+      autoUpdate: null,
+      autoUpdateInterval: 33,
+      nativeScrollbarsOverlaid: {
+        showNativeScrollbars: false,
+        initialize: true
+      },
+      overflowBehavior: {
+        x: 'hidden',
+        y: 'scroll'
+      },
+      scrollbars: {
+        visibility: 'auto',
+        autoHide: 'move',
+        autoHideDelay: 800,
+        dragScrolling: true,
+        clickScrolling: false,
+        touchSupport: true,
+        snapHandle: false
+      }
+    });
     $(document).ready(function () {
       $('.form-select').select2(
         {
@@ -129,6 +155,9 @@
   <script>
     $(document).ready(function () {
       $('.datatable').DataTable({
+        "pageLength": 15,
+        "lengthMenu": [5, 10, 15, 20, 25, 50, 100],
+
         "language": {
           "lengthMenu": "Mostrar _MENU_ registros por pagina",
           "zeroRecords": "No se encontraron resultados",

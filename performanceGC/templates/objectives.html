@@ -1,51 +1,54 @@
 {% extends 'main.html' %}
 {% load static %}
+{% block title %}
+  Objetivos
+{% endblock %}
 {% block content %}
+    <section class="row g-2 justify-content-center">
+      <div class="col-md-4">
+        <div class="row g-2">
+          <div class="col-12">
+            <div class="card card-body border-0 rounded-1 shadow">
+              <h4 class="text-center">{{ periodo }}</h4>
+              <h5  class="text-center">{{ empleado|title }}</h5>
+              <div class="d-grid gap-2">
+                <a href="{% url 'profile' empleado.ficha %}" class="btn btn-dark bi bi-arrow-left">
+                  Regresar al Perfil
+                </a>
+                <a href="{% url 'newobjective' empleado.ficha %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Objetivo</a>
 
-  <main class="container">
-    <section class="row justify-content-center">
-      <div class="col-md-4 my-4">
-        <div class="card border-0 shadow">
-          <div class="card-header lead fw-bolder text-center bg-dark">
-            <a href="{% url 'profile' empleado.ficha %}" class="btn btn-dark bi bi-arrow-left">{{ empleado|title }}</a>
-          </div>
-
-          <div class="card-body">
-            <h5 class="text-center">{{ periodo }}</h5>
-            <!-- nuevo objetivo -->
-            <div class="row ps-5 pe-5">
-              <a href="{% url 'newobjective' empleado.ficha %}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nuevo Objetivo</a>
+              </div>
             </div>
-
-            <div class="card card-body my-4 border-dark rounded-4">
+          </div>
+          <div class="col-12">
+            <div class="card card-body border-0 rounded-1 shadow">
               <div class="chart-container mx-auto " style="position: relative; max-width: 256px; height: auto;">
                 <canvas id="completionChart"></canvas>
               </div>
             </div>
-            <div class="card card-body my-4 border-dark rounded-4">
+          </div>
+          
+          <div class="col-12">
+            <div class="card card-body border-0 rounded-1 shadow">
               <div class="chart-container mx-auto " style="position: relative; max-width: 256px; height: auto;">
                 <canvas id="status_chart"></canvas>
               </div>
             </div>
-            <div class="card card-body my-4 border-dark rounded-4">
+          </div>
+
+          <div class="col-12">
+            <div class="card card-body border-0 rounded-1 shadow">
               <div class="chart-container mx-auto " style="position: relative; max-width: 256px; height: auto;">
                 <canvas id="typeChart"></canvas>
               </div>
             </div>
-
           </div>
+            
         </div>
       </div>
-      <div class="col-md-8 my-4">
-        <div class="card card border-0 shadow">
-          <div class="card-header text-center text-bg-dark bg-dark">
-            <div class="row">
-              <div class="col">
-                <h4 class="text-center">Objetivos Generales</h4>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
+      <div class="col-md-8">
+        <div class="card card-body border-0 rounded-1 shadow">
+          <h4 class="text-center">Objetivos Generales del Periodo</h4>
             {% for obj in objetivos %}
               <div class="card border-1 mb-4 rounded-4 border-dark" style="--bs-bg-opacity: .2;">
                 <div class="card-body">
@@ -169,7 +172,6 @@
         </div>
       </div>
     </section>
-  </main>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 

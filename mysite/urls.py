@@ -5,7 +5,11 @@ from django.urls import include, path
 from django.views.generic.base import RedirectView
 from django.contrib.staticfiles.storage import staticfiles_storage
 
+handler400 = 'performanceGC.views.error_400'
 handler404 = 'performanceGC.views.error_404'
+handler403 = 'performanceGC.views.error_403'
+handler500 = 'performanceGC.views.error_500'
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

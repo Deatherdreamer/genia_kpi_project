@@ -9,7 +9,7 @@
 {% block content %}
   <section class="container">
     <div class="row d-flex justify-content-center align-items-center" style="height: calc(100vh - 56px);">
-      <div class="col-12 col-md-6 col-lg-4">
+      <div class="col-12 col-md-6 col-lg-4" style="max-width: 400px;">
         <div class="card border-0 rounded-1 shadow">
           <div class="card-header bg-white" style="border-bottom: none;">
             <div class="z-1 position-absolute start-50 translate-middle rounded-circle bg-white" style="width: 200px; height: 200px; ">
@@ -37,7 +37,7 @@
                 <div class="col-12">
                   <div class="d-flex justify-content-between align-items-center">
                     <label for="id_password" class="fw-bold form-label requiredField">Contraseña</label>
-                    <button type="button" class="mb-2 p-0 btn btn-link" id="showPassword">
+                    <button type="button" class="mb-2 p-0 btn btn-link" id="showPassword" style="font-size: 0.875rem;" tabindex="-1">
                       <i class="bi bi-eye"></i>
                       Mostrar
                     </button>

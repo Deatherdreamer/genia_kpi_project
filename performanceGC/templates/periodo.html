@@ -8,102 +8,100 @@
 {% endblock %}
 
 {% block content %}
-  <main class="container">
-    <section class="row my-2 g-2">
-      <div class="col">
-          <div class="card border-0 rounded-0 shadow">          
-            <div class="card-body">
-              <h4 class="text-center">Periodo Actual</h4>
-            <h5 class="text-center">{{ periodo_actual }}</h5>
-            <table class="table table-hover">
-              <tbody>
-                <tr>
-                  <th scope="row">Proceso de Evaluacion</th>
-                  <td>
-                    <table class="table table-sm">
-                      <tbody>
-                        <tr>
-                          <th scope="row">Fecha Inicio</th>
-                          <td>{{ periodo_actual.fechaInicioEvaluaciones }}</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Fecha Fin</th>
-                          <td>{{ periodo_actual.fechaFinEvaluaciones }}</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Estado</th>
-                          <td>
-                            {% if periodo_actual.estado == 'En Proceso' %}
-                              <span class="badge bg-success">{{ periodo_actual.estado }}</span>
-                            {% elif periodo_actual.estado == 'No ha comenzado' %}
-                              <span class="badge bg-secondary">{{ periodo_actual.estado }}</span>
-                            {% elif periodo_actual.estado == 'Prorroga' %}
-                              <span class="badge bg-warning text-dark">{{ periodo_actual.estado }}</span>
-                            {% elif periodo_actual.estado == 'Finalizado' %}
-                              <span class="badge bg-primary">{{ periodo_actual.estado }}</span>
-                            {% else %}
-                              <span class="badge bg-danger">{{ periodo_actual.estado }}</span>
-                            {% endif %}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </td>
-                </tr>
+  <section class="row g-2">
+    <div class="col">
+      <div class="card border-0 rounded-0 shadow">
+        <div class="card-body">
+          <h4 class="text-center">Periodo Actual</h4>
+          <h5 class="text-center">{{ periodo_actual }}</h5>
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <th scope="row">Proceso de Evaluacion</th>
+                <td>
+                  <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <th scope="row">Fecha Inicio</th>
+                        <td>{{ periodo_actual.fechaInicioEvaluaciones }}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Fecha Fin</th>
+                        <td>{{ periodo_actual.fechaFinEvaluaciones }}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Estado</th>
+                        <td>
+                          {% if periodo_actual.estado == 'En Proceso' %}
+                            <span class="badge bg-success">{{ periodo_actual.estado }}</span>
+                          {% elif periodo_actual.estado == 'No ha comenzado' %}
+                            <span class="badge bg-secondary">{{ periodo_actual.estado }}</span>
+                          {% elif periodo_actual.estado == 'Prorroga' %}
+                            <span class="badge bg-warning text-dark">{{ periodo_actual.estado }}</span>
+                          {% elif periodo_actual.estado == 'Finalizado' %}
+                            <span class="badge bg-primary">{{ periodo_actual.estado }}</span>
+                          {% else %}
+                            <span class="badge bg-danger">{{ periodo_actual.estado }}</span>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
 
-                <tr>
-                  <th scope="row">Objetivos Propuestos</th>
-                  <td>{{ periodo_actual.objetivosPeriodo }}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Evaluaciones Realizadas</th>
-                  <td>{{ periodo_actual.evaluacionesPeriodo }}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Promedio de Resultados</th>
-                  <td>{{ periodo_actual.promedioEvaluaciones }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="d-flex justify-content-start gap-2">
-              <a href="{% url 'periodo_details' periodo_actual.id %}" class="btn btn-dark">Ver Estado</a>
-                <a href="{% url 'editperiodo' periodo_actual.id %}" class="btn btn-primary">Editar</a>
-            </div>
+              <tr>
+                <th scope="row">Objetivos Propuestos</th>
+                <td>{{ periodo_actual.objetivosPeriodo }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Evaluaciones Realizadas</th>
+                <td>{{ periodo_actual.evaluacionesPeriodo }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Promedio de Resultados</th>
+                <td>{{ periodo_actual.promedioEvaluaciones }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="d-flex justify-content-start gap-2">
+            <a href="{% url 'periodo_details' periodo_actual.id %}" class="btn btn-dark">Ver Estado</a>
+            <a href="{% url 'editperiodo' periodo_actual.id %}" class="btn btn-primary">Editar</a>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="col">
-        <div class="card border-0 rounded-0 shadow">          
-          <div class="card-body">
-            <h4 class="text-center">Otros periodos</h4>
-            <table class="table table-hover">
-              <thead>
-                <th>Periodo</th>
-                <th>Inicio de Evaluaciones</th>
-                <th>Fin de Evaluaciones</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </thead>
-              <tbody>
-                {% for periodo in periodos %}
-                  <tr>
-                    <td>{{periodo}}</td>
-                    <td>{{periodo.fechaInicioEvaluaciones}}</td>
-                    <td>{{periodo.fechaFinEvaluaciones}}</td>
-                    <td>{{periodo.estado}}</td>
-                    <td></td>
-                  </tr>
-                {% empty %}
-                  <tr>
-                    <td colspan="5">No hay periodos anteriores</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+    <div class="col">
+      <div class="card border-0 rounded-0 shadow">
+        <div class="card-body">
+          <h4 class="text-center">Otros periodos</h4>
+          <table class="table table-hover">
+            <thead>
+              <th>Periodo</th>
+              <th>Inicio de Evaluaciones</th>
+              <th>Fin de Evaluaciones</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </thead>
+            <tbody>
+              {% for periodo in periodos %}
+                <tr>
+                  <td>{{ periodo }}</td>
+                  <td>{{ periodo.fechaInicioEvaluaciones }}</td>
+                  <td>{{ periodo.fechaFinEvaluaciones }}</td>
+                  <td>{{ periodo.estado }}</td>
+                  <td></td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5">No hay periodos anteriores</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 {% endblock %}

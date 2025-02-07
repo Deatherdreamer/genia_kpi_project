@@ -1,64 +1,62 @@
 {% extends 'main.html' %}
 {% block content %}
-  <div class="container">
-    <div class="row justify-content-center mt-4">
-      <div class="col">
-        <div class="card card-body border-0 rounded-0 shadow">
-          <div class="table-responsive">
-            <h4 class="text-center">Listado de Colaboradores</h4>
+  <div class="row justify-content-center">
+    <div class="col">
+      <div class="card card-body border-0 rounded-0 shadow">
+        <div class="table-responsive">
+          <h4 class="text-center">Listado de Colaboradores</h4>
 
-            <table class="table table-sm table-striped table-hover datatable" id="employeeTable">
-              <thead>
-                <tr>
-                  <th scope="col">Ficha</th>
-                  <th scope="col"></th>
-                  <th scope="col">Nombre y Apellido</th>
-                  <th scope="col">Cargo</th>
-                  <th scope="col">Gerencia</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody class="">
-                {% for empleado in empleados %}
-                  <tr class="align-middle">
-                    <th scope="row">{{ empleado.ficha }}</th>
-                    <td>
-                      {% if empleado.tiene_objetivos %}
-                        {% if empleado.tiene_objetivos_por_aprobar %}
-                          <span class="p-2 badge rounded-pill text-bg-warning fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado tiene objetivos que requieren aprobación">
-                            <i class="bi bi-exclamation-triangle"></i>
-                            <div class="d-none">{{ empleado.tiene_objetivos_por_aprobar }}</div>
-                          </span>
-                        {% else %}
-                          <span class="p-2 badge rounded-pill text-bg-success fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado tiene todos sus objetivos aprobados">
-                            <i class="bi bi-check-circle"></i>
-                            <div class="d-none">{{ empleado.tiene_objetivos_por_aprobar }}</div>
-                          </span>
-                        {% endif %}
+          <table class="table table-sm table-striped table-hover datatable" id="employeeTable">
+            <thead>
+              <tr>
+                <th scope="col">Ficha</th>
+                <th scope="col"></th>
+                <th scope="col">Nombre y Apellido</th>
+                <th scope="col">Cargo</th>
+                <th scope="col">Gerencia</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="">
+              {% for empleado in empleados %}
+                <tr class="align-middle">
+                  <th scope="row">{{ empleado.ficha }}</th>
+                  <td>
+                    {% if empleado.tiene_objetivos %}
+                      {% if empleado.tiene_objetivos_por_aprobar %}
+                        <span class="p-2 badge rounded-pill text-bg-warning fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado tiene objetivos que requieren aprobación">
+                          <i class="bi bi-exclamation-triangle"></i>
+                          <div class="d-none">{{ empleado.tiene_objetivos_por_aprobar }}</div>
+                        </span>
                       {% else %}
-                        <span class="p-2 badge rounded-pill text-bg-danger fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado no tiene objetivos">
-                          <i class="bi bi-x-circle"></i>
-                          <div class="d-none">Sin Objetivos</div>
+                        <span class="p-2 badge rounded-pill text-bg-success fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado tiene todos sus objetivos aprobados">
+                          <i class="bi bi-check-circle"></i>
+                          <div class="d-none">{{ empleado.tiene_objetivos_por_aprobar }}</div>
                         </span>
                       {% endif %}
-                    </td>
-                    <td>{{ empleado.nombre|title }} {{ empleado.apellido|title }}</td>
+                    {% else %}
+                      <span class="p-2 badge rounded-pill text-bg-danger fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="El empleado no tiene objetivos">
+                        <i class="bi bi-x-circle"></i>
+                        <div class="d-none">Sin Objetivos</div>
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td>{{ empleado.nombre|title }} {{ empleado.apellido|title }}</td>
 
-                    <td>{{ empleado.cargo|title }}</td>
-                    <td>{{ empleado.cargo.gerencia|title }}</td>
-                    <td>
-                      <div class="btn-group btn-group-sm">
-                        <a class="btn btn-primary" href="{% url 'profile' empleado.ficha %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Perfil"><i class="bi bi-search"></i></a>
-                        <a class="btn btn-info" href="{% url 'objectives' empleado.ficha %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Objetivos"><i class="bi bi-clipboard"></i></a>
-                      </div>
-                    </td>
-                  </tr>
-                {% empty %}
+                  <td>{{ empleado.cargo|title }}</td>
+                  <td>{{ empleado.cargo.gerencia|title }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <a class="btn btn-primary" href="{% url 'profile' empleado.ficha %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Perfil"><i class="bi bi-eye"></i></a>
+                      <a class="btn btn-info" href="{% url 'objectives' empleado.ficha %}" data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Objetivos"><i class="bi bi-clipboard"></i></a>
+                    </div>
+                  </td>
+                </tr>
+              {% empty %}
 
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

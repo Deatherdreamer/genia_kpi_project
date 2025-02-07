@@ -8,10 +8,10 @@ urlpatterns = [
     path('', views.index, name='index'),
  
     # path('debugTests/', views.debugTests, name='debugtests'),
+    # URLS PARA ERRORES
+    # path('error/404/<str:exception>/', views.error_404, name='error_404'),
     
-    # USER AUTHENTICATION
-    # path('signin/', views.loginUser, name='signin'),
-    # path('signout/', views.logoutUser, name='signout'),
+    # URLS PARA USUARIOS
     path('newUser/', views.createUser, name='newUser'),
     path('users/', views.users, name='users'),
     

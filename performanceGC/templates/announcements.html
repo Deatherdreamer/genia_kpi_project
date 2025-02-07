@@ -8,52 +8,45 @@
 {% endblock %}
 
 {% block content %}
-  <main class="container">
-    <section class="row justify-content-center">
-        <h4 class="text-center my-4">Tablero de Anuncios</h4>
-        <div class="col-md-4 mb-4">
-            <div class="card card-body shadow border-0">
-                <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%"
-                            class="card-img-top">
-                {% if user.is_staff %}
-                <a href="{% url 'announcements_add' %}" class="btn btn-dark btn-block mt-3">Crear Anuncio</a>
-                {% endif %}
+  <h4 class="text-center">Tablero de Anuncios</h4>
+  <section class="row g-2 justify-content-center">
+    <div class="col-md-4">
+      <div class="card card-body shadow border-0">
+        <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%" class="card-img-top" />
+        {% if user.is_staff %}
+          <a href="{% url 'announcements_add' %}" class="btn btn-dark btn-block mt-3">Crear Anuncio</a>
+        {% endif %}
 
-                <a href="{% url 'index' %}" class="btn btn-dark btn-block mt-3">Volver a Inicio</a>
-                <a href="{% url 'profile' user.empleado.ficha  %}" class="btn btn-dark btn-block mt-3">Ir a Perfil</a>
-
-            </div>
-        </div>
-      <div class="col-md-8">
-        
-        {% for announcement in announcements %}
-          <div class="card mb-4 shadow border-0">
-            <div class="card-body">
-              <h5 class="card-title">{{announcement.title}}</h5>
-              <h6 class="card-subtitle mb-2 text-body-secondary">{{announcement.date}}</h6>
-              {{announcement.text|linebreaks}}
-            </div>
-            {% if announcement.image %}
+        <a href="{% url 'index' %}" class="btn btn-dark btn-block mt-3">Volver a Inicio</a>
+        <a href="{% url 'profile' user.empleado.ficha %}" class="btn btn-dark btn-block mt-3">Ir a Perfil</a>
+      </div>
+    </div>
+    <div class="col-md-8">
+      {% for announcement in announcements %}
+        <div class="card shadow border-0">
+          <div class="card-body">
+            <h5 class="card-title">{{ announcement.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">{{ announcement.date }}</h6>
+            {{ announcement.text|linebreaks }}
+          </div>
+          {% if announcement.image %}
             <div class="text-center">
-              <img src="{{announcement.image.url}}" class="card-img-bottom" alt="{{announcement.title}}" style="max-height: 80%; max-width: 80%; object-fit: cover; object-position: center; margin: auto; display: block; margin-bottom: 1rem; margin-top: 1rem; border-radius: 5px; border: 1px solid #ddd; padding: 5px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);">
+              <img src="{{ announcement.image.url }}" class="card-img-bottom" alt="{{ announcement.title }}" style="max-height: 80%; max-width: 80%; object-fit: cover; object-position: center; margin: auto; display: block; margin-bottom: 1rem; margin-top: 1rem; border-radius: 5px; border: 1px solid #ddd; padding: 5px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);" />
             </div>
-            {% endif %}
-            {% if user.is_staff %}
+          {% endif %}
+          {% if user.is_staff %}
             <div class="card-footer">
               <a href="{% url 'announcements_edit' announcement.id %}" class="btn btn-dark btn-sm">Editar</a>
               <form action="{% url 'announcements_delete' announcement.id %}" method="post" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Esta seguro de Elminar este anuncio?')">Eliminar</button>
               </form>
-              
-              
             </div>
-            {% endif %}
-          </div>
-          {% empty %}
-          <p>No announcements yet.</p>
-        {% endfor %}
-      </div>
-    </section>
-  </main>
+          {% endif %}
+        </div>
+      {% empty %}
+        <p>No announcements yet.</p>
+      {% endfor %}
+    </div>
+  </section>
 {% endblock %}

@@ -5,12 +5,12 @@
 {% endblock %}
 
 {% block content %}
-  <section class="row p-4 g-4 ">
+  <section class="row g-2">
     <div class="col-md-9 order-md-1">
       <div class="card card-body border-0 rounded-1 shadow h-100">
         <h3 class="text-center">Genia Performance 360 Pro</h3>
         <h4 class="text-center">Sistema de Evaluación de Desempeño</h4>
-        <div class="row mt-2">
+        <div class="row g-0">
           <div class="col-md-6">
             <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" class="img-fluid" />
           </div>
@@ -24,34 +24,38 @@
       </div>
     </div>
     <div class="col-md-3 order-md-2">
-      <div class="row g-3">
-        {% if user.is_authenticated %}
-          <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
-            <h5 class="card-title">Ver Perfil</h5>
-            <p class="card-text">Haga clic en el botón para visualizar su perfil</p>
-            <a href="{% url 'profile' user.empleado.ficha %}" class="btn btn-primary btn-block stretched-link">Ver</a>
-          </div>
-        {% else %}
-          <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
-            <h5 class="card-title">Iniciar Sesión</h5>
-            <p class="card-text">Haga clic en el botón para iniciar sesión</p>
-            <a href="{% url 'account_login' %}" class="btn btn-primary btn-block stretched-link">Entrar</a>
-          </div>
-        {% endif %}
-
-        <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
-          <h5 class="card-title">Guía Telefónica</h5>
-          <p class="card-text">Haga clic aquí para ir a la Guía Telefónica de Genia Care</p>
-          <a href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal" class="btn btn-primary btn-block stretched-link">Ir</a>
+      <div class="row g-2">
+        <div class="col-12">
+          {% if user.is_authenticated %}
+            <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+              <h5 class="card-title">Ver Perfil</h5>
+              <p class="card-text">Haga clic en el botón para visualizar su perfil</p>
+              <a href="{% url 'profile' user.empleado.ficha %}" class="btn btn-primary btn-block stretched-link">Ver</a>
+            </div>
+          {% else %}
+            <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+              <h5 class="card-title">Iniciar Sesión</h5>
+              <p class="card-text">Haga clic en el botón para iniciar sesión</p>
+              <a href="{% url 'account_login' %}" class="btn btn-primary btn-block stretched-link">Entrar</a>
+            </div>
+          {% endif %}
         </div>
-
-        <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
-          <h5 class="card-title">¿Necesita ayuda?</h5>
-          <p class="card-text">
-            En caso de tener alguna duda sobre el uso del sistema puedes contactar a:
-            <a href="">geniacare.contigo@geniacare.com</a>
-            <a href="">soporte@geniacare.com</a>
-          </p>
+        <div class="col-12">
+          <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+            <h5 class="card-title">Guía Telefónica</h5>
+            <p class="card-text">Haga clic aquí para ir a la Guía Telefónica de Genia Care</p>
+            <a href="https://sites.google.com/geniacare.com/guia-telefonica-de-genia-care/p%C3%A1gina-principal" class="btn btn-primary btn-block stretched-link">Ir</a>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="card card-body border-0 rounded-1 shadow" style="height: 200px;">
+            <h5 class="card-title">¿Necesita ayuda?</h5>
+            <p class="card-text">
+              En caso de tener alguna duda sobre el uso del sistema puedes contactar a:
+              <a href="">geniacare.contigo@geniacare.com</a>
+              <a href="">soporte@geniacare.com</a>
+            </p>
+          </div>
         </div>
       </div>
     </div>

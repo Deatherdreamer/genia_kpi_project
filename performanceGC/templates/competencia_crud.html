@@ -1,31 +1,37 @@
 {% extends 'main.html' %}
 {% load static %}
+
+{% block title %}
+  {% if form.instance.pk %}
+    Editar Competencia
+  {% else %}
+    Agregar Competencia
+  {% endif %}
+{% endblock %}
+
 {% block content %}
-  <main class="container">
-    <div class="row justify-content-center mt-4">
-      <div class="col-md">
-        <form action="
+  <section class="row justify-content-center">
+    <div class="col-md">
+      <form action="
         {% if form.instance.id %}
-            {% url 'editCompetence' form.instance.id %}
-          {% else %}
-            {% url 'addCompetence' %}
-          {% endif %}"
-          method="POST"
-          id="form"
-          class="card border-0 shadow mt-4">
-          <div class="card-header bg-primary text-white">
-            <h3 class="mb-0 text-center card-title">
-              {% if form.instance.pk %}
-                Editar Competencia
-              {% else %}
-                Agregar Competencia
-              {% endif %}
-            </h3>
-          </div>
-          <div class="card-body">
-            {% csrf_token %}
-            <div class="row">
-              {% for field in form %}
+          {% url 'editCompetence' form.instance.id %}
+        {% else %}
+          {% url 'addCompetence' %}
+        {% endif %}"
+        method="POST"
+        id="form"
+        class="card border-0 rounded-1 shadow">
+        <div class="card-body">
+          <h4 class="mb-0 text-center card-title">
+            {% if form.instance.pk %}
+              Editar Competencia
+            {% else %}
+              Agregar Competencia
+            {% endif %}
+          </h4>
+          {% csrf_token %}
+          <div class="row">
+            {% for field in form %}
               {% if field.name == 'descripcion' %}
                 <div class="form-group my-2 col-md-12">
                   <strong class="">
@@ -44,45 +50,44 @@
                   {% endfor %}
                   {{ field }}
                 </div>
-                {% else %}
+              {% else %}
                 <div class="form-group my-2 col-md-6">
-                    <strong class="">
-                      {% if field.field.required %}
-                        <span class="text-danger">*</span>
-                      {% endif %}
-                      {{ field.label_tag }}
-                    </strong>
-                    {% if field.help_text %}
-                      <p class="mb-0">
-                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                      </p>
+                  <strong class="">
+                    {% if field.field.required %}
+                      <span class="text-danger">*</span>
                     {% endif %}
-                    {% for error in field.errors %}
-                      <p class="mb-0" style="color: red">{{ error }}</p>
-                    {% endfor %}
-                    {{ field }}
-                  </div>
-                {% endif %}
-              {% endfor %}
-            </div>
+                    {{ field.label_tag }}
+                  </strong>
+                  {% if field.help_text %}
+                    <p class="mb-0">
+                      <small class="form-text text-muted">{{ field.help_text }}</small>
+                    </p>
+                  {% endif %}
+                  {% for error in field.errors %}
+                    <p class="mb-0" style="color: red">{{ error }}</p>
+                  {% endfor %}
+                  {{ field }}
+                </div>
+              {% endif %}
+            {% endfor %}
           </div>
-          <div class="card-footer">
-            <div class="row">
-              <div class="col-md-6">
-                {% if form.instance.pk %}
-                  <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Editar competencia', '¿Está seguro que desea editar la competencia?')">Guardar</button>
-                {% else %}
-                  <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Agregar competencia', '¿Está seguro que desea agregar la competencia?')">Guardar</button>
-                {% endif %}
-              </div>
+        </div>
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-md-6">
+              {% if form.instance.pk %}
+                <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Editar competencia', '¿Está seguro que desea editar la competencia?')">Guardar</button>
+              {% else %}
+                <button type="button" class="btn btn-lg btn-primary w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Agregar competencia', '¿Está seguro que desea agregar la competencia?')">Guardar</button>
+              {% endif %}
+            </div>
 
-              <div class="col-md-6">
-                <a href="{% url 'seeCompetences' %}" class="btn btn-lg btn-danger w-100">Cancelar</a>
-              </div>
+            <div class="col-md-6">
+              <a href="{% url 'seeCompetences' %}" class="btn btn-lg btn-danger w-100">Cancelar</a>
             </div>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
-  </main>
+  </section>
 {% endblock %}

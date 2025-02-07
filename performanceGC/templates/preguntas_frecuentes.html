@@ -1,28 +1,24 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-  <main class="container">
-    <section class="row justify-content-center">
-      <div class="col">
-        <div class="card card-body border-0 shadow mt-4">
-          <h4 class="text-center">Preguntas frecuentes</h4>
-          <div class="accordion accordion-flush" id="competencesAccordion">
-            {% for pregunta in preguntas_frecuentes %}
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="flush-heading{{ pregunta.id }}"><button class="accordion-button collapsed fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ pregunta.id }}" aria-expanded="false" aria-controls="flush-collapse{{ pregunta.id }}">{{ pregunta.pregunta|title }}</button></h2>
-                <div id="flush-collapse{{ pregunta.id }}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{ pregunta.id }}" data-bs-parent="#competencesAccordion">
-                  <div class="accordion-body">
-                    <h5 class="cart-title">Respuesta:</h5>
-                    <p class="card-text">{{ pregunta.respuesta }}</p>
-
-
-                  </div>
+  <section class="row justify-content-center">
+    <div class="col">
+      <div class="card card-body border-0 shadow">
+        <h4 class="text-center">Preguntas frecuentes</h4>
+        <div class="accordion accordion-flush" id="competencesAccordion">
+          {% for pregunta in preguntas_frecuentes %}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="flush-heading{{ pregunta.id }}"><button class="accordion-button collapsed fw-bold fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ pregunta.id }}" aria-expanded="false" aria-controls="flush-collapse{{ pregunta.id }}">{{ pregunta.pregunta|title }}</button></h2>
+              <div id="flush-collapse{{ pregunta.id }}" class="accordion-collapse collapse" aria-labelledby="flush-heading{{ pregunta.id }}" data-bs-parent="#competencesAccordion">
+                <div class="accordion-body">
+                  <h5 class="cart-title">Respuesta:</h5>
+                  <p class="card-text">{{ pregunta.respuesta }}</p>
                 </div>
               </div>
-            {% endfor %}
-          </div>
+            </div>
+          {% endfor %}
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 {% endblock %}

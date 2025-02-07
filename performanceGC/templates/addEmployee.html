@@ -3,8 +3,16 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 
+{% block title %}
+  {% if form.instance.pk %}
+    Editar Colaborador
+  {% else %}
+    Agregar Colaborador
+  {% endif %}
+{% endblock %}
+
 {% block content %}
-  <section class="row justify-content-center my-4">
+  <section class="row justify-content-center">
     <div class="col-12 col-md-8 col-lg-6">
       <div class="card card-body border-0 rounded-1 shadow">
         <h2 class="text-center">

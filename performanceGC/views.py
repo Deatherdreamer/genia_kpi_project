@@ -28,8 +28,47 @@ def index(request):
     return render(request, 'index.html')
 
 def error_404(request, exception):
-    messages.error(request, 'ERROR 404. Página no encontrada. Redirigiendo al inicio.')
-    return redirect('index')
+    error_code = 404
+    error_message = 'Oops, la pagina que estas buscando parece no existir.'
+    
+    context = {
+        'error_code': error_code,
+        'error_message': error_message
+    }
+    return render(request, 'error-page.html', context)
+
+def error_500(request):
+    error_code = 500
+    error_message = 'Oops, algo salió mal. Por favor, intenta de nuevo.'
+    
+    context = {
+        'error_code': error_code,
+        'error_message': error_message
+    }
+    return render(request, 'error-page.html', context)
+
+def error_403(request, exception):
+    error_code = 403
+    error_message = 'Oops, no tienes permisos para acceder a esta página.'
+    
+    context = {
+        'error_code': error_code,
+        'error_message': error_message
+    }
+    return render(request, 'error-page.html', context)
+
+def error_400(request, exception):
+    error_code = 400
+    error_message = 'Oops, la solicitud no pudo ser procesada.'
+    
+    context = {
+        'error_code': error_code,
+        'error_message': error_message
+    }
+    return render(request, 'error-page.html', context)
+
+
+
 # def debugTests(request):
 #     competencias = Competencias.objects.all()
 #     return render(request, 'cosasraras.html',

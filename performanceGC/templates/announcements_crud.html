@@ -2,54 +2,69 @@
 {% load static %}
 {% load custom_tags %}
 {% load widget_tweaks %}
+{% block title %}
+  {% if form.instance.pk %}
+    Editar Anuncio
+  {% else %}
+    Agregar Anuncio
+  {% endif %}
+{% endblock %}
 
 {% block content %}
-  <main class="container">
-    <section class="row justify-content-center">
-      <h4 class="text-center my-4">{% if form.instance.pk %}Editar Anuncio{% else %}Agregar Anuncio{% endif %}</h4>      
-      <div class="col-md-4">
-        <div class="card card-body shadow border-0">
-          <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%" class="card-img-top" />
-          <a href="{% url 'announcements' %}" class="btn btn-dark btn-block mt-3">Regresar a Anuncios</a>
-        </div>
+<h4 class="text-center">
+  {% if form.instance.pk %}
+    Editar Anuncio
+  {% else %}
+    Agregar Anuncio
+  {% endif %}
+</h4>
+  <section class="row g-2 justify-content-center">
+   
+    <div class="col-md-4">
+      <div class="card card-body shadow border-0">
+        <img src="{% static 'LOGO GENIA PERFORMANCE 360 PRO 29112023.png' %}" alt="logo" width="100%" class="card-img-top" />
+        <a href="{% url 'announcements' %}" class="btn btn-dark btn-block mt-3">Regresar a Anuncios</a>
       </div>
-      <div class="col-md-8">
-        <div class="card card-body shadow border-0">
-          <form 
-          action="{% if form.instance.pk %}{% url 'announcements_edit' form.instance.pk %}{% else %}{% url 'announcements_add' %}{% endif %}"
-          method="POST" 
-          enctype="multipart/form-data" 
+    </div>
+    <div class="col-md-8">
+      <div class="card card-body shadow border-0">
+        <form action="{% if form.instance.pk %}
+            {% url 'announcements_edit' form.instance.pk %}
+          {% else %}
+            {% url 'announcements_add' %}
+          {% endif %}"
+          method="POST"
+          enctype="multipart/form-data"
           id="form">
-            {% csrf_token %}
-            <div class="row">
-              {% for field in form %}
-                <div class="form-group my-2 col-md-12">
-                  <strong class="">
-                    {% if field.field.required %}
-                      <span class="text-danger">*</span>
-                    {% endif %}
-                    {{ field.label_tag }}
-                  </strong>
-                  {% if field.help_text %}
-                    <p class="mb-0">
-                      <small class="form-text text-muted">{{ field.help_text }}</small>
-                    </p>
+          {% csrf_token %}
+          <div class="row">
+            {% for field in form %}
+              <div class="form-group my-2 col-md-12">
+                <strong class="">
+                  {% if field.field.required %}
+                    <span class="text-danger">*</span>
                   {% endif %}
-                  {% for error in field.errors %}
-                    <p class="mb-0" style="color: red">{{ error }}</p>
-                  {% endfor %}
-                  {{ field }}
-                </div>
-              {% endfor %}
-            </div>
-            {% if form.instance.pk %}
-              <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Modificar Anuncio','¿Está seguro que desea modificar el anuncio?')">Modificar</button>
-            {% else %}
-              <button type="button" class="btn  btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Publicar Anuncio','¿Está seguro que desea publicar el anuncio?')">Publicar</button>
-            {% endif %}
-          </form>
-        </div>
+                  {{ field.label_tag }}
+                </strong>
+                {% if field.help_text %}
+                  <p class="mb-0">
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                  </p>
+                {% endif %}
+                {% for error in field.errors %}
+                  <p class="mb-0" style="color: red">{{ error }}</p>
+                {% endfor %}
+                {{ field }}
+              </div>
+            {% endfor %}
+          </div>
+          {% if form.instance.pk %}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Modificar Anuncio','¿Está seguro que desea modificar el anuncio?')">Modificar</button>
+          {% else %}
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal" onclick="modalTexts('Publicar Anuncio','¿Está seguro que desea publicar el anuncio?')">Publicar</button>
+          {% endif %}
+        </form>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 {% endblock %}

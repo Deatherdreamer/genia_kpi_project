@@ -3,67 +3,83 @@
 {% load custom_tags %}
 {% load widget_tweaks %}
 
-{% block title %}Listado de Gerencias{% endblock %}
+{% block title %}
+  Listado de Gerencias
+{% endblock %}
 
 {% block content %}
-<section class="row justify-content-center my-4">
-    <div class="col-12 col-md-10">
+  <section class="row justify-content-center">
+    <div class="col-12">
       <div class="card card-body border-0 rounded-1 shadow">
-        <h2 class="text-center">Listado de Gerencias</h2>
+        <h4 class="text-center">Listado de Gerencias</h4>
         <a href="{% url 'addGerencia' %}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i>
-            Nueva Gerencia</a>
+          <i class="bi bi-plus-circle"></i>
+          Nueva Gerencia
+        </a>
         <ul class="nav nav-underline nav-fill" id="myTab" role="tablist">
-            {% for direccion in direcciones %}
-                <li class="nav-item" role="presentation">
-                <button class="nav-link {% if forloop.first %}active{% endif %}"
-                    id="tab-{{ direccion.id }}-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#tab-{{ direccion.id }}"
-                    type="button"
-                    role="tab"
-                    aria-controls="tab-{{ direccion.id }}"
-                    aria-selected="{% if forloop.first %}
+          {% for direccion in direcciones %}
+            <li class="nav-item" role="presentation">
+              <button class="nav-link {% if forloop.first %}active{% endif %}"
+                id="tab-{{ direccion.id }}-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-{{ direccion.id }}"
+                type="button"
+                role="tab"
+                aria-controls="tab-{{ direccion.id }}"
+                aria-selected="{% if forloop.first %}
+                  
+                  
+                  
                     true
-                    {% else %}
+
+
+
+                {% else %}
+                  
+                  
+                  
                     false
-                    {% endif %}">
-                    {{ direccion }}
-                </button>
-                </li>
-            {% endfor %}
+
+
+
+                {% endif %}">
+                {{ direccion }}
+              </button>
+            </li>
+          {% endfor %}
         </ul>
         <div class="tab-content" id="myTabContent">
-            {% for direccion in direcciones %}
-                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ direccion.id }}" role="tabpanel" aria-labelledby="tab-{{ direccion.id }}-tab">
-                    <table class="table table-hover table-striped datatable align-middle w-100">
-                        <thead>
-                            <tr>
-                                <th scope="col">Nombre de la Gerencia</th>
-                                <th scope="col">Direccion</th>
-                                <th scope="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for gerencia in direccion.gerencias %}
-                                <tr>
-                                    <td>{{ gerencia.nombreText }}</td>
-                                    <td>{{ gerencia.direccion }}</td>
-                                    <td class="text-end">
-                                        <a href="{% url 'editGerencia' gerencia.id %}" class="btn btn-dark">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <a href="{% url 'gerenciadetails' gerencia.id %}" class="btn btn-dark">
-                                            <i class="bi bi-search"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% endfor %}
+          {% for direccion in direcciones %}
+            <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ direccion.id }}" role="tabpanel" aria-labelledby="tab-{{ direccion.id }}-tab">
+              <h5 class="text-center mt-3">Dirección</h5>
+              <h6 class="text-center">{{ direccion }}</h6>
+              <table class="table table-hover table-striped datatable align-middle w-100">
+                <thead>
+                  <tr>
+                    <th scope="col">Gerencia</th>
+                    <th scope="col">Dirección</th>
+                    <th scope="col" style="width: 0%;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for gerencia in direccion.gerencias %}
+                    <tr>
+                      <td>{{ gerencia.nombreText }}</td>
+                      <td>{{ gerencia.direccion }}</td>
+                      <td>
+                        <div class="btn-group btn-group-sm">
+                          <a href="{% url 'gerenciadetails' gerencia.id %}" class="btn btn-primary"><i class="bi bi-eye"></i></a>
+                          <a href="{% url 'editGerencia' gerencia.id %}" class="btn btn-warning"><i class="bi bi-pencil-square"></i></a>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endfor %}
         </div>
+      </div>
     </div>
-</section>
+  </section>
 {% endblock %}

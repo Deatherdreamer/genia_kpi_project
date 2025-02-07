@@ -2,18 +2,20 @@
 {% load static %}
 {% load custom_tags %}
 
-{% block title %}Listado de Cargos{% endblock %}
-
+{% block title %}
+  Listado de Cargos
+{% endblock %}
 
 {% block content %}
-  <section class="row justify-content-center my-4">
-    <div class="col-12 col-md-10">
+  <section class="row justify-content-center">
+    <div class="col-12">
       <div class="card card-body border-0 rounded-1 shadow">
-        <h2 class="text-center">Listado de Cargos</h2>
+        <h4 class="text-center">Listado de Cargos</h4>
         <a href="{% url 'addCargo' %}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i>
-            Nuevo Cargo</a>
-       
+          <i class="bi bi-plus-circle"></i>
+          Nuevo Cargo
+        </a>
+
         <ul class="nav nav-underline nav-fill" id="myTab" role="tablist">
           {% for nivel in niveles %}
             <li class="nav-item" role="presentation">
@@ -27,13 +29,25 @@
                 aria-selected="{% if forloop.first %}
                   
                   
+                  
+                  
+                  
                   true
+
+
+
 
 
                 {% else %}
                   
                   
+                  
+                  
+                  
                   false
+
+
+
 
 
                 {% endif %}">
@@ -46,70 +60,70 @@
         <div class="tab-content" id="myTabContent">
           {% for nivel in niveles %}
             <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ nivel.id }}" role="tabpanel" aria-labelledby="tab-{{ nivel.id }}-tab">
-              <table class="table table-hover table-striped datatable align-middle w-100">
-                <thead>
-                  <tr>
-                    <th scope="col">Nombre del cargo</th>
+              <div class="table-responsive">
+                <h5 class="text-center mt-3">Nivel</h5>
+                <h6 class="text-center">{{ nivel.get_choice_value }}</h6>
 
-                    <th scope="col">Cargo supervisor</th>
-
-                    <th scope="col">Gerencia</th>
-
-                    <th scope="col">Departamento</th>
-
-                    <th scope="col">Dirección</th>
-
-                    <th scope="col">Estado</th>
-
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {% for cargo in nivel.cargos %}
+                <table class="table table-hover table-striped datatable align-middle w-100">
+                  <thead>
                     <tr>
-                      <td>{{ cargo.nombreText|title }}</td>
-                      <td>
-                        {% if cargo.supervisor %}
-                          {{ cargo.supervisor|title }}
-                        {% else %}
-                          No tiene
-                        {% endif %}
-                      </td>
+                      <th scope="col">Nombre del cargo</th>
 
-                      <td>{{ cargo.gerencia|title }}</td>
+                      <th scope="col">Cargo supervisor</th>
 
-                      <td>{{ cargo.gerencia.departamento|title }}</td>
+                      <th scope="col">Gerencia</th>
 
-                      <td>{{ cargo.gerencia.direccion|title }}</td>
+                      <th scope="col">Departamento</th>
 
-                      <td>
-                        {% if cargo.is_active %}
-                          Activo
-                        {% else %}
-                          Inactivo
-                        {% endif %}
-                      </td>
+                      <th scope="col">Dirección</th>
 
-                      <td>
-                        <a href="{% url 'cargodetails' cargo.id %}" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></a>
-                      </td>
-                      <td>
-                        <a href="{% url 'editCargo' cargo.id %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
-                      </td>
-                        <td>
-                        <form action="{% url 'deactivatecargo' cargo.id %}" method="post" id="form-{{ cargo.id }}">
-                          {% csrf_token %}
-                          <button type="button" class="btn btn-sm btn-danger" onclick="deactivateModalTexts('Confirmar Desactivación','¿Está seguro que desea desactivar el cargo {{ cargo.nombreText|title }}?', document.getElementById('form-{{ cargo.id }}'))"><i class="bi bi-trash"></i></button>
-                        </form>
+                      <th scope="col">Estado</th>
 
-                      </td>
+                      <th scope="col" style="width: 0%;">Acciones</th>
                     </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody>
+                    {% for cargo in nivel.cargos %}
+                      <tr>
+                        <td>{{ cargo.nombreText|title }}</td>
+                        <td>
+                          {% if cargo.supervisor %}
+                            {{ cargo.supervisor|title }}
+                          {% else %}
+                            No tiene
+                          {% endif %}
+                        </td>
+
+                        <td>{{ cargo.gerencia|title }}</td>
+
+                        <td>{{ cargo.gerencia.departamento|title }}</td>
+
+                        <td>{{ cargo.gerencia.direccion|title }}</td>
+
+                        <td>
+                          {% if cargo.is_active %}
+                            Activo
+                          {% else %}
+                            Inactivo
+                          {% endif %}
+                        </td>
+
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="{% url 'cargodetails' cargo.id %}" class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'editCargo' cargo.id %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                            <form action="{% url 'deactivatecargo' cargo.id %}" method="post" id="form-{{ cargo.id }}">
+                              {% csrf_token %}
+                              <button type="button" class="btn btn-sm btn-danger" onclick="deactivateModalTexts('Confirmar Desactivación','¿Está seguro que desea desactivar el cargo {{ cargo.nombreText|title }}?', document.getElementById('form-{{ cargo.id }}'))"><i class="bi bi-trash"></i></button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
             </div>
           {% endfor %}
         </div>
@@ -121,8 +135,9 @@
 {% block scripts %}
   <script>
     function deactivateModalTexts(title, text, form) {
-      form = document.getElementById(form.id)    
-      swal.fire({
+      form = document.getElementById(form.id)
+      swal
+        .fire({
           title: title,
           text: text,
           icon: 'warning',

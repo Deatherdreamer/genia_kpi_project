@@ -420,6 +420,8 @@ class Empleado(models.Model):
     def comentariosRecibidos(self):
         return comentarios.objects.filter(para=self).order_by('-fecha')
 
+    def realizo_eval_periodo_actual(self):
+        return self.evaluaciondesempeno_set.filter(periodo=Periodo.objects.get(is_active=True)).exists()
 
 class Periodo(models.Model):
     año_inicio = models.IntegerField(default=datetime.now().year, unique=True)

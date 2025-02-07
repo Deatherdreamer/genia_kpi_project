@@ -10,7 +10,7 @@
     <h1 style="text-align: center">Evaluación de Desempeño</h1>
     <h2 style="text-align: center">NIVEL {{empleado.cargo.nivel.nivel}}</h2>
 
-    <form action="" method="POST"
+    <form action="" method="get"
       class="card card-body shadow-lg p-3 mb-5 bg-white rounded" onsubmit="return validarSumaObjetivos()">
       {% csrf_token %}
 
@@ -88,7 +88,7 @@
             <td>{{form.0.comentarios}}</td>
           </tr>
           <tr>
-            <th class="align-middle text-center fs-5">Actividades</th>
+            <th class="align-middle text-center fs-5">Objetivos Específicos</th>
             <td colspan="5">
               <table class="table table-sm">
                 <tbody>
@@ -97,10 +97,13 @@
                     <th class="align-middle">#{{ forloop.counter }}</th>
                     <td>{% render_field form2.actividad class='form-control' readonly=true %}</td>
                     <th class="align-middle">
-                      %:
+                      Completado un:
                     </th>
-                    <td>
-                      {% render_field form2.pesoActividad class='form-control' %}
+                    <td class="align-middle">
+                      <div class="d-flex" style="max-width: 150px;">
+                      {% render_field form2.pesoActividad class='form-control' %} 
+                      <span class="input-group-text">%</span>
+                      </div>
                     </td>
                     <td></td>
                   </tr>
@@ -206,20 +209,39 @@
         </thead>
         <tbody>
           <tr>
-            <td><textarea class="form-control" name="deteccionCompetencia1" rows="3"></textarea></td>
-            <td><textarea class="form-control" name="deteccionTecConductual1" rows="3"></textarea></td>
+            <td>
+              <textarea class="form-control" name="deteccionCompetencia1" rows="3">{{evaluacion.deteccionCompetencia1}}
+              </textarea>
+            </td>
+            <td>
+              <textarea class="form-control" name="deteccionTecConductual1" rows="3">{{evaluacion.deteccionTecConductual1}}
+
+              </textarea>
+            </td>
 
           </tr>
           <tr>
-            <td><textarea class="form-control" name="deteccionCompetencia2" rows="3"></textarea></td>
+            <td>
+              <textarea class="form-control" name="deteccionCompetencia2" rows="3">{{evaluacion.deteccionCompetencia2}}
+              </textarea>
+            </td>
 
-            <td><textarea class="form-control" name="deteccionTecConductual2" rows="3"></textarea></td>
+            <td>
+              <textarea class="form-control" name="deteccionTecConductual2" rows="3">{{evaluacion.deteccionTecConductual2}}
+              </textarea>
+            </td>
 
           </tr>
           <tr>
-            <td><textarea class="form-control" name="deteccionCompetencia3" rows="3"></textarea></td>
+            <td>
+              <textarea class="form-control" name="deteccionCompetencia3" rows="3">{{evaluacion.deteccionCompetencia3}}
+              </textarea>
+            </td>
 
-            <td><textarea class="form-control" name="deteccionTecConductual3" rows="3"></textarea></td>
+            <td>
+              <textarea class="form-control" name="deteccionTecConductual3" rows="3">{{evaluacion.deteccionTecConductual3}}
+              </textarea>
+            </td>
 
           </tr>
         </tbody>
@@ -227,7 +249,9 @@
       </table>
 
       <label for="comentarios">Comentarios Adicionales</label><br>
-      <textarea class="form-control" id="comentarios" name="comentarios" rows="5" cols="30"></textarea><br>
+      <textarea class="form-control" id="comentarios" name="comentarios" rows="5" cols="30">
+        {{evaluacion.comentarios}}
+      </textarea><br>
 
 
       <div class="">        
